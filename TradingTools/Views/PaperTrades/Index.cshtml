@@ -1,45 +1,41 @@
 ﻿<div class="row justify-content-center align-items-top" style="height: 100vh;">
-    <div class="col-6 text-center">
+    <div class="col-10 text-center">
         <h2>Paper Trades</h2>
-        <table class="table">
-            <thead class="thead-light">
-                <tr>
-                    @* Ask ChatGPT: How to make the elements in the header appear next to each other? *@
-                    <th scope="col" class="w-25">
-                        <div class="dropdown mb-2">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Time Frame: 10M
-                            </button>
-                            <div class="dropdown-menu animated--fade-in" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="#">5M</a>
-                                <a class="dropdown-item" href="#">10M</a>
-                                <a class="dropdown-item" href="#">15M</a>
-                                <a class="dropdown-item" href="#">30M</a>
-                                <a class="dropdown-item" href="#">1H</a>
-                                <a class="dropdown-item" href="#">2H</a>
-                                <a class="dropdown-item" href="#">4H</a>
-                                <a class="dropdown-item" href="#">D</a>
-                            </div>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-3 p-2">
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Time Frame: 10M
+                        </button>
+                        <div class="dropdown-menu animated--fade-in" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="#">5M</a>
+                            <a class="dropdown-item" href="#">10M</a>
+                            <a class="dropdown-item" href="#">15M</a>
+                            <a class="dropdown-item" href="#">30M</a>
+                            <a class="dropdown-item" href="#">1H</a>
+                            <a class="dropdown-item" href="#">2H</a>
+                            <a class="dropdown-item" href="#">4H</a>
+                            <a class="dropdown-item" href="#">D</a>
                         </div>
-                    </th>
-                    <th scope="col">
-                        <div class="dropdown mb-2">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Strategy: First Bar Below/Above
-                            </button>
-                            <div class="dropdown-menu animated--fade-in" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="#">First Bar Below/Above</a>
-                            </div>
+                    </div>
+                </div>
+                <div class="col-3 p-2">
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Strategy: First Bar Below/Above
+                        </button>
+                        <div class="dropdown-menu animated--fade-in" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="#">First Bar Below/Above</a>
                         </div>
-                    </th>
-                </tr>
-                <tr>Mama mia</tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="text-center"><span>Current Trade: <b>Sample Size 1, Trade 5</b></span></td>
-                </tr>
-            </tbody>
-        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <span>Current Trade: <b>Sample Size 1, Trade 5</b></span>
+            </div>
+        </div>
     </div>
 </div>
