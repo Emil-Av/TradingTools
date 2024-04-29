@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TradingTools", "TradingTool
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csproj", "{B5944996-1C37-4E6E-B264-ED8E4A746C35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{B9408655-F89B-4CFC-88D5-A254C8297315}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{B9408655-F89B-4CFC-88D5-A254C8297315}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

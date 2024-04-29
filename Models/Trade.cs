@@ -9,12 +9,8 @@ namespace Models
 {
     public class Trade
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
-        public string? Instrument { get; set; }
-
+        public string? Symbol { get; set; }
 
         public double? TriggerPrice { get; set; }
 
@@ -25,7 +21,6 @@ namespace Models
         public double? StopPrice { get; set; }
 
         [Required]
-
         public double? FirstTarget { get; set; }
 
         public double? SecondTarget { get; set; }
@@ -46,7 +41,7 @@ namespace Models
 
         public enum SideType { Long, Short }
 
-        public enum OrderType { Limit, Market}
+        public enum OrderType { Limit, Market }
 
         public DateTime? EntryTime { get; set; }
 
