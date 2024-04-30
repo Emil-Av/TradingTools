@@ -14,5 +14,11 @@ namespace DataAccess.Data
         public DbSet<PaperTrade> PaperTrades { get; set; }
 
         public DbSet<Journal> Journals { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<PaperTrade>().HasData(
+                new PaperTrade { Id=1, Symbol="BTCUSD", TimeFrame = TimeFrame.M10, Strategy = Strategy.FirstBarBelowAbove, ScreenshotsUrls = new List<string>() { "~/img/myimg/1.png", "~/img/myimg/2.png", "~/img/myimg/3.png" } });
+        }
     }
 }

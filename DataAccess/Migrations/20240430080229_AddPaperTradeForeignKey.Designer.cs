@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240430080229_AddPaperTradeForeignKey")]
+    partial class AddPaperTradeForeignKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,6 +64,7 @@ namespace DataAccess.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<double?>("EntryPrice")
+                        .IsRequired()
                         .HasColumnType("float");
 
                     b.Property<DateTime?>("EntryTime")
@@ -76,41 +80,25 @@ namespace DataAccess.Migrations
                         .HasColumnType("float");
 
                     b.Property<double?>("FirstTarget")
+                        .IsRequired()
                         .HasColumnType("float");
 
                     b.Property<double?>("Loss")
                         .HasColumnType("float");
 
-                    b.Property<int?>("OrderType")
-                        .HasColumnType("int");
-
                     b.Property<double?>("Profit")
                         .HasColumnType("float");
-
-                    b.Property<string>("ScreenshotsUrls")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double?>("SecondTarget")
                         .HasColumnType("float");
 
-                    b.Property<int?>("SideType")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Status")
-                        .HasColumnType("int");
-
                     b.Property<double?>("StopPrice")
+                        .IsRequired()
                         .HasColumnType("float");
-
-                    b.Property<int?>("Strategy")
-                        .HasColumnType("int");
 
                     b.Property<string>("Symbol")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("TimeFrame")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("TradeDuration")
                         .HasColumnType("datetime2");
@@ -121,16 +109,6 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PaperTrades");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ScreenshotsUrls = "[\"~/img/myimg/1.png\",\"~/img/myimg/2.png\",\"~/img/myimg/3.png\"]",
-                            Strategy = 0,
-                            Symbol = "BTCUSD",
-                            TimeFrame = 1
-                        });
                 });
 
             modelBuilder.Entity("Models.Journal", b =>

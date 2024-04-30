@@ -10,14 +10,18 @@ namespace DataAccess.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<int>(
+            //    migrationBuilder.AlterColumn<int>(
+            //        name: "Id",
+            //        table: "Journals",
+            //        type: "int",
+            //        nullable: false,
+            //        oldClrType: typeof(int),
+            //        oldType: "int")
+            //        .Annotation("SqlServer:Identity", "1, 1");
+            //}
+            migrationBuilder.DropColumn(
                 name: "Id",
-                table: "Journals",
-                type: "int",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int")
-                .Annotation("SqlServer:Identity", "1, 1");
+                table: "Journals");
         }
 
         /// <inheritdoc />

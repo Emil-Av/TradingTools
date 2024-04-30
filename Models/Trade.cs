@@ -14,13 +14,10 @@ namespace Models
 
         public double? TriggerPrice { get; set; }
 
-        [Required]
         public double? EntryPrice { get; set; }
 
-        [Required]
         public double? StopPrice { get; set; }
 
-        [Required]
         public double? FirstTarget { get; set; }
 
         public double? SecondTarget { get; set; }
@@ -33,15 +30,17 @@ namespace Models
 
         public double? Fee { get; set; }
 
-        public enum TimeFrame { M5, M10, M15, M30, H1, H2, H4, D}
+        public TimeFrame? TimeFrame { get; set; }
 
-        public enum Status { Active, Closed, Pending, Cancelled }
+        public Status? Status { get; set; }
 
-        public enum Strategy { FirstBarBelowAbove, Cradle }
+        public Strategy? Strategy { get; set; }
 
-        public enum SideType { Long, Short }
+        public SideType? SideType { get; set; }
 
-        public enum OrderType { Limit, Market }
+        public OrderType? OrderType { get; set; }
+
+        public List<string>? ScreenshotsUrls { get; set; }
 
         public DateTime? EntryTime { get; set; }
 
@@ -49,4 +48,14 @@ namespace Models
 
         public DateTime? TradeDuration { get; set; }
     }
+
+    public enum TimeFrame { M5, M10, M15, M30, H1, H2, H4, D }
+
+    public enum Status { Active, Closed, Pending, Cancelled }
+
+    public enum Strategy { FirstBarBelowAbove, Cradle }
+
+    public enum SideType { Long, Short }
+
+    public enum OrderType { Limit, Market }
 }

@@ -1,17 +1,27 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DataAccess.Data;
+using Microsoft.AspNetCore.Mvc;
+using Models;
 
 namespace TradingTools.Controllers
 {
     public class PaperTradesController : Controller
     {
-        public PaperTradesController() 
+        private readonly ApplicationDbContext _db;
+        public PaperTradesController(ApplicationDbContext db)
         {
-
+            _db = db;
         }
-
         public IActionResult Index()
         {
-            return View();
+            List<PaperTrade> objPaperTrades = _db.PaperTrades.ToList();
+
+            return View(objPaperTrades);
+        }
+
+        public IActionResult UploadTrades()
+        {
+
+            return RedirectToAction("Index"); 
         }
     }
 }
