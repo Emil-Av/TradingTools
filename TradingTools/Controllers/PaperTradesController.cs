@@ -18,6 +18,7 @@ namespace TradingTools.Controllers
             return View(objPaperTrades);
         }
 
+        [HttpPost]
         public IActionResult UploadTrades()
         {
 
