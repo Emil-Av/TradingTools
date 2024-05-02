@@ -76,8 +76,6 @@ namespace TradingTools.Controllers
                                     timeFrame = tradeInfo[2];
                                     sampleSize = tradeInfo[3];
                                     tradeNumber = tradeInfo[4];
-
-
                                 }
                                 isNewTrade = true;
                                 if (entry.FullName.EndsWith("png"))
