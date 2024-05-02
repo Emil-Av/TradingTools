@@ -9,6 +9,10 @@ namespace Models
 {
     public class PaperTrade : Trade
     {
+        public PaperTrade()
+        {
+            ScreenshotsUrls = new List<string>();
+        }
         public int Id { get; set; }
     }
 }
