@@ -140,11 +140,13 @@
         }
         else
         {
-            <a class="button d-flex flex-column align-items-center justify-content-center mt-5" role="button" id="uploadFolderButton" onclick="document.getElementById('folderInput').click()">
-                <input type="file" id="folderInput" style="display:none" webkitdirectory directory multiple />
-                <i class="fa-regular fa-folder-open fa-2xl mb-3"></i>
-                <span>Upload Trades</span>
-            </a>
+            <form method="post" enctype="multipart/form-data" id="formUploadFiles" asp-action="UploadTrades">
+                <input type="file" name="zipFile" id="folderInput" style="display:none" accept=".zip"/>
+                <a class="button d-flex flex-column align-items-center justify-content-center mt-5" role="button" id="uploadFolderButton" onclick="document.getElementById('folderInput').click()">
+                    <i class="fa-regular fa-folder-open fa-2xl mb-3"></i>
+                    <span>Upload Trades</span>
+                </a>
+            </form>
         }
     </div>
 </div>
