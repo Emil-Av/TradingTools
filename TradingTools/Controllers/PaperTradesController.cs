@@ -24,7 +24,7 @@ namespace TradingTools.Controllers
         }
 
         /// <summary>
-        ///  Method to upload existing trades.
+        ///  Method to process the uploaded .zip file. The .zip file has to have the structure mainFolder\Strategy\TimeFrame\SampleSize\TradeNumber\files
         /// </summary>
         /// <param name="zipFile"></param>
         /// <returns></returns>
@@ -47,42 +47,75 @@ namespace TradingTools.Controllers
 
                     using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Read))
                     {
-                        bool isNewTrade = true;
+                        bool canCreateNewTrade = true;
+                        string currentFolder = string.Empty;
                         PaperTrade? trade = null;
-                        string strategy = string.Empty;
-                        string timeFrame = string.Empty;
-                        string sampleSize = string.Empty;
-                        string tradeNumber = string.Empty; 
-
                         List<ZipArchiveEntry> sortedEntries = archive.Entries.OrderBy(e => e.FullName, new NaturalStringComparer()).ToList();
+                        List<string> folders = new List<string>();
+
                         foreach (var entry in sortedEntries)
                         {
                             if (entry.FullName.EndsWith('/') || entry.FullName.EndsWith("\\"))
                             {
-                                if (isNewTrade)
+                                if (canCreateNewTrade)
                                 {
                                     //_unitOfWork.PaperTrade.Add(trade);
+                                    folders.Clear();
                                     trade = new PaperTrade();
                                 }
-                                isNewTrade = false;
+                                canCreateNewTrade = false;
                                 continue;
                             }
                             else if (!entry.FullName.Contains("Reviews"))
                             {
-                                if (!isNewTrade)
+                                if (!canCreateNewTrade)
                                 {
                                     string[] tradeInfo = entry.FullName.Split('/');
-                                    strategy = tradeInfo[1];
-                                    timeFrame = tradeInfo[2];
-                                    sampleSize = tradeInfo[3];
-                                    tradeNumber = tradeInfo[4];
+                                    // wwwroot\Trades folder
+                                    currentFolder = Path.Combine(wwwRootPath, tradeInfo[0]);
+                                    // Get all subfolders
+                                    for (int i = 1; i <= 4; i++)
+                                    {
+                                        folders.Add(tradeInfo[i]);
+                                    }
+                                    // Create the wwwroot\Trades folder
+                                    if (!Directory.Exists(currentFolder))
+                                    {
+                                        Directory.CreateDirectory(currentFolder);
+                                    }
+                                    // Create all subfolders
+                                    for (int i = 0; i < folders.Count; i++)
+                                    {
+                                        currentFolder = Path.Combine(currentFolder, folders[i]);
+                                        if (!Directory.Exists(currentFolder))
+                                        {
+                                            Directory.CreateDirectory(currentFolder);
+                                        }
+                                    }
                                 }
-                                isNewTrade = true;
-                                if (entry.FullName.EndsWith("png"))
+                                // Get the entry from the archive
+                                ZipArchiveEntry? fileToSave = archive.Entries.FirstOrDefault(x => x.FullName == entry.FullName);
+                                // Save the current file
+                                if (fileToSave == null)
                                 {
-                                    trade?.ScreenshotsUrls?.Add(entry.FullName);
+                                    // Show error
+                                }
+                                // Open the file from the archive into a stream
+                                using (Stream entryStream = fileToSave.Open())
+                                { 
+                                    using (FileStream fileStream = new FileStream(Path.Combine(currentFolder, entry.Name), FileMode.Create))
+                                    {
+                                        // Copy the stream to a physical file
+                                        entryStream.CopyTo(fileStream);
+                                    }
                                 }
 
+                                if (entry.FullName.EndsWith("png"))
+                                {
+                                    string screenshotName = entry.FullName.Split('/').Last();
+                                    trade.ScreenshotsUrls.Add(Path.Combine(currentFolder, screenshotName));
+                                }
+                                canCreateNewTrade = true;
                             }
                         }
                     }
