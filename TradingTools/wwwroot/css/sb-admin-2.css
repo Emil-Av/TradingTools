@@ -11279,3 +11279,11 @@ footer.sticky-footer .copyright {
 body.sidebar-toggled footer.sticky-footer {
   width: 100%;
 }
+
+.showMyContent {
+    display: block;
+}
+
+.hideMyContent {
+    display: none;
+}

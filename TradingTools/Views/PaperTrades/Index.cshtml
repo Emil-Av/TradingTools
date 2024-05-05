@@ -1,153 +1,156 @@
 ﻿@model List<PaperTrade>
 
-<div class="row justify-content-center align-items-top">
-    <div class="col-10 text-center">
-        <h2>
-            @(Model.Count > 1 ? "Paper Trades" : "No Paper Trades Yet")
-        </h2>
-        @if (Model.Count > 1)
-        {
-            <div class="container mb-4">
+<partial name="~/Views/Shared/_LoadingIndicator.cshtml" />
+<div action="hideMyContent" id="myContent">
+    <div class="row justify-content-center align-items-top">
+        <div class="col-10 text-center">
+            <h2>
+                @(Model.Count > 1 ? "Paper Trades" : "No Paper Trades Yet")
+            </h2>
+            @if (Model.Count > 1)
+            {
+                <div class="container mb-4">
+                    <div class="row justify-content-center">
+                        <div class="col-auto p-2">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Time Frame: <span id="currentTimeFrame"></span>
+                                </button>
+                                <div class="dropdown-menu animated--fade-in" id="menuTimeFrame" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" href="#">5M</a>
+                                    <a class="dropdown-item" href="#">10M</a>
+                                    <a class="dropdown-item" href="#">15M</a>
+                                    <a class="dropdown-item" href="#">30M</a>
+                                    <a class="dropdown-item" href="#">1H</a>
+                                    <a class="dropdown-item" href="#">2H</a>
+                                    <a class="dropdown-item" href="#">4H</a>
+                                    <a class="dropdown-item" href="#">D</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto p-2">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Strategy: <span id="currentStrategy"></span>
+                                </button>
+                                <div class="dropdown-menu animated--fade-in" id="menuStrategy" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" href="#">First Bar Below/Above</a>
+                                    <a class="dropdown-item" href="#">Cradle</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto p-2">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Sample Size: <span id="currentSampleSize"></span>
+                                </button>
+                                <div class="dropdown-menu animated--fade-in" id="menuSampleSize" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" href="#">1</a>
+                                    <a class="dropdown-item" href="#">2</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto p-2">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Trade: <span id="currentTradeNumber"></span>
+                                </button>
+                                <div class="dropdown-menu animated--fade-in" id="menuTradeNumber" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" href="#">5</a>
+                                    <a class="dropdown-item" href="#">4</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row justify-content-center">
-                    <div class="col-auto p-2">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Time Frame: <span id="currentTimeFrame"></span>
-                            </button>
-                            <div class="dropdown-menu animated--fade-in" id="menuTimeFrame" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="#">5M</a>
-                                <a class="dropdown-item" href="#">10M</a>
-                                <a class="dropdown-item" href="#">15M</a>
-                                <a class="dropdown-item" href="#">30M</a>
-                                <a class="dropdown-item" href="#">1H</a>
-                                <a class="dropdown-item" href="#">2H</a>
-                                <a class="dropdown-item" href="#">4H</a>
-                                <a class="dropdown-item" href="#">D</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-auto p-2">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Strategy: <span id="currentStrategy"></span>
-                            </button>
-                            <div class="dropdown-menu animated--fade-in" id="menuStrategy" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="#">First Bar Below/Above</a>
-                                <a class="dropdown-item" href="#">Cradle</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-auto p-2">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Sample Size: <span id="currentSampleSize"></span>
-                            </button>
-                            <div class="dropdown-menu animated--fade-in" id="menuSampleSize" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="#">1</a>
-                                <a class="dropdown-item" href="#">2</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-auto p-2">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Trade: <span id="currentTradeNumber"></span>
-                            </button>
-                            <div class="dropdown-menu animated--fade-in" id="menuTradeNumber" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="#">5</a>
-                                <a class="dropdown-item" href="#">4</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row justify-content-center">
-                <div class="col-10">
-                    <div id="carouselExampleIndicators" class="carousel slide" data-interval="false">
-                        <ol class="carousel-indicators">
-                            <li data-bs-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-                            <li data-bs-target="#carouselExampleIndicators" data-slide-to="1"></li>
-                            <li data-bs-target="#carouselExampleIndicators" data-slide-to="2"></li>
-                        </ol>
-                        <div class="carousel-inner">
-                            @foreach (PaperTrade trade in Model)
-                            {
-                                for (int i = 0; i < trade.ScreenshotsUrls.Count; i++)
+                    <div class="col-10">
+                        <div id="carouselExampleIndicators" class="carousel slide" data-interval="false">
+                            <ol class="carousel-indicators">
+                                <li data-bs-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                                <li data-bs-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                                <li data-bs-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                            </ol>
+                            <div class="carousel-inner">
+                                @foreach (PaperTrade trade in Model)
                                 {
-                                    <div class="@(i == 0? "carousel-item active" : "carousel-item")">
-                                        <img src="@Url.Content(trade.ScreenshotsUrls[i])" class="d-block w-100" alt="...">
-                                    </div>
+                                    for (int i = 0; i < trade.ScreenshotsUrls.Count; i++)
+                                    {
+                                        <div class="@(i == 0? "carousel-item active" : "carousel-item")">
+                                            <img src="@Url.Content(trade.ScreenshotsUrls[i])" class="d-block w-100" alt="...">
+                                        </div>
+                                    }
                                 }
-                            }
+                            </div>
+                            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="carousel-control-next" href="#carouselExampleIndicators" type="button" data-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Next</span>
+                            </a>
                         </div>
-                        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#carouselExampleIndicators" type="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                        </a>
                     </div>
                 </div>
-            </div>
 
 
-            <!-- Journaling begin -->
-            <div class="row justify-content-center mt-3">
-                <div class="col-10 text-center">
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <h6 class="m-0 font-weight-bold text-primary">Journal</h6>
-                                </div>
-                                <div class="col mr-md-5">
-                                    <ul class="nav justify-content-center">
-                                        <li class="nav-item">
-                                            <a class="dropdown-item" href="#">Pre</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item" href="#">During</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item" href="#">Exit</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item" href="#">Post</a>
-                                        </li>
-                                    </ul>
+                <!-- Journaling begin -->
+                <div class="row justify-content-center mt-3">
+                    <div class="col-10 text-center">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <h6 class="m-0 font-weight-bold text-primary">Journal</h6>
+                                    </div>
+                                    <div class="col mr-md-5">
+                                        <ul class="nav justify-content-center">
+                                            <li class="nav-item">
+                                                <a class="dropdown-item" href="#">Pre</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="dropdown-item" href="#">During</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="dropdown-item" href="#">Exit</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="dropdown-item" href="#">Post</a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card-body">
-                            The styling for this basic card example is created by using default Bootstrap
-                            utility classes. By using utility classes, the style of the card component can be
-                            easily modified with no need for any custom CSS!
-                            The styling for this basic card example is created by using default Bootstrap
-                            utility classes. By using utility classes, the style of the card component can be
-                            easily modified with no need for any custom CSS!
-                            The styling for this basic card example is created by using default Bootstrap
-                            utility classes. By using utility classes, the style of the card component can be
-                            easily modified with no need for any custom CSS!
+                            <div class="card-body">
+                                The styling for this basic card example is created by using default Bootstrap
+                                utility classes. By using utility classes, the style of the card component can be
+                                easily modified with no need for any custom CSS!
+                                The styling for this basic card example is created by using default Bootstrap
+                                utility classes. By using utility classes, the style of the card component can be
+                                easily modified with no need for any custom CSS!
+                                The styling for this basic card example is created by using default Bootstrap
+                                utility classes. By using utility classes, the style of the card component can be
+                                easily modified with no need for any custom CSS!
+                            </div>
                         </div>
                     </div>
+                    <!-- Journaling End  -->
                 </div>
-                <!-- Journaling End  -->
-            </div>
-        }
-        else
-        {
-            <form method="post" enctype="multipart/form-data" id="formUploadFiles" asp-action="UploadTrades">
-                <input type="file" name="zipFile" id="folderInput" style="display:none" accept=".zip"/>
-                <a class="button d-flex flex-column align-items-center justify-content-center mt-5" role="button" id="uploadFolderButton" onclick="document.getElementById('folderInput').click()">
-                    <i class="fa-regular fa-folder-open fa-2xl mb-3"></i>
-                    <span>Upload Trades</span>
-                </a>
-            </form>
-        }
+            }
+            else
+            {
+                <form method="post" enctype="multipart/form-data" id="formUploadFiles" asp-action="UploadTrades">
+                    <input type="file" name="zipFile" id="folderInput" style="display:none" accept=".zip" />
+                    <a class="button d-flex flex-column align-items-center justify-content-center mt-5" role="button" id="uploadFolderButton" onclick="document.getElementById('folderInput').click()">
+                        <i class="fa-regular fa-folder-open fa-2xl mb-3"></i>
+                        <span>Upload Trades</span>
+                    </a>
+                </form>
+            }
+        </div>
     </div>
 </div>
 @section Scripts {

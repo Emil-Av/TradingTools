@@ -1,3 +1,18 @@
+//$.ajax({
+//    url: '/papertrades/index',
+//    type: 'GET',
+//    beforeSend: function () {
+//        ShowHideLoadingIndicator();
+//    },
+//    success: function (response) {
+//    },
+//    error: function (jqXHR, textStatus, errorThrown) {
+
+//    },
+//    complete: function () {
+//        ShowHideLoadingIndicator();
+//    }
+//})
 
 $(document).ready(function () {
 
