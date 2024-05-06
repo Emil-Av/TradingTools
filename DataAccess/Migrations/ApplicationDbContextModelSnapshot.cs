@@ -106,7 +106,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Symbol")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("TimeFrame")
@@ -131,6 +130,31 @@ namespace DataAccess.Migrations
                             Symbol = "BTCUSD",
                             TimeFrame = 1
                         });
+                });
+
+            modelBuilder.Entity("Models.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("SampleSizeReview")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Strategy")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TimeFrame")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TradeType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("Models.Journal", b =>

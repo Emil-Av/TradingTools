@@ -20,7 +20,7 @@ namespace DataAccess.Repository
 
         public void Update(PaperTrade paperTrade)
         {
-            var objFromDb = _db.PaperTrades.FirstOrDefault(x => x.Id == paperTrade.Id);
+            PaperTrade? objFromDb = _db.PaperTrades.FirstOrDefault(x => x.Id == paperTrade.Id);
             if (objFromDb != null)
             {
                 objFromDb.Symbol = paperTrade.Symbol;

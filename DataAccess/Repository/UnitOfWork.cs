@@ -14,10 +14,16 @@ namespace DataAccess.Repository
 
         public IPaperTradeRepository PaperTrade { get; private set; }
 
+        public IReviewRepository Review { get; private set; }
+
+        public IJournalRepository Journal { get; private set; }
+
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
             PaperTrade = new PaperTradeRepository(_db);
+            Review = new ReviewRepository(_db);
+            Journal = new JournalRepository(_db);
         }
 
         public void Save()

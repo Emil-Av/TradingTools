@@ -10,7 +10,6 @@ namespace Models
 {
     public class Journal
     {
-        [Key]
         public int Id { get; set; }
         public string? Pre { get; set; }
 
@@ -20,6 +19,7 @@ namespace Models
 
         public string? Post { get; set; }
 
+        // Navigation property
         public int PaperTradeId { get; set; }
         [ForeignKey(nameof(PaperTradeId))]
 

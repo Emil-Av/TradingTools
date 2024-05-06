@@ -10,6 +10,10 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using System.Linq;
+using static NuGet.Packaging.PackagingConstants;
+using System.ComponentModel;
+using System.Web.Mvc.Html;
+using Utilities;
 
 namespace TradingTools.Controllers
 {
@@ -35,7 +39,7 @@ namespace TradingTools.Controllers
         /// <param name="zipFile"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> UploadTradesAsync(IFormFile zipFile)
+        public IActionResult UploadTrades(IFormFile zipFile)
         {
             // Check if the submitted file is a zip file
             if (zipFile == null || Path.GetExtension(zipFile.FileName).ToLower() != ".zip")
@@ -57,6 +61,7 @@ namespace TradingTools.Controllers
                         string currentFolder = string.Empty;
                         PaperTrade? trade = null;
                         Journal? journal = null;
+                        Review? review = new Review();
                         List<ZipArchiveEntry> sortedEntries = archive.Entries.OrderBy(e => e.FullName, new NaturalStringComparer()).ToList();
                         List<string> folders = new List<string>();
 
@@ -67,115 +72,63 @@ namespace TradingTools.Controllers
                             {
                                 if (canCreateNewTrade)
                                 {
-                                    //_unitOfWork.PaperTrade.Add(trade);
+                                    int lastTradeId = 0; 
+                                    // Loop is running > 1 time
+                                    if (trade != null)
+                                    {
+                                        _unitOfWork.PaperTrade.Add(trade);
+                                        _unitOfWork.Save();
+                                        lastTradeId = _unitOfWork.PaperTrade.GetAll().
+                                                                            Select(x => x.Id).OrderByDescending(id => id).FirstOrDefault();
+                                        journal.PaperTradeId = lastTradeId;
+                                        _unitOfWork.Journal.Add(journal);
+                                        _unitOfWork.Save();
+                                    }
                                     journal = new Journal();
                                     trade = new PaperTrade();
-                                    int id = _unitOfWork.PaperTrade.GetAll().Select(x => x.Id).OrderByDescending(id => id).FirstOrDefault();
-                                    journal.PaperTrade.Id = id;
+                                    if (lastTradeId > 20)
+                                    {
+                                        _unitOfWork.Review.Add(review);
+                                        _unitOfWork.Save();
+                                        review = new Review();
+                                    }
                                     folders.Clear();
                                 }
                                 canCreateNewTrade = false;
                                 continue;
                             }
-                            // Entry is either a screenshot or the .odt journal file
-                            else if (!entry.FullName.Contains("Reviews"))
+                            // The review for the sample size
+                            else if (entry.FullName.Contains("Review"))
                             {
+                                ParseODTReviewFile(entry, review);
+                            }
+                            // Entry is either a screenshot or the .odt journal file
+                            else
+                            {
+                                string[] tradeInfo = entry.FullName.Split('/');
+                                trade.Strategy = MyEnumConverter.SetStrategy(tradeInfo[1]);
+                                trade.TimeFrame = MyEnumConverter.SetTimeFrame(tradeInfo[2]);
+                                review.TradeType = TradeType.PaperTrade;
+                                review.TimeFrame = trade.TimeFrame;
+                                review.Strategy = trade.Strategy;
                                 if (!canCreateNewTrade)
                                 {
-                                    string[] tradeInfo = entry.FullName.Split('/');
-                                    // wwwroot\Trades folder
-                                    currentFolder = Path.Combine(wwwRootPath, tradeInfo[0]);
-                                    // Get all subfolders
-                                    for (int i = 1; i <= 4; i++)
-                                    {
-                                        folders.Add(tradeInfo[i]);
-                                    }
-                                    // Create the wwwroot\Trades folder
-                                    if (!Directory.Exists(currentFolder))
-                                    {
-                                        Directory.CreateDirectory(currentFolder);
-                                    }
-                                    // Create all subfolders
-                                    for (int i = 0; i < folders.Count; i++)
-                                    {
-                                        currentFolder = Path.Combine(currentFolder, folders[i]);
-                                        if (!Directory.Exists(currentFolder))
-                                        {
-                                            Directory.CreateDirectory(currentFolder);
-                                        }
-                                    }
+                                    currentFolder = CreateFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath, folders);
                                 }
 
                                 try
                                 {
                                     // Save the file
-                                    entry.ExtractToFile(Path.Combine(currentFolder, entry.Name));
                                     if (entry.FullName.EndsWith(".png"))
                                     {
+                                        entry.ExtractToFile(Path.Combine(currentFolder, entry.Name));
                                         string screenshotName = entry.FullName.Split('/').Last();
                                         trade.ScreenshotsUrls.Add(Path.Combine(currentFolder, screenshotName));
                                     }
                                     else if (entry.FullName.EndsWith(".odt"))
                                     {
-                                        using (ZipArchive odtFile = ZipFile.OpenRead(Path.Combine(currentFolder, entry.Name)))
-                                        {
-                                            ZipArchiveEntry contentEntry = odtFile.GetEntry("content.xml");
-                                            if (contentEntry != null)
-                                            {
-                                                using (StreamReader reader = new StreamReader(contentEntry.Open()))
-                                                {
-                                                    string xmlContent = reader.ReadToEnd();
-                                                    XDocument xmlDoc = XDocument.Parse(xmlContent);
-                                                    List<XElement> nodes = xmlDoc.Descendants().Where(e => e.Name.LocalName == "p").ToList();
-                                                    string lastJournal = string.Empty;
-                                                    foreach (XElement node in nodes)
-                                                    {
-                                                        XElement element = XElement.Parse(node.ToString());
-                                                        if (element.Value.Contains("[Pre]"))
-                                                        {
-                                                            lastJournal = "[Pre]";
-                                                            continue;
+                                        ParseODTJournalFile(entry, journal);
 
-                                                        }
-                                                        else if (element.Value.Contains("[During]"))
-                                                        {
-                                                            lastJournal = "[During]";
-                                                            continue;
-
-                                                        }
-                                                        else if (element.Value.Contains("[Exit]"))
-                                                        {
-                                                            lastJournal = "[Exit]";
-                                                            continue;
-
-                                                        }
-                                                        else if (element.Value.Contains("[Post]"))
-                                                        {
-                                                            lastJournal = "[Post]";
-                                                            continue;
-
-                                                        }
-
-                                                        if (lastJournal.Equals("[Pre]"))
-                                                        {
-                                                            journal.Pre += element.Value + "\n";
-                                                        }
-                                                        else if (lastJournal.Equals("[During]"))
-                                                        {
-                                                            journal.During += element.Value+ "\n";
-                                                        }
-                                                        else if (lastJournal.Equals("[Exit]"))
-                                                        {
-                                                            journal.Exit += element.Value+ "\n";
-                                                        }
-                                                        else if (lastJournal.Equals("[Post]"))
-                                                        {
-                                                            journal.Post += element.Value+ "\n";
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
                                     }
                                 }
                                 catch
@@ -188,9 +141,9 @@ namespace TradingTools.Controllers
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-
+                Debug.WriteLine(ex.Message);
             }
             finally
             {
@@ -199,32 +152,151 @@ namespace TradingTools.Controllers
 
             return RedirectToAction("Index");
         }
-    }
 
-    public class NaturalStringComparer : IComparer<string>
-    {
-        public int Compare(string x, string y)
+        string CreateFolders(string[] tradeInfo, string currentFolder, string entryFullName, string wwwRootPath, List<string> folders)
         {
-            string[] xParts = Regex.Split(x.Replace(" ", ""), "([0-9]+)");
-            string[] yParts = Regex.Split(y.Replace(" ", ""), "([0-9]+)");
-
-            int minLength = Math.Min(xParts.Length, yParts.Length);
-            for (int i = 0; i < minLength; i++)
+            // wwwroot\Trades folder
+            currentFolder = Path.Combine(wwwRootPath, tradeInfo[0]);
+            // Get all subfolders
+            for (int i = 1; i <= 4; i++)
             {
-                if (xParts[i] != yParts[i])
+                folders.Add(tradeInfo[i]);
+            }
+            // Create the wwwroot\Trades folder
+            if (!Directory.Exists(currentFolder))
+            {
+                Directory.CreateDirectory(currentFolder);
+            }
+            // Create all subfolders
+            for (int i = 0; i < folders.Count; i++)
+            {
+                currentFolder = Path.Combine(currentFolder, folders[i]);
+                if (!Directory.Exists(currentFolder))
                 {
-                    if (int.TryParse(xParts[i], out int xNum) && int.TryParse(yParts[i], out int yNum))
-                    {
-                        return xNum.CompareTo(yNum);
-                    }
-                    else
-                    {
-                        return string.Compare(xParts[i], yParts[i], StringComparison.Ordinal);
-                    }
+                    Directory.CreateDirectory(currentFolder);
                 }
             }
 
-            return xParts.Length.CompareTo(yParts.Length);
+            return currentFolder;
+        }
+
+        void ParseODTReviewFile(ZipArchiveEntry entry, Review review)
+        {
+            using (Stream stream = entry.Open())
+            {
+                using (ZipArchive archive = new ZipArchive(stream))
+                {
+                    ZipArchiveEntry contentEntry = archive.GetEntry("content.xml");
+                    if (contentEntry != null)
+                    {
+                        using (StreamReader reader = new StreamReader(contentEntry.Open()))
+                        {
+                            string xmlContent = reader.ReadToEnd();
+                            XDocument xmlDoc = XDocument.Parse(xmlContent);
+                            List<XElement> nodes = xmlDoc.Descendants().Where(e => e.Name.LocalName == "p").ToList();
+                            foreach (XElement node in nodes)
+                            {
+                                XElement element = XElement.Parse(node.ToString());
+                                review.SampleSizeReview += string.IsNullOrEmpty(element.Value) ? "\n" : element.Value;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        void ParseODTJournalFile(ZipArchiveEntry entry, Journal journal)
+        {
+            using (Stream stream = entry.Open())
+            {
+                using (ZipArchive archive = new ZipArchive(stream))
+                {
+                    ZipArchiveEntry contentEntry = archive.GetEntry("content.xml");
+                    if (contentEntry != null)
+                    {
+                        using (StreamReader reader = new StreamReader(contentEntry.Open()))
+                        {
+                            string xmlContent = reader.ReadToEnd();
+                            XDocument xmlDoc = XDocument.Parse(xmlContent);
+                            List<XElement> nodes = xmlDoc.Descendants().Where(e => e.Name.LocalName == "p").ToList();
+                            string lastJournal = string.Empty;
+                            foreach (XElement node in nodes)
+                            {
+                                XElement element = XElement.Parse(node.ToString());
+                                if (element.Value.Contains("[Pre]"))
+                                {
+                                    lastJournal = "[Pre]";
+                                    continue;
+
+                                }
+                                else if (element.Value.Contains("[During]"))
+                                {
+                                    lastJournal = "[During]";
+                                    continue;
+
+                                }
+                                else if (element.Value.Contains("[Exit]"))
+                                {
+                                    lastJournal = "[Exit]";
+                                    continue;
+
+                                }
+                                else if (element.Value.Contains("[Post]"))
+                                {
+                                    lastJournal = "[Post]";
+                                    continue;
+
+                                }
+
+                                if (lastJournal.Equals("[Pre]"))
+                                {
+                                    journal.Pre += string.IsNullOrEmpty(element.Value) ? "\n" : element.Value;
+                                }
+                                else if (lastJournal.Equals("[During]"))
+                                {
+                                    journal.During += string.IsNullOrEmpty(element.Value) ? "\n" : element.Value;
+                                }
+                                else if (lastJournal.Equals("[Exit]"))
+                                {
+                                    journal.Exit += string.IsNullOrEmpty(element.Value) ? "\n" : element.Value;
+                                }
+                                else if (lastJournal.Equals("[Post]"))
+                                {
+                                    journal.Post += string.IsNullOrEmpty(element.Value) ? "\n" : element.Value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
+
+public class NaturalStringComparer : IComparer<string>
+{
+    public int Compare(string x, string y)
+    {
+        string[] xParts = Regex.Split(x.Replace(" ", ""), "([0-9]+)");
+        string[] yParts = Regex.Split(y.Replace(" ", ""), "([0-9]+)");
+
+        int minLength = Math.Min(xParts.Length, yParts.Length);
+        for (int i = 0; i < minLength; i++)
+        {
+            if (xParts[i] != yParts[i])
+            {
+                if (int.TryParse(xParts[i], out int xNum) && int.TryParse(yParts[i], out int yNum))
+                {
+                    return xNum.CompareTo(yNum);
+                }
+                else
+                {
+                    return string.Compare(xParts[i], yParts[i], StringComparison.Ordinal);
+                }
+            }
+        }
+
+        return xParts.Length.CompareTo(yParts.Length);
+    }
+}
+

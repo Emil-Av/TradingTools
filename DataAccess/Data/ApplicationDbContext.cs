@@ -15,6 +15,8 @@ namespace DataAccess.Data
 
         public DbSet<Journal> Journals { get; set; }
 
+        public DbSet<Review> Reviews { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PaperTrade>().HasData(

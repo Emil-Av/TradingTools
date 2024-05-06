@@ -10,6 +10,10 @@ namespace DataAccess.Repository.IRepository
     {
         IPaperTradeRepository PaperTrade { get; }
 
+        IJournalRepository Journal { get; }
+
+        IReviewRepository Review { get; }
+
         void Save();
     }
 }

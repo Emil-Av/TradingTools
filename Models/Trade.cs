@@ -9,7 +9,6 @@ namespace Models
 {
     public class Trade
     {
-        [Required]
         public string? Symbol { get; set; }
 
         public double? TriggerPrice { get; set; }
@@ -58,4 +57,6 @@ namespace Models
     public enum SideType { Long, Short }
 
     public enum OrderType { Limit, Market }
+
+    public enum TradeType { Trade, PaperTrade }
 }
