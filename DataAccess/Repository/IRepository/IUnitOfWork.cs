@@ -14,6 +14,8 @@ namespace DataAccess.Repository.IRepository
 
         IReviewRepository Review { get; }
 
+        ISampleSizeRepository SampleSize { get; }
+
         void Save();
     }
 }

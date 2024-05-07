@@ -26,6 +26,7 @@ namespace DataAccess.Repository
                 objFromDb.SampleSizeReview = review.SampleSizeReview;
                 objFromDb.Strategy = review.Strategy;
                 objFromDb.TimeFrame = review.TimeFrame;
+                objFromDb.TradeType = review.TradeType;
             }
         }
     }

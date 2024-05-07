@@ -29,6 +29,8 @@ namespace Models
 
         public double? Fee { get; set; }
 
+        public SampleSize? SampleSize { get; set; }
+
         public TimeFrame? TimeFrame { get; set; }
 
         public Status? Status { get; set; }

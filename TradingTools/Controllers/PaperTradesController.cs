@@ -14,6 +14,7 @@ using static NuGet.Packaging.PackagingConstants;
 using System.ComponentModel;
 using System.Web.Mvc.Html;
 using Utilities;
+using Models.ViewModels;
 
 namespace TradingTools.Controllers
 {
@@ -21,16 +22,23 @@ namespace TradingTools.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
+
+        public PaperTradesVM PaperTradesVM { get; set; }
         public PaperTradesController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
+
         }
 
         public IActionResult Index()
         {
-            List<PaperTrade> objPaperTrades = _unitOfWork.PaperTrade.GetAll().ToList();
-            return View(objPaperTrades);
+            PaperTradesVM = new PaperTradesVM()
+            {
+                ListPaperTrades = _unitOfWork.PaperTrade.GetAll().ToList()
+            };
+
+            return View(PaperTradesVM);
         }
 
         /// <summary>
@@ -59,9 +67,12 @@ namespace TradingTools.Controllers
                     {
                         bool canCreateNewTrade = true;
                         string currentFolder = string.Empty;
+                        string lastSampleSize = string.Empty;
+                        int currentSampleSizeId = 0;
                         PaperTrade? trade = null;
                         Journal? journal = null;
                         Review? review = new Review();
+                        SampleSize? sampleSize = null;
                         List<ZipArchiveEntry> sortedEntries = archive.Entries.OrderBy(e => e.FullName, new NaturalStringComparer()).ToList();
                         List<string> folders = new List<string>();
 
@@ -72,7 +83,7 @@ namespace TradingTools.Controllers
                             {
                                 if (canCreateNewTrade)
                                 {
-                                    int lastTradeId = 0; 
+                                    int lastTradeId = 0;
                                     // Loop is running > 1 time
                                     if (trade != null)
                                     {
@@ -86,12 +97,6 @@ namespace TradingTools.Controllers
                                     }
                                     journal = new Journal();
                                     trade = new PaperTrade();
-                                    if (lastTradeId > 20)
-                                    {
-                                        _unitOfWork.Review.Add(review);
-                                        _unitOfWork.Save();
-                                        review = new Review();
-                                    }
                                     folders.Clear();
                                 }
                                 canCreateNewTrade = false;
@@ -108,9 +113,29 @@ namespace TradingTools.Controllers
                                 string[] tradeInfo = entry.FullName.Split('/');
                                 trade.Strategy = MyEnumConverter.SetStrategy(tradeInfo[1]);
                                 trade.TimeFrame = MyEnumConverter.SetTimeFrame(tradeInfo[2]);
-                                review.TradeType = TradeType.PaperTrade;
-                                review.TimeFrame = trade.TimeFrame;
-                                review.Strategy = trade.Strategy;
+                                trade.SampleSizeId = currentSampleSizeId;
+
+
+                                string currentSampleSize = tradeInfo[3];
+                                // First sample size of the loop or a new one
+                                if (lastSampleSize != currentSampleSize)
+                                {
+                                    lastSampleSize = currentSampleSize;
+                                    sampleSize = new SampleSize();
+                                    sampleSize.Strategy = trade.Strategy;
+                                    sampleSize.TimeFrame = trade.TimeFrame;
+                                    _unitOfWork.SampleSize.Add(sampleSize);
+                                    _unitOfWork.Save();
+                                    currentSampleSizeId = _unitOfWork.SampleSize.GetAll().
+                                                                                Select(x => x.Id).OrderByDescending(id => id).FirstOrDefault();
+
+                                    review.TradeType = TradeType.PaperTrade;
+                                    review.TimeFrame = trade.TimeFrame;
+                                    review.Strategy = trade.Strategy;
+                                    _unitOfWork.Review.Add(review);
+                                    _unitOfWork.Save();
+                                }
+
                                 if (!canCreateNewTrade)
                                 {
                                     currentFolder = CreateFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath, folders);
@@ -271,32 +296,33 @@ namespace TradingTools.Controllers
             }
         }
     }
-}
 
-public class NaturalStringComparer : IComparer<string>
-{
-    public int Compare(string x, string y)
+
+    public class NaturalStringComparer : IComparer<string>
     {
-        string[] xParts = Regex.Split(x.Replace(" ", ""), "([0-9]+)");
-        string[] yParts = Regex.Split(y.Replace(" ", ""), "([0-9]+)");
-
-        int minLength = Math.Min(xParts.Length, yParts.Length);
-        for (int i = 0; i < minLength; i++)
+        public int Compare(string x, string y)
         {
-            if (xParts[i] != yParts[i])
+            string[] xParts = Regex.Split(x.Replace(" ", ""), "([0-9]+)");
+            string[] yParts = Regex.Split(y.Replace(" ", ""), "([0-9]+)");
+
+            int minLength = Math.Min(xParts.Length, yParts.Length);
+            for (int i = 0; i < minLength; i++)
             {
-                if (int.TryParse(xParts[i], out int xNum) && int.TryParse(yParts[i], out int yNum))
+                if (xParts[i] != yParts[i])
                 {
-                    return xNum.CompareTo(yNum);
-                }
-                else
-                {
-                    return string.Compare(xParts[i], yParts[i], StringComparison.Ordinal);
+                    if (int.TryParse(xParts[i], out int xNum) && int.TryParse(yParts[i], out int yNum))
+                    {
+                        return xNum.CompareTo(yNum);
+                    }
+                    else
+                    {
+                        return string.Compare(xParts[i], yParts[i], StringComparison.Ordinal);
+                    }
                 }
             }
-        }
 
-        return xParts.Length.CompareTo(yParts.Length);
+            return xParts.Length.CompareTo(yParts.Length);
+        }
     }
 }
 

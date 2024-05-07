@@ -18,12 +18,15 @@ namespace DataAccess.Repository
 
         public IJournalRepository Journal { get; private set; }
 
+        public ISampleSizeRepository SampleSize { get; private set; }
+
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
             PaperTrade = new PaperTradeRepository(_db);
             Review = new ReviewRepository(_db);
             Journal = new JournalRepository(_db);
+            SampleSize = new SampleSizeRepository(_db);
         }
 
         public void Save()
