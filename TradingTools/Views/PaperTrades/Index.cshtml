@@ -1,7 +1,7 @@
 ﻿@model PaperTradesVM
 
 <partial name="~/Views/Shared/_LoadingIndicator.cshtml" />
-<div action="hideMyContent" id="myContent">
+<div class="hideMyContent" id="myContent">
     <div class="row justify-content-center align-items-top">
         <div class="col-10 text-center">
             <h2>
@@ -142,9 +142,9 @@
             }
             else
             {
-                <form method="post" enctype="multipart/form-data" id="formUploadFiles" asp-action="UploadTrades">
-                    <input type="file" name="zipFile" id="folderInput" style="display:none" accept=".zip" />
-                    <a class="button d-flex flex-column align-items-center justify-content-center mt-5" role="button" id="uploadFolderButton" onclick="document.getElementById('folderInput').click()">
+                <form method="post" enctype="multipart/form-data" id="formUploadFile" asp-action="UploadTrades">
+                    <input type="file" name="zipFile" id="fileInput" style="display:none" accept=".zip" />
+                    <a class="button d-flex flex-column align-items-center justify-content-center mt-5" role="button" id="uploadFileButton" onclick="document.getElementById('fileInput').click()">
                         <i class="fa-regular fa-folder-open fa-2xl mb-3"></i>
                         <span>Upload Trades</span>
                     </a>

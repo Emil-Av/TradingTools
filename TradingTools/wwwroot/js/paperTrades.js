@@ -17,8 +17,8 @@
 $(document).ready(function () {
 
     // After a .zip file is uploaded, the 'change' event is triggered, this submits the form and sends the .zip file to the controller
-    $('#folderInput').on('change', function (event) {
-        $('#formUploadFiles').submit();
+    $('#fileInput').on('change', function () {
+        $('#formUploadFile').submit();
     });
 
     // Get all element
