@@ -1,12 +1,40 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DataAccess.Data;
+using DataAccess.Repository.IRepository;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Models;
 
 namespace TradingTools.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IUnitOfWork _unitOfWork;
+        public HomeController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
         public IActionResult Index()
         {
+            CheckOrCreateUserSettings();
+
             return View();
+        }
+
+        /// <summary>
+        ///  Creates new user settings.
+        /// </summary>
+        private void CheckOrCreateUserSettings()
+        {
+            if (_unitOfWork.UserSettings.GetAll().ToList().Count == 0)
+            {
+                _unitOfWork.UserSettings.Add(new UserSettings()
+                {
+                    PTTimeFrame = TimeFrame.M10,
+                    PTStrategy = Strategy.FirstBarBelowAbove
+                });
+
+                _unitOfWork.Save();
+            }
         }
     }
 }

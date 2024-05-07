@@ -20,6 +20,8 @@ namespace DataAccess.Repository
 
         public ISampleSizeRepository SampleSize { get; private set; }
 
+        public IUserSettingsRepository UserSettings { get; private set; }
+
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
@@ -27,6 +29,7 @@ namespace DataAccess.Repository
             Review = new ReviewRepository(_db);
             Journal = new JournalRepository(_db);
             SampleSize = new SampleSizeRepository(_db);
+            UserSettings = new UserSettingsRepository(_db);
         }
 
         public void Save()

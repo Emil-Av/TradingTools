@@ -16,6 +16,8 @@ namespace DataAccess.Repository.IRepository
 
         ISampleSizeRepository SampleSize { get; }
 
+        IUserSettingsRepository UserSettings { get; }
+
         void Save();
     }
 }

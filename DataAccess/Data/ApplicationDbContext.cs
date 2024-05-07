@@ -17,6 +17,10 @@ namespace DataAccess.Data
 
         public DbSet<Review> Reviews { get; set; }
 
+        public DbSet<SampleSize> SamplesSizes { get; set; }
+
+        public DbSet<UserSettings> UserSettings { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PaperTrade>().HasData(
