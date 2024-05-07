@@ -33,9 +33,11 @@ namespace TradingTools.Controllers
 
         public IActionResult Index()
         {
+            int? lastSampleSize = _unitOfWork.SampleSize.GetAll().OrderByDescending(x => x).FirstOrDefault().Id;
+            UserSettings userSettings = _unitOfWork.UserSettings.GetAll().FirstOrDefault();
             PaperTradesVM = new PaperTradesVM()
             {
-                ListPaperTrades = _unitOfWork.PaperTrade.GetAll().ToList()
+                ListPaperTrades = _unitOfWork.PaperTrade.GetAll().Where(x => x.SampleSizeId == lastSampleSize).OrderByDescending(x => x.Id).ToList()
             };
 
             return View(PaperTradesVM);
@@ -73,7 +75,8 @@ namespace TradingTools.Controllers
                         Journal? journal = null;
                         Review? review = new Review();
                         SampleSize? sampleSize = null;
-                        List<ZipArchiveEntry> sortedEntries = archive.Entries.OrderBy(e => e.FullName, new NaturalStringComparer()).ToList();
+                        List<ZipArchiveEntry> sortedEntries = archive.Entries.
+                                                                        OrderBy(e => e.FullName, new NaturalStringComparer()).ToList();
                         List<string> folders = new List<string>();
 
                         foreach (var entry in sortedEntries)
