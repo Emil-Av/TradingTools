@@ -33,11 +33,14 @@ namespace TradingTools.Controllers
 
         public IActionResult Index()
         {
-            int? lastSampleSize = _unitOfWork.SampleSize.GetAll().OrderByDescending(x => x).FirstOrDefault().Id;
-            UserSettings userSettings = _unitOfWork.UserSettings.GetAll().FirstOrDefault();
+            UserSettings userSettings = _unitOfWork.UserSettings.GetAll().First();
+            int? latestSampleSize = _unitOfWork.SampleSize.GetAll().OrderByDescending(x => x.Id).FirstOrDefault()?.Id;
+            // Currently no users, so there is only one data record
             PaperTradesVM = new PaperTradesVM()
             {
-                ListPaperTrades = _unitOfWork.PaperTrade.GetAll().Where(x => x.SampleSizeId == lastSampleSize).OrderByDescending(x => x.Id).ToList()
+                ListPaperTrades = _unitOfWork.PaperTrade.GetAll().Where(x => x.SampleSizeId == latestSampleSize && x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy).OrderByDescending(x => x.Id).ToList(),
+                ListSampleSizes = _unitOfWork.SampleSize.GetAll().Where(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy).OrderByDescending(x => x.Id).ToList()
+
             };
 
             return View(PaperTradesVM);
@@ -114,8 +117,8 @@ namespace TradingTools.Controllers
                             else
                             {
                                 string[] tradeInfo = entry.FullName.Split('/');
-                                trade.Strategy = MyEnumConverter.SetStrategy(tradeInfo[1]);
-                                trade.TimeFrame = MyEnumConverter.SetTimeFrame(tradeInfo[2]);
+                                trade.Strategy = MyEnumConverter.SetStrategyFromString(tradeInfo[1]);
+                                trade.TimeFrame = MyEnumConverter.SetTimeFrameFromString(tradeInfo[2]);
                                 trade.SampleSizeId = currentSampleSizeId;
 
 
@@ -151,7 +154,9 @@ namespace TradingTools.Controllers
                                     {
                                         entry.ExtractToFile(Path.Combine(currentFolder, entry.Name));
                                         string screenshotName = entry.FullName.Split('/').Last();
-                                        trade.ScreenshotsUrls.Add(Path.Combine(currentFolder, screenshotName));
+                                        string screenshotPath = currentFolder.Replace(wwwRootPath, "").Replace("\\\\", "/");
+                                        trade.ScreenshotsUrls.Add(Path.Combine(screenshotPath, screenshotName));
+                                        //trade.ScreenshotsUrls.Add(Path.Combine(currentFolder, screenshotName));
                                     }
                                     else if (entry.FullName.EndsWith(".odt"))
                                     {

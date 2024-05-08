@@ -15,50 +15,52 @@
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Time Frame: <span id="currentTimeFrame"></span>
+                                    Time Frame: <span id="currentTimeFrame">@MyEnumConverter.SetTimeFrameFromEnum(Model.ListPaperTrades.First().TimeFrame)</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="menuTimeFrame" aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item" href="#">5M</a>
-                                    <a class="dropdown-item" href="#">10M</a>
-                                    <a class="dropdown-item" href="#">15M</a>
-                                    <a class="dropdown-item" href="#">30M</a>
-                                    <a class="dropdown-item" href="#">1H</a>
-                                    <a class="dropdown-item" href="#">2H</a>
-                                    <a class="dropdown-item" href="#">4H</a>
-                                    <a class="dropdown-item" href="#">D</a>
+                                    @foreach (TimeFrame tf in Enum.GetValues(typeof(TimeFrame)))
+                                    {
+                                        <a class="dropdown-item" href="#">@MyEnumConverter.SetTimeFrameFromEnum(tf)</a>
+                                    }
                                 </div>
                             </div>
                         </div>
                         <div class="col-auto p-2">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Strategy: <span id="currentStrategy"></span>
+                                    Strategy: <span id="currentStrategy">@MyEnumConverter.SetStrategyFromEnum(Model.ListPaperTrades.First().Strategy)</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="menuStrategy" aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item" href="#">First Bar Below/Above</a>
-                                    <a class="dropdown-item" href="#">Cradle</a>
+                                    @foreach (Strategy strategy in Enum.GetValues(typeof(Strategy)))
+                                    {
+                                        <a class="dropdown-item" href="#">@MyEnumConverter.SetStrategyFromEnum(strategy)</a>
+                                    }
                                 </div>
                             </div>
                         </div>
                         <div class="col-auto p-2">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Sample Size: <span id="currentSampleSize"></span>
+                                    Sample Size: <span id="currentSampleSize">@(Model.ListSampleSizes.Count)</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="menuSampleSize" aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item" href="#">1</a>
-                                    <a class="dropdown-item" href="#">2</a>
+                                    @for (int i = 0; i < Model.ListSampleSizes.Count; i++)
+                                    {
+                                        <a class="dropdown-item" href="#">@(Model.ListSampleSizes.Count - i)</a>
+                                    }
                                 </div>
                             </div>
                         </div>
                         <div class="col-auto p-2">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Trade: <span id="currentTradeNumber"></span>
+                                    Trade: <span id="currentTrade">@Model.ListPaperTrades.Count</span>
                                 </button>
-                                <div class="dropdown-menu animated--fade-in" id="menuTradeNumber" aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item" href="#">5</a>
-                                    <a class="dropdown-item" href="#">4</a>
+                                <div class="dropdown-menu animated--fade-in" id="menuTrade" aria-labelledby="dropdownMenuButton">
+                                    @for (int i = 0; i < Model.ListPaperTrades.Count; i++)
+                                    {
+                                        <a class="dropdown-item" href="#">@(Model.ListPaperTrades.Count - i)</a>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -67,11 +69,18 @@
 
                 <div class="row justify-content-center">
                     <div class="col-10">
-                        <div id="carouselExampleIndicators" class="carousel slide" data-interval="false">
+                        <div id="carouselTrades" class="carousel slide" data-interval="false">
                             <ol class="carousel-indicators">
-                                <li data-bs-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-                                <li data-bs-target="#carouselExampleIndicators" data-slide-to="1"></li>
-                                <li data-bs-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                                @foreach (PaperTrade trade in Model.ListPaperTrades)
+                                {
+                                    for (int i = 0; i < trade.ScreenshotsUrls.Count; i++)
+                                    {
+                                        <li data-bs-target="#carouselTrades" data-slide-to="@(i)" @(i == 0 ? "class=\"active\"" : "")></li>
+                                    }
+                                }
+                                <!--<li data-bs-target="#carouselTrades" data-slide-to="0" class="active"></li>
+                                <li data-bs-target="#carouselTrades" data-slide-to="1"></li>
+                                <li data-bs-target="#carouselTrades" data-slide-to="2"></li>-->
                             </ol>
                             <div class="carousel-inner">
                                 @foreach (PaperTrade trade in Model.ListPaperTrades)
@@ -84,11 +93,11 @@
                                     }
                                 }
                             </div>
-                            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                            <a class="carousel-control-prev" href="#carouselTrades" role="button" data-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                 <span class="sr-only">Previous</span>
                             </a>
-                            <a class="carousel-control-next" href="#carouselExampleIndicators" type="button" data-slide="next">
+                            <a class="carousel-control-next" href="#carouselTrades" type="button" data-slide="next">
                                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                 <span class="sr-only">Next</span>
                             </a>

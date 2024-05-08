@@ -9,5 +9,7 @@ namespace Models.ViewModels
     public class PaperTradesVM
     {
         public List<PaperTrade> ListPaperTrades { get; set; }
+
+        public List<SampleSize> ListSampleSizes { get; set; }
     }
 }

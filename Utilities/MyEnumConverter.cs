@@ -15,7 +15,7 @@ namespace Utilities
             return tradeTypes[tradeType];
         }
 
-        public static TimeFrame SetTimeFrame(string tf)
+        public static TimeFrame SetTimeFrameFromString(string tf)
         {
             Dictionary<string, TimeFrame> timeFrames = new Dictionary<string, TimeFrame>()
             {
@@ -33,12 +33,41 @@ namespace Utilities
             return timeFrames[tf];
         }
 
-        public static Strategy SetStrategy(string strategy)
+        public static string SetTimeFrameFromEnum(TimeFrame? tf)
+        {
+            Dictionary<TimeFrame?, string> timeFrames = new Dictionary<TimeFrame?, string>()
+            {
+                { TimeFrame.M5, "5M" },
+                { TimeFrame.M10 , "10M" },
+                { TimeFrame.M15 , "15M" },
+                { TimeFrame.M30 , "30M" },
+                { TimeFrame.H1 , "1H" },
+                { TimeFrame.H2 , "2H" },
+                { TimeFrame.H4 , "4H" },
+                { TimeFrame.D , "D" }
+
+            };
+
+            return timeFrames[tf];
+        }
+
+        public static Strategy SetStrategyFromString(string strategy)
         {
             Dictionary<string, Strategy> strategies = new Dictionary<string, Strategy>()
             {
                 { "Cradle", Strategy.Cradle },
                 { "First Bar Below-Above", Strategy.FirstBarBelowAbove }
+            };
+
+            return strategies[strategy];
+        }
+
+        public static string SetStrategyFromEnum(Strategy? strategy)
+        {
+            Dictionary<Strategy?, string> strategies = new Dictionary<Strategy?, string>()
+            {
+                { Strategy.Cradle, "Cradle" },
+                { Strategy.FirstBarBelowAbove, "First Bar Below-Above" }
             };
 
             return strategies[strategy];
