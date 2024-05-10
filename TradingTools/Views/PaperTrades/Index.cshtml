@@ -5,9 +5,9 @@
     <div class="row justify-content-center align-items-top">
         <div class="col-10 text-center">
             <h2>
-                @(Model.ListPaperTrades.Count > 0 ? "Paper Trades" : "No Paper Trades Yet")
+                @(Model.CurrentTrade != null ? "Paper Trades" : "No Paper Trades Yet")
             </h2>
-            @if (Model.ListPaperTrades.Count > 0)
+            @if (Model.CurrentTrade != null)
             {
                 <div class="container mb-4">
                     <div class="row justify-content-center">
@@ -15,7 +15,7 @@
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Time Frame: <span id="currentTimeFrame">@MyEnumConverter.SetTimeFrameFromEnum(Model.ListPaperTrades.First().TimeFrame)</span>
+                                    Time Frame: <span id="currentTimeFrame">@MyEnumConverter.SetTimeFrameFromEnum(Model.CurrentTrade.TimeFrame)</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="menuTimeFrame" aria-labelledby="dropdownMenuButton">
                                     @foreach (TimeFrame tf in Enum.GetValues(typeof(TimeFrame)))
@@ -28,7 +28,7 @@
                         <div class="col-auto p-2">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Strategy: <span id="currentStrategy">@MyEnumConverter.SetStrategyFromEnum(Model.ListPaperTrades.First().Strategy)</span>
+                                    Strategy: <span id="currentStrategy">@MyEnumConverter.SetStrategyFromEnum(Model.CurrentTrade.Strategy)</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="menuStrategy" aria-labelledby="dropdownMenuButton">
                                     @foreach (Strategy strategy in Enum.GetValues(typeof(Strategy)))
@@ -41,12 +41,12 @@
                         <div class="col-auto p-2">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Sample Size: <span id="currentSampleSize">@(Model.ListSampleSizes.Count)</span>
+                                    Sample Size: <span id="currentSampleSize">@(Model.NumberSampleSizes)</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="menuSampleSize" aria-labelledby="dropdownMenuButton">
-                                    @for (int i = 0; i < Model.ListSampleSizes.Count; i++)
+                                    @for (int i = 0; i < Model.NumberSampleSizes; i++)
                                     {
-                                        <a class="dropdown-item" href="#">@(Model.ListSampleSizes.Count - i)</a>
+                                        <a class="dropdown-item" href="#">@(Model.NumberSampleSizes - i)</a>
                                     }
                                 </div>
                             </div>
@@ -54,12 +54,12 @@
                         <div class="col-auto p-2">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Trade: <span id="currentTrade">@Model.ListPaperTrades.Count</span>
+                                    Trade: <span id="currentTrade">@Model.TradesInSampleSize</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="menuTrade" aria-labelledby="dropdownMenuButton">
-                                    @for (int i = 0; i < Model.ListPaperTrades.Count; i++)
+                                    @for (int i = 0; i < Model.TradesInSampleSize; i++)
                                     {
-                                        <a class="dropdown-item" href="#">@(Model.ListPaperTrades.Count - i)</a>
+                                        <a class="dropdown-item" href="#">@(Model.TradesInSampleSize - i)</a>
                                     }
                                 </div>
                             </div>
@@ -71,27 +71,19 @@
                     <div class="col-10">
                         <div id="carouselTrades" class="carousel slide" data-interval="false">
                             <ol class="carousel-indicators">
-                                @foreach (PaperTrade trade in Model.ListPaperTrades)
+                                @for (int i = 0; i < Model.CurrentTrade.ScreenshotsUrls.Count; i++)
                                 {
-                                    for (int i = 0; i < trade.ScreenshotsUrls.Count; i++)
-                                    {
-                                        <li data-bs-target="#carouselTrades" data-slide-to="@(i)" @(i == 0 ? "class=\"active\"" : "")></li>
-                                    }
+                                    <li data-bs-target="#carouselTrades" data-slide-to="@(i)" @(i == 0 ? "class=\"active\"" : "")></li>
                                 }
-                                <!--<li data-bs-target="#carouselTrades" data-slide-to="0" class="active"></li>
-                                <li data-bs-target="#carouselTrades" data-slide-to="1"></li>
-                                <li data-bs-target="#carouselTrades" data-slide-to="2"></li>-->
                             </ol>
                             <div class="carousel-inner">
-                                @foreach (PaperTrade trade in Model.ListPaperTrades)
-                                {
-                                    for (int i = 0; i < trade.ScreenshotsUrls.Count; i++)
+
+                                    @for (int i = 0; i < Model.CurrentTrade.ScreenshotsUrls.Count; i++)
                                     {
                                         <div class="@(i == 0? "carousel-item active" : "carousel-item")">
-                                            <img src="@trade.ScreenshotsUrls[i]" class="d-block w-100" alt="...">
+                                            <img src="@Model.CurrentTrade.ScreenshotsUrls[i]" class="d-block w-100" alt="...">
                                         </div>
                                     }
-                                }
                             </div>
                             <a class="carousel-control-prev" href="#carouselTrades" role="button" data-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -104,6 +96,12 @@
                         </div>
                     </div>
                 </div>
+                <form asp-action="LoadTrade" method="post" id="formButtonsInput">
+                    <input name="timeFrameInput" id="timeFrameInput" hidden />
+                    <input name="strategyInput" id="strategyInput" hidden />
+                    <input name="sampleSizeInput" id="sampleSizeInput" hidden />
+                    <input name="tradeInput" id="tradeInput" hidden />
+                </form>
 
 
                 <!-- Journaling begin -->

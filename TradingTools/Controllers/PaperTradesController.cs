@@ -15,6 +15,7 @@ using System.ComponentModel;
 using System.Web.Mvc.Html;
 using Utilities;
 using Models.ViewModels;
+using DataAccess.Repository;
 
 namespace TradingTools.Controllers
 {
@@ -22,32 +23,53 @@ namespace TradingTools.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
-
+        private UserSettings userSettings;
         public PaperTradesVM PaperTradesVM { get; set; }
         public PaperTradesController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
+            PaperTradesVM = new PaperTradesVM();
 
+        }
+
+        public IActionResult LoadTrade(string timeFrameInput, string strategyInput, string sampleSizeInput, string tradeInput)
+        {
+            userSettings = _unitOfWork.UserSettings.GetAll().First();
+            TimeFrame timeFrame1 = MyEnumConverter.SetTimeFrameFromString(timeFrameInput);
+            Strategy strategy1 = MyEnumConverter.SetStrategyFromString(strategyInput);
+            Int32.TryParse(sampleSizeInput, out int sampleSize1);
+            Int32.TryParse(tradeInput, out int trade1);
+
+            List<SampleSize> sampleSizes = _unitOfWork.SampleSize.GetAll(x => x.Strategy == strategy1 && x.TimeFrame == timeFrame1).OrderByDescending(x => x.Id).ToList();
+            // the paramater "sampleSize" represents the sampleSize number in descending order (e.g. 3 is the third sample size for the time frame and strategy)
+            int sampleSizeId = sampleSizes[sampleSize1 - 1].Id;
+            int? latestSampleSize = _unitOfWork.SampleSize.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy).OrderByDescending(x => x.Id).FirstOrDefault()?.Id;
+            List<PaperTrade> paperTrades = _unitOfWork.PaperTrade.GetAll(x => x.SampleSizeId == sampleSizeId).OrderByDescending(x => x.Id).ToList();
+            PaperTradesVM.CurrentTrade = paperTrades[trade1 - 1];
+            PaperTradesVM.NumberSampleSizes = _unitOfWork.SampleSize.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy).Count();
+            PaperTradesVM.TradesInSampleSize = _unitOfWork.PaperTrade.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.SampleSizeId == latestSampleSize).Count();
+            return View("Index", PaperTradesVM);
         }
 
         public IActionResult Index()
         {
-            UserSettings userSettings = _unitOfWork.UserSettings.GetAll().First();
-            int? latestSampleSize = _unitOfWork.SampleSize.GetAll().OrderByDescending(x => x.Id).FirstOrDefault()?.Id;
             // Currently no users, so there is only one data record
-            PaperTradesVM = new PaperTradesVM()
-            {
-                ListPaperTrades = _unitOfWork.PaperTrade.GetAll().Where(x => x.SampleSizeId == latestSampleSize && x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy).OrderByDescending(x => x.Id).ToList(),
-                ListSampleSizes = _unitOfWork.SampleSize.GetAll().Where(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy).OrderByDescending(x => x.Id).ToList()
-
-            };
+            userSettings = _unitOfWork.UserSettings.GetAll().First();
+            // Get the latest sample size for the strategy and time frame
+            int? latestSampleSize = _unitOfWork.SampleSize.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy).OrderByDescending(x => x.Id).FirstOrDefault()?.Id;
+            // Get the last trade of the sample size
+            PaperTradesVM.CurrentTrade = _unitOfWork.PaperTrade.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.SampleSizeId == latestSampleSize).OrderByDescending(x => x.Id).FirstOrDefault();
+            // Get the number of sample sizes for the time frame and strategy
+            PaperTradesVM.NumberSampleSizes = _unitOfWork.SampleSize.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy).Count();
+            // Get the number of trades for the sample size
+            PaperTradesVM.TradesInSampleSize = _unitOfWork.PaperTrade.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.SampleSizeId == latestSampleSize).Count();
 
             return View(PaperTradesVM);
         }
 
         /// <summary>
-        ///  Method to process the uploaded .zip file. The .zip file has to have the structure mainFolder\Strategy\TimeFrame\SampleSize\TradeNumber\files
+        ///  Method to process the uploaded .zip file. The .zip file has to have the following structure: mainFolder\Strategy\TimeFrame\SampleSize\TradeNumber\files. Reviews.odt has to be in the SampleSize folder.
         /// </summary>
         /// <param name="zipFile"></param>
         /// <returns></returns>
@@ -73,10 +95,11 @@ namespace TradingTools.Controllers
                         bool canCreateNewTrade = true;
                         string currentFolder = string.Empty;
                         string lastSampleSize = string.Empty;
+                        string lastTimeFrame = string.Empty;
                         int currentSampleSizeId = 0;
                         PaperTrade? trade = null;
                         Journal? journal = null;
-                        Review? review = new Review();
+                        Review? review = null;
                         SampleSize? sampleSize = null;
                         List<ZipArchiveEntry> sortedEntries = archive.Entries.
                                                                         OrderBy(e => e.FullName, new NaturalStringComparer()).ToList();
@@ -108,11 +131,6 @@ namespace TradingTools.Controllers
                                 canCreateNewTrade = false;
                                 continue;
                             }
-                            // The review for the sample size
-                            else if (entry.FullName.Contains("Review"))
-                            {
-                                ParseODTReviewFile(entry, review);
-                            }
                             // Entry is either a screenshot or the .odt journal file
                             else
                             {
@@ -123,9 +141,12 @@ namespace TradingTools.Controllers
 
 
                                 string currentSampleSize = tradeInfo[3];
+                                string currentTimeFrame = tradeInfo[2];
                                 // First sample size of the loop or a new one
-                                if (lastSampleSize != currentSampleSize)
+                                if (lastSampleSize != currentSampleSize || lastTimeFrame != currentTimeFrame)
                                 {
+                                    review = new Review();
+                                    lastTimeFrame = currentTimeFrame;
                                     lastSampleSize = currentSampleSize;
                                     sampleSize = new SampleSize();
                                     sampleSize.Strategy = trade.Strategy;
@@ -156,19 +177,26 @@ namespace TradingTools.Controllers
                                         string screenshotName = entry.FullName.Split('/').Last();
                                         string screenshotPath = currentFolder.Replace(wwwRootPath, "").Replace("\\\\", "/");
                                         trade.ScreenshotsUrls.Add(Path.Combine(screenshotPath, screenshotName));
-                                        //trade.ScreenshotsUrls.Add(Path.Combine(currentFolder, screenshotName));
                                     }
-                                    else if (entry.FullName.EndsWith(".odt"))
+                                    else if (!entry.FullName.Contains("Reviews"))
                                     {
                                         ParseODTJournalFile(entry, journal);
 
+                                    }
+                                    else
+                                    {
+                                        ParseODTReviewFile(entry, review);
                                     }
                                 }
                                 catch
                                 {
                                     // Display error message
                                 }
-                                canCreateNewTrade = true;
+                                // The Review file is in SampleSize\Reviews.odt folder, not in the individual trade's folder. Don't create a new trade record in the database for that iteration
+                                if (!entry.FullName.Contains("Reviews"))
+                                {
+                                    canCreateNewTrade = true;
+                                }
                             }
                         }
                     }
@@ -176,7 +204,7 @@ namespace TradingTools.Controllers
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                Debug.WriteLine($"Error in parsing the .zip file: {ex.Message}");
             }
             finally
             {
@@ -193,7 +221,11 @@ namespace TradingTools.Controllers
             // Get all subfolders
             for (int i = 1; i <= 4; i++)
             {
-                folders.Add(tradeInfo[i]);
+                // No need for "Reviews" folder
+                if (!tradeInfo[i].Contains("Reviews"))
+                {
+                    folders.Add(tradeInfo[i]);
+                }
             }
             // Create the wwwroot\Trades folder
             if (!Directory.Exists(currentFolder))

@@ -21,5 +21,6 @@ namespace Models
         [ForeignKey(nameof(SampleSizeId))]
 
         public SampleSize? SampleSize { get; set; }
+
     }
 }

@@ -8,8 +8,13 @@ namespace Models.ViewModels
 {
     public class PaperTradesVM
     {
-        public List<PaperTrade> ListPaperTrades { get; set; }
+        // The trade being displayed
+        public PaperTrade CurrentTrade { get; set; }
 
-        public List<SampleSize> ListSampleSizes { get; set; }
+        // The number of sample sizes for a strategy and time frame
+        public int NumberSampleSizes { get; set; }
+
+        // The current number of trades for the latest sample size
+        public int TradesInSampleSize { get; set; }
     }
 }
