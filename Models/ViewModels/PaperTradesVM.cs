@@ -11,6 +11,10 @@ namespace Models.ViewModels
         // The trade being displayed
         public PaperTrade CurrentTrade { get; set; }
 
+        // The journal for the CurrentTrade
+
+        public Journal Journal { get; set; }
+
         // The number of sample sizes for a strategy and time frame
         public int NumberSampleSizes { get; set; }
 

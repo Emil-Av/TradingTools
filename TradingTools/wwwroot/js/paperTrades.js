@@ -1,4 +1,9 @@
 $(document).ready(function () {
+
+    $('#menuJournal').on('click', '.dropdown-item', function () {
+        var journal = $(this).text();
+        alert(journal);
+    })
     // After a .zip file is uploaded, the 'change' event is triggered, this submits the form and sends the .zip file to the controller
     $('#fileInput').on('change', function () {
         $('#formUploadFile').submit();
@@ -97,11 +102,9 @@ $(document).ready(function () {
         // Set the Trades menu
         // if (showLatestTrade || currentTrade <= tradesInSampleSize)
         if (showLatestTrade === true) {
-            console.log('ai satefutene');
             $('#currentTrade').text(tradesInSampleSize);
         }
         else {
-            console.log('currentTrade: ' + currentTrade);
             $('#currentTrade').text(currentTrade);
         }
         $('#menuTrade').empty();

@@ -79,7 +79,8 @@ namespace TradingTools.Controllers
             PaperTradesVM.NumberSampleSizes = _unitOfWork.SampleSize.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy).Count();
             // Get the number of trades for the sample size
             PaperTradesVM.TradesInSampleSize = _unitOfWork.PaperTrade.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.SampleSizeId == latestSampleSize).Count();
-            TempData["success"] = "satefuten";
+            PaperTradesVM.Journal = _unitOfWork.Journal.Get(x => x.PaperTradeId == PaperTradesVM.CurrentTrade.Id);
+            
             return View(PaperTradesVM);
         }
 
