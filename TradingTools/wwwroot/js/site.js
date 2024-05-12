@@ -10,3 +10,7 @@ function HideLoadingIndicator() {
     content.removeClass('hideMyContent').addClass('showMyContent');
     loadingIndicator.css('display', 'none');
 }
+
+function ShowNotification(message) {
+        toastr.success(message);
+}

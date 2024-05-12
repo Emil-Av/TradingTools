@@ -9,8 +9,10 @@
             </h2>
             @if (Model.CurrentTrade != null)
             {
+                <!-- Menus -->
                 <div class="container mb-4">
                     <div class="row justify-content-center">
+                        <!-- Menu Time Frame -->
                         <div class="col-auto p-2">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
@@ -25,6 +27,7 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Menu Strategy -->
                         <div class="col-auto p-2">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -38,6 +41,7 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Menu Sample Size -->
                         <div class="col-auto p-2">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -51,6 +55,7 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Menu Trade -->
                         <div class="col-auto p-2">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -59,24 +64,25 @@
                                 <div class="dropdown-menu animated--fade-in" id="menuTrade" aria-labelledby="dropdownMenuButton">
                                     @for (int i = 0; i < Model.TradesInSampleSize; i++)
                                     {
-                                        <a class="dropdown-item" href="#">@(Model.TradesInSampleSize - i)</a>
+                                        <a class="dropdown-item" role="button">@(Model.TradesInSampleSize - i)</a>
                                     }
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
+                <!-- Images -->
                 <div class="row justify-content-center">
                     <div class="col-10">
                         <div id="carouselTrades" class="carousel slide" data-interval="false">
-                            <ol class="carousel-indicators">
-                                @for (int i = 0; i < Model.CurrentTrade.ScreenshotsUrls.Count; i++)
-                                {
-                                    <li data-bs-target="#carouselTrades" data-slide-to="@(i)" @(i == 0 ? "class=\"active\"" : "")></li>
-                                }
-                            </ol>
-                            <div class="carousel-inner">
+                            <div id="imageContainer">
+                                <ol class="carousel-indicators">
+                                    @for (int i = 0; i < Model.CurrentTrade.ScreenshotsUrls.Count; i++)
+                                    {
+                                        <li data-bs-target="#carouselTrades" data-slide-to="@(i)" @(i == 0 ? "class=\"active\"" : "")></li>
+                                    }
+                                </ol>
+                                <div class="carousel-inner">
 
                                     @for (int i = 0; i < Model.CurrentTrade.ScreenshotsUrls.Count; i++)
                                     {
@@ -84,6 +90,7 @@
                                             <img src="@Model.CurrentTrade.ScreenshotsUrls[i]" class="d-block w-100" alt="...">
                                         </div>
                                     }
+                                </div>
                             </div>
                             <a class="carousel-control-prev" href="#carouselTrades" role="button" data-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -96,13 +103,6 @@
                         </div>
                     </div>
                 </div>
-                <form asp-action="LoadTrade" method="post" id="formButtonsInput">
-                    <input name="timeFrameInput" id="timeFrameInput" hidden />
-                    <input name="strategyInput" id="strategyInput" hidden />
-                    <input name="sampleSizeInput" id="sampleSizeInput" hidden />
-                    <input name="tradeInput" id="tradeInput" hidden />
-                </form>
-
 
                 <!-- Journaling begin -->
                 <div class="row justify-content-center mt-3">
@@ -149,6 +149,7 @@
             }
             else
             {
+                // Upload trades (when the DB is empty)
                 <form method="post" enctype="multipart/form-data" id="formUploadFile" asp-action="UploadTrades">
                     <input type="file" name="zipFile" id="fileInput" style="display:none" accept=".zip" />
                     <a class="button d-flex flex-column align-items-center justify-content-center mt-5" role="button" id="uploadFileButton" onclick="document.getElementById('fileInput').click()">
@@ -162,5 +163,6 @@
 </div>
 @section Scripts {
     <script src="~/js/paperTrades.js"></script>
+    <script src="~/js/toastr.min.js"></script>
 }
 @* https://summernote.org/ *@

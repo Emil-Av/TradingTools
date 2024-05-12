@@ -23,7 +23,7 @@ namespace TradingTools.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        private UserSettings userSettings;
+        private UserSettings? userSettings;
         public PaperTradesVM PaperTradesVM { get; set; }
         public PaperTradesController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
@@ -33,25 +33,40 @@ namespace TradingTools.Controllers
 
         }
 
-        public IActionResult LoadTrade(string timeFrameInput, string strategyInput, string sampleSizeInput, string tradeInput)
+        public IActionResult LoadTrade(string timeFrame, string strategy, string sampleSize, string trade)
         {
             userSettings = _unitOfWork.UserSettings.GetAll().First();
-            TimeFrame timeFrame1 = MyEnumConverter.SetTimeFrameFromString(timeFrameInput);
-            Strategy strategy1 = MyEnumConverter.SetStrategyFromString(strategyInput);
-            Int32.TryParse(sampleSizeInput, out int sampleSize1);
-            Int32.TryParse(tradeInput, out int trade1);
+            TimeFrame timeFrame1 = MyEnumConverter.SetTimeFrameFromString(timeFrame);
+            Strategy strategy1 = MyEnumConverter.SetStrategyFromString(strategy);
+            _ = int.TryParse(sampleSize, out int sampleSize1);
+            _ = int.TryParse(trade, out int trade1);
 
-            List<SampleSize> sampleSizes = _unitOfWork.SampleSize.GetAll(x => x.Strategy == strategy1 && x.TimeFrame == timeFrame1).OrderByDescending(x => x.Id).ToList();
-            // the paramater "sampleSize" represents the sampleSize number in descending order (e.g. 3 is the third sample size for the time frame and strategy)
-            int sampleSizeId = sampleSizes[sampleSize1 - 1].Id;
-            int? latestSampleSize = _unitOfWork.SampleSize.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy).OrderByDescending(x => x.Id).FirstOrDefault()?.Id;
-            List<PaperTrade> paperTrades = _unitOfWork.PaperTrade.GetAll(x => x.SampleSizeId == sampleSizeId).OrderByDescending(x => x.Id).ToList();
-            PaperTradesVM.CurrentTrade = paperTrades[trade1 - 1];
-            PaperTradesVM.NumberSampleSizes = _unitOfWork.SampleSize.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy).Count();
-            PaperTradesVM.TradesInSampleSize = _unitOfWork.PaperTrade.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.SampleSizeId == latestSampleSize).Count();
-            return View("Index", PaperTradesVM);
+
+            List<SampleSize> listSampleSizes = _unitOfWork.SampleSize.GetAll(x => x.Strategy == strategy1 && x.TimeFrame == timeFrame1).OrderByDescending(x => x.Id).ToList();
+            // If no sample size is found for the strategy and time frame, then there are no trades for them
+            if (listSampleSizes.Count == 0)
+            {
+                TempData["error"] = $"No trades for {strategy1} strategy on the {timeFrame1} chart.";
+                return Json(null);
+            }
+            // the paramater "sampleSize1" represents the sampleSize number in descending order (e.g. 3 is the third sample size for the time frame and strategy)
+            int sampleSizeId = listSampleSizes[sampleSize1 - 1].Id;
+            List<PaperTrade> listTrades = _unitOfWork.PaperTrade.GetAll(x => x.SampleSizeId == sampleSizeId).ToList();
+            // If for example a different time frame is selected (or new strategy or new sample size), but this time frame has only 5 trades but the selected trade > 5, then display the latest trade of the sample size
+            if (listTrades.Count < trade1)
+            {
+                PaperTradesVM.CurrentTrade = listTrades.LastOrDefault();
+            }
+            else
+            {
+                PaperTradesVM.CurrentTrade = listTrades[trade1 - 1];
+            }
+            PaperTradesVM.NumberSampleSizes = listSampleSizes.Count();
+            PaperTradesVM.TradesInSampleSize = _unitOfWork.PaperTrade.GetAll(x => x.SampleSizeId == sampleSizeId).Count();
+
+
+            return Json(new { paperTradesVM = PaperTradesVM });
         }
-
         public IActionResult Index()
         {
             // Currently no users, so there is only one data record
@@ -64,7 +79,7 @@ namespace TradingTools.Controllers
             PaperTradesVM.NumberSampleSizes = _unitOfWork.SampleSize.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy).Count();
             // Get the number of trades for the sample size
             PaperTradesVM.TradesInSampleSize = _unitOfWork.PaperTrade.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.SampleSizeId == latestSampleSize).Count();
-
+            TempData["success"] = "satefuten";
             return View(PaperTradesVM);
         }
 
@@ -131,7 +146,7 @@ namespace TradingTools.Controllers
                                 canCreateNewTrade = false;
                                 continue;
                             }
-                            // Entry is either a screenshot or the .odt journal file
+                            // Entry is either a screenshot or a .odt file
                             else
                             {
                                 string[] tradeInfo = entry.FullName.Split('/');
