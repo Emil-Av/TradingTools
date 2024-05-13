@@ -63,6 +63,7 @@ namespace TradingTools.Controllers
             }
             PaperTradesVM.NumberSampleSizes = listSampleSizes.Count();
             PaperTradesVM.TradesInSampleSize = _unitOfWork.PaperTrade.GetAll(x => x.SampleSizeId == sampleSizeId).Count();
+            PaperTradesVM.Journal = _unitOfWork.Journal.Get(x => x.PaperTradeId == PaperTradesVM.CurrentTrade.Id);
 
 
             return Json(new { paperTradesVM = PaperTradesVM });

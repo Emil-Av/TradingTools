@@ -1,18 +1,18 @@
 $(document).ready(function () {
+    // When a new trade has to be loaded, one of the buttons has to be clicked (either TimeFrame, Strategy..). In case no trade exists for the selection, set the prior value. Used in LoadTradeAsync()
+    var menuClicked;
+    var clickedMenuValue;
+    var showLatestTrade;
+    var paperTradesVM;
 
     $('#menuJournal').on('click', '.dropdown-item', function () {
+        console.log(paperTradesVM);
         var journal = $(this).text();
-        alert(journal);
     })
     // After a .zip file is uploaded, the 'change' event is triggered, this submits the form and sends the .zip file to the controller
     $('#fileInput').on('change', function () {
         $('#formUploadFile').submit();
     });
-
-    // When a new trade has to be loaded, one of the buttons has to be clicked (either TimeFrame, Strategy..). In case no trade exists for the selection, set the prior value. Used in LoadTradeAsync()
-    var menuClicked;
-    var clickedMenuValue;
-    var showLatestTrade;
 
     // Get all element
     var elements =
@@ -43,7 +43,10 @@ $(document).ready(function () {
                 // Set the new value
                 var value = $(this).text();
                 $(elements[key]).text(value);
-                LoadTradeAsync($('#currentTimeFrame').text(), $('#currentStrategy').text(), $('#currentSampleSize').text(), $('#currentTrade').text());
+                LoadTradeAsync($('#currentTimeFrame').text(),
+                                $('#currentStrategy').text(),
+                                $('#currentSampleSize').text(),
+                                $('#currentTrade').text());
             });
         })(key);
     }
@@ -76,20 +79,21 @@ $(document).ready(function () {
 
             },
             success: function (response) {
+                paperTradesVM = response;
                 if (response == null) {
-                    toastr.error('test');
                     menuClicked.text(clickedMenuValue);
                     return;
                 }
-                console.log('ajax called');
-                SetMenuValues(response['paperTradesVM']['numberSampleSizes'], trade, response['paperTradesVM']['tradesInSampleSize']);
-                LoadImages(response['paperTradesVM']['currentTrade']['screenshotsUrls']);
+                SetMenuValues(trade);
+                LoadImages();
                 SetSelectedItemClass();
             }
         })
     }
     // Populates the drop down items after a new trade has been selected and sets the values in the spans.
-    function SetMenuValues(numberSampleSizes, currentTrade, tradesInSampleSize) {
+    function SetMenuValues(displayedTrade) {
+        var numberSampleSizes = paperTradesVM['paperTradesVM']['numberSampleSizes'];
+        var tradesInSampleSize = paperTradesVM['paperTradesVM']['tradesInSampleSize'];
         // Set the SampleSize menu
         $('#currentSampleSize').text(numberSampleSizes);
         $('#menuSampleSize').empty();
@@ -100,12 +104,11 @@ $(document).ready(function () {
         $('#menuSampleSize').html(sampleSizes);
 
         // Set the Trades menu
-        // if (showLatestTrade || currentTrade <= tradesInSampleSize)
         if (showLatestTrade === true) {
             $('#currentTrade').text(tradesInSampleSize);
         }
         else {
-            $('#currentTrade').text(currentTrade);
+            $('#currentTrade').text(displayedTrade);
         }
         $('#menuTrade').empty();
 
@@ -116,9 +119,9 @@ $(document).ready(function () {
         $('#menuTrade').html(trades);
     }
 
-function LoadImages(screenshots) {
+function LoadImages() {
     $('#imageContainer').empty();
-    var screenshots = screenshots;
+    var screenshots = paperTradesVM['paperTradesVM']['currentTrade']['screenshotsUrls'];
 
     var newCarouselHtml = '<ol class="carousel-indicators">';
     for (var i = 0; i < screenshots.length; i++) {

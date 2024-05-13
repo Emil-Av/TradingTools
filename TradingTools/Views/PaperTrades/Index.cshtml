@@ -113,21 +113,36 @@
                                     <div class="col-auto">
                                         <h6 class="m-0 font-weight-bold text-primary">Journal</h6>
                                     </div>
-                                    <div class="col mr-md-5">
-                                        <ul class="nav justify-content-center" id="menuJournal">
-                                            <li class="nav-item">
-                                                <a class="dropdown-item" role="button">Pre</a>
+                                    <div class="col mr-md-5 d-flex justify-content-center">
+                                        <ul class="nav nav-tabs" id="journalTabs" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <a class="nav-link active" id="pre" data-toggle="tab" href="#pre" role="tab" aria-controls="pre" aria-selected="true">Pre</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="dropdown-item" role="button">During</a>
+                                                <a class="nav-link" id="during" data-toggle="tab" href="#during" role="tab" aria-controls="during" aria-selected="false">During</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="dropdown-item" role="button">Exit</a>
+                                                <a class="nav-link" id="exit" data-toggle="tab" href="#exit" role="tab" aria-controls="exit" aria-selected="false">Exit</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="dropdown-item" role="button">Post</a>
+                                                <a class="nav-link" id="post" data-toggle="tab" href="#post" role="tab" aria-controls="post" aria-selected="false">Post</a>
                                             </li>
                                         </ul>
+                                        @* <ul class="nav justify-content-center" id="menuJournal">
+                                    <li class="nav-item">
+                                    <a class="dropdown-item fw-bold" role="button">Pre</a>
+                                    </li>
+                                    <li class="nav-item">
+                                    <a class="dropdown-item" role="button">During</a>
+                                    </li>
+                                    <li class="nav-item">
+                                    <a class="dropdown-item" role="button">Exit</a>
+                                    </li>
+                                    <li class="nav-item">
+                                    <a class="dropdown-item" role="button">Post</a>
+                                    </li>
+                                    </ul> *@
+
                                     </div>
                                 </div>
                             </div>
