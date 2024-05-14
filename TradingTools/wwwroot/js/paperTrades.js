@@ -4,18 +4,18 @@ $(document).ready(function () {
     var clickedMenuValue;
     var showLatestTrade;
     var paperTradesVM;
-    var currentJournalTab;
+    var currentJournalTab = 'pre';
 
     $('#tabContent').on('dblclick', function () {
+        console.log('1');
         // Hide the tabContent of the journal and show the summernote instead
-        $('#show' + currentJournalTab).css('display', 'none');
-        $('.summernote').summernote('code', 'my text');
-        $('#edit' + currentJournalTab).css('display', 'block')
+        $('#' + currentJournalTab).css('display', 'none');
+        $('#summernote').summernote('code', 'my text');
+        $('#summernote').summernote();
     });
 
     $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         currentJournalTab = $(e.target).attr("aria-controls"); // activated tab
-        currentJournalTab = capitalizeFirstLetter(currentJournalTab);
         console.log(currentJournalTab);
     });
 
