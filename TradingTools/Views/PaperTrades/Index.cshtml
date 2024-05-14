@@ -116,64 +116,53 @@
                                     <div class="col mr-md-5 d-flex justify-content-center">
                                         <ul class="nav nav-tabs" id="journalTabs" role="tablist">
                                             <li class="nav-item" role="presentation">
-                                                <a class="nav-link active" id="pre" data-toggle="tab" href="#pre" role="tab" aria-controls="pre" aria-selected="true">Pre</a>
+                                                <button class="nav-link active" id="pre-tab" data-toggle="tab" data-target="#pre" type="button" role="tab" aria-controls="pre" aria-selected="true">Pre</button>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" id="during" data-toggle="tab" href="#during" role="tab" aria-controls="during" aria-selected="false">During</a>
+                                                <button class="nav-link" id="during-tab" data-toggle="tab" data-target="#during" type="button" role="tab" aria-controls="during" aria-selected="false">During</button>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" id="exit" data-toggle="tab" href="#exit" role="tab" aria-controls="exit" aria-selected="false">Exit</a>
+                                                <button class="nav-link" id="exit-tab" data-toggle="tab" data-target="#exit" type="button" role="tab" aria-controls="exit" aria-selected="false">Exit</button>
                                             </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" id="post" data-toggle="tab" href="#post" role="tab" aria-controls="post" aria-selected="false">Post</a>
-                                            </li>
+                                            @if (Model.Journal.Post != null)
+                                            {
+                                                <li class="nav-item">
+                                                    <button class="nav-link" id="post-tab" data-toggle="tab" data-target="#post" type="button" role="tab" aria-controls="post" aria-selected="false">Post</button>
+                                                </li>
+                                            }
                                         </ul>
-                                        @* <ul class="nav justify-content-center" id="menuJournal">
-                                    <li class="nav-item">
-                                    <a class="dropdown-item fw-bold" role="button">Pre</a>
-                                    </li>
-                                    <li class="nav-item">
-                                    <a class="dropdown-item" role="button">During</a>
-                                    </li>
-                                    <li class="nav-item">
-                                    <a class="dropdown-item" role="button">Exit</a>
-                                    </li>
-                                    <li class="nav-item">
-                                    <a class="dropdown-item" role="button">Post</a>
-                                    </li>
-                                    </ul> *@
-
                                     </div>
                                 </div>
                             </div>
                             <div class="card-body">
-                                <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="pre" role="tabpanel" aria-labelledby="pre">
-                                        <h2>Home Content</h2>
-                                        <p>This is the content of the Home tab.</p>
+                                <div class="tab-content" id="tabContent">
+                                    <div class="tab-pane fade show active" id="pre" role="tabpanel" aria-labelledby="pre-tab">
+                                        <p id="showPre">@Model.Journal.Pre</p>
                                     </div>
-                                    <div class="tab-pane fade" id="during" role="tabpanel" aria-labelledby="during">
-                                        <h2>During Content</h2>
-                                        <p>This is the content of the Profile tab.</p>
+                                    <div class="tab-pane fade" id="during" role="tabpanel" aria-labelledby="during-tab">
+                                        <p id="showDuring">@Model.Journal.During</p>
                                     </div>
-                                    <div class="tab-pane fade" id="exit" role="tabpanel" aria-labelledby="exit">
-                                        <h2>Exit Content</h2>
-                                        <p>This is the content of the Contact tab.</p>
+                                    <div class="tab-pane fade" id="exit" role="tabpanel" aria-labelledby="exit-tab">
+                                        <p id="showExit">@Model.Journal.Exit</p>
                                     </div>
-                                    <div class="tab-pane fade" id="post" role="tabpanel" aria-labelledby="post">
-                                        <h2>Post Content</h2>
-                                        <p>This is the content of the Contact tab.</p>
+                                    @if (Model.Journal.Post != null)
+                                    {
+                                        <div class="tab-pane fade" id="post" role="tabpanel" aria-labelledby="post-tab">
+                                            <p id="showPost">Model.Journal.Post</p>
+                                        </div>
+                                        <div id="summernote" class="hidden-element">
+                                            <p id="editPost"></p>
+                                        </div>
+                                    }
+                                    <div id="summernote" class="hidden-element">
+                                        <p id="editPre"></p>
                                     </div>
-                                </div>
-                                <div id="journalEntry">
-                                    <p id="journal">@Model.Journal.Pre</p>
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </div>
-                                <div id="summernote" class="hidden-element">
-                                    <p id="journal"></p>
                                 </div>
                             </div>
                         </div>
+                            <div id="journalEntry">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </div>
                     </div>
                     <!-- Journaling End  -->
                 </div>
@@ -196,4 +185,3 @@
     <script src="~/js/paperTrades.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
 }
-@* https://summernote.org/ *@

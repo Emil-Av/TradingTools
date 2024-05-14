@@ -4,18 +4,32 @@ $(document).ready(function () {
     var clickedMenuValue;
     var showLatestTrade;
     var paperTradesVM;
+    var currentJournalTab;
 
-    $('#menuJournal').on('click', '.dropdown-item', function () {
-        console.log(paperTradesVM);
-        var journal = $(this).text();
-    })
+    $('#tabContent').on('dblclick', function () {
+        // Hide the tabContent of the journal and show the summernote instead
+        $('#show' + currentJournalTab).css('display', 'none');
+        $('.summernote').summernote('code', 'my text');
+        $('#edit' + currentJournalTab).css('display', 'block')
+    });
+
+    $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        currentJournalTab = $(e.target).attr("aria-controls"); // activated tab
+        currentJournalTab = capitalizeFirstLetter(currentJournalTab);
+        console.log(currentJournalTab);
+    });
+
+    //$('#menuJournal').on('click', '.dropdown-item', function () {
+    //    console.log(paperTradesVM);
+    //    var journal = $(this).text();
+    //})
     // After a .zip file is uploaded, the 'change' event is triggered, this submits the form and sends the .zip file to the controller
     $('#fileInput').on('change', function () {
         $('#formUploadFile').submit();
     });
 
     // Get all element
-    var elements =
+    var menuButtons =
     {
         '#menuTimeFrame': '#currentTimeFrame',
         '#menuStrategy': '#currentStrategy',
@@ -24,14 +38,14 @@ $(document).ready(function () {
     };
 
     // Attach a click event for each <a> element of each menu.
-    for (var key in elements) {
+    for (var key in menuButtons) {
         (function (key) {
             SetSelectedItemClass(key);
             // Change the value of the span in the button
             $(key).on('click', '.dropdown-item', function () {
                 // Save the old value. If there is no trade in the DB for the selected trade, the menu's old value should be displayed.
-                menuClicked = $(elements[key]);
-                clickedMenuValue = $(elements[key]).text();
+                menuClicked = $(menuButtons[key]);
+                clickedMenuValue = $(menuButtons[key]).text();
                 // If the time frame,the strategy or the sample size has changed, then the latest trade must always be displayed. Used in SetMenuValues()
                 if (key != '#menuTrade') {
                     showLatestTrade = true;
@@ -42,7 +56,7 @@ $(document).ready(function () {
 
                 // Set the new value
                 var value = $(this).text();
-                $(elements[key]).text(value);
+                $(menuButtons[key]).text(value);
                 LoadTradeAsync($('#currentTimeFrame').text(),
                                 $('#currentStrategy').text(),
                                 $('#currentSampleSize').text(),
@@ -51,11 +65,15 @@ $(document).ready(function () {
         })(key);
     }
 
+    function capitalizeFirstLetter(text) {
+        return text.charAt(0).toUpperCase() + text.slice(1)
+    }
+
     function SetSelectedItemClass() {
         // Set the "selected item" color
-        for (var key in elements) {
+        for (var key in menuButtons) {
             $(key + ' a').each(function () {
-                if ($(this).text() === $(elements[key]).text()) {
+                if ($(this).text() === $(menuButtons[key]).text()) {
                     $(this).addClass('bg-gray-400');
                 }
                 else {
