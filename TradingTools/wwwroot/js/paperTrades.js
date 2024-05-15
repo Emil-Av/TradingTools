@@ -1,34 +1,108 @@
 $(document).ready(function () {
-    // When a new trade has to be loaded, one of the buttons has to be clicked (either TimeFrame, Strategy..). In case no trade exists for the selection, set the prior value. Used in LoadTradeAsync()
+
+    /**
+    * ******************************
+    * Region global variables starts
+    * ******************************
+    */
+
+    // menuClicked, clickedMenuValue: When a new trade has to be loaded, one of the buttons has to be clicked (either TimeFrame, Strategy..). In case no trade exists for the selection, set the last value. Used in LoadTradeAsync()
     var menuClicked;
     var clickedMenuValue;
     var showLatestTrade;
+    // The model
     var paperTradesVM;
-    var currentJournalTab = 'pre';
+    var showedJournal = '#showPre'; // Always the start value
+    var isEditorShown = false;
 
-    $('#tabContent').on('dblclick', function () {
-        console.log('1');
-        // Hide the tabContent of the journal and show the summernote instead
-        $('#' + currentJournalTab).css('display', 'none');
-        $('#summernote').summernote('code', 'my text');
-        $('#summernote').summernote();
-    });
+    /**
+    * ******************************
+    * Region global variables ends
+    * ******************************
+    */
 
-    $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        currentJournalTab = $(e.target).attr("aria-controls"); // activated tab
-        console.log(currentJournalTab);
-    });
-
-    //$('#menuJournal').on('click', '.dropdown-item', function () {
-    //    console.log(paperTradesVM);
-    //    var journal = $(this).text();
-    //})
     // After a .zip file is uploaded, the 'change' event is triggered, this submits the form and sends the .zip file to the controller
     $('#fileInput').on('change', function () {
         $('#formUploadFile').submit();
     });
 
-    // Get all element
+
+    /**
+    * ************************
+    * Region summernote starts
+    * ************************
+    */
+
+    function UpdateJournal() {
+        let tradeId = $('#currentTradeIdInput').val();
+        let dataToSend =
+        {
+            CurrentTrade: {
+                Id: tradeId
+            },
+            Journal: {
+                Pre: $('#showPre').text(),
+                During: $('#showDuring').text(),
+                Exit: $('#showExit').text(),
+                Post: $('#showPost').text()
+            }
+        };
+        $.ajax({
+            method: 'POST',
+            url: '/papertrades/updatejournal',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'JSON',
+            data: JSON.stringify(dataToSend),
+            success: function (response) {
+                alert(response)
+            }
+        })
+    }
+
+    $('#tabContent').on('dblclick', function () {
+        // Hide the tabContent of the journal and show the summernote instead
+        // Get the text from the tabContent
+        var journalText = $(showedJournal).text();
+        // Hide the tabContent
+        $(showedJournal).css('display', 'none');
+        // Set the text into the editor
+        $('#summernote').summernote('code', journalText);
+        // Display the editor
+        $('#summernote').summernote('justifyLeft');
+        isEditorShown = true;
+    });
+
+    $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        if (isEditorShown) {
+            $(showedJournal).text($('#summernote').summernote('code'));
+            $(showedJournal).css('display', 'block');
+            $('#summernote').summernote('code', '');
+            $('#summernote').summernote('destroy');
+            isEditorShown = false;
+            UpdateJournal();
+        }
+        showedJournal = '#show' + CapitalizeFirstLetter($(e.target).attr('aria-controls')); // activated tab
+    });
+
+
+    function CapitalizeFirstLetter(text) {
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+    /**
+    * ************************
+    * Region summernote ends
+    * ************************
+    */
+
+
+    /**
+    * ***************************
+    * Region menu buttons starts
+    * ***************************
+    */
+
+    // Create key, value array: key is the button menu, value is the span element. The span element is the selected value from the dropdown menu.
     var menuButtons =
     {
         '#menuTimeFrame': '#currentTimeFrame',
@@ -58,17 +132,14 @@ $(document).ready(function () {
                 var value = $(this).text();
                 $(menuButtons[key]).text(value);
                 LoadTradeAsync($('#currentTimeFrame').text(),
-                                $('#currentStrategy').text(),
-                                $('#currentSampleSize').text(),
-                                $('#currentTrade').text());
+                    $('#currentStrategy').text(),
+                    $('#currentSampleSize').text(),
+                    $('#currentTrade').text());
             });
         })(key);
     }
 
-    function capitalizeFirstLetter(text) {
-        return text.charAt(0).toUpperCase() + text.slice(1)
-    }
-
+    // Mark the selected drop down item
     function SetSelectedItemClass() {
         // Set the "selected item" color
         for (var key in menuButtons) {
@@ -81,9 +152,9 @@ $(document).ready(function () {
                 }
             })
         }
-       
-    }
 
+    }
+    // API Call to load the selected trade
     function LoadTradeAsync(timeFrame, strategy, sampleSize, trade) {
         $.ajax({
             method: 'POST',
@@ -137,36 +208,43 @@ $(document).ready(function () {
         $('#menuTrade').html(trades);
     }
 
-function LoadImages() {
-    $('#imageContainer').empty();
-    var screenshots = paperTradesVM['paperTradesVM']['currentTrade']['screenshotsUrls'];
+    // Load the images into the carousel
+    function LoadImages() {
+        $('#imageContainer').empty();
+        var screenshots = paperTradesVM['paperTradesVM']['currentTrade']['screenshotsUrls'];
 
-    var newCarouselHtml = '<ol class="carousel-indicators">';
-    for (var i = 0; i < screenshots.length; i++) {
-        var url = screenshots[i];
-        if (i == 0) {
-            newCarouselHtml += '<li data-bs-target="#carouselTrades" data-slide-to="' + i + '" class="active"></li >';
+        var newCarouselHtml = '<ol class="carousel-indicators">';
+        for (var i = 0; i < screenshots.length; i++) {
+            var url = screenshots[i];
+            if (i == 0) {
+                newCarouselHtml += '<li data-bs-target="#carouselTrades" data-slide-to="' + i + '" class="active"></li >';
+            }
+            else {
+                newCarouselHtml += '<li data-bs-target="#carouselTrades" data-slide-to="' + i + '" ></li >';
+            }
         }
-        else {
-            newCarouselHtml += '<li data-bs-target="#carouselTrades" data-slide-to="' + i + '" ></li >';
-        }
-    }
-    newCarouselHtml += '</ol>';
+        newCarouselHtml += '</ol>';
 
-    newCarouselHtml += '<div class="carousel-inner">';
-    for (var i = 0; i < screenshots.length; i++) {
-        var url = screenshots[i];
-        if (i == 0) {
-            newCarouselHtml += '<div class="carousel-item active"><img src="' + url + '" class="d-block w-100" alt = "..." ></div>';
+        newCarouselHtml += '<div class="carousel-inner">';
+        for (var i = 0; i < screenshots.length; i++) {
+            var url = screenshots[i];
+            if (i == 0) {
+                newCarouselHtml += '<div class="carousel-item active"><img src="' + url + '" class="d-block w-100" alt = "..." ></div>';
+            }
+            else {
+                newCarouselHtml += '<div class="carousel-item"><img src="' + url + '" class="d-block w-100" alt = "..." ></div>';;
+            }
         }
-        else {
-            newCarouselHtml += '<div class="carousel-item"><img src="' + url + '" class="d-block w-100" alt = "..." ></div>';;
-        }
-    }
-    newCarouselHtml += '</div>';
+        newCarouselHtml += '</div>';
 
-    $('#imageContainer').html(newCarouselHtml);
+        $('#imageContainer').html(newCarouselHtml);
     }
+
+    /**
+    * ***************************
+    * Region menu buttons ends
+    * ***************************
+    */
 });
 
 

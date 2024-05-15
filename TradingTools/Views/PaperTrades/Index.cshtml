@@ -1,6 +1,7 @@
 ﻿@model PaperTradesVM
 
 <partial name="~/Views/Shared/_LoadingIndicator.cshtml" />
+<input type="hidden" value="@Model.CurrentTrade.Id" id="currentTradeIdInput"/>
 <div class="hideMyContent" id="myContent">
     <div class="row justify-content-center align-items-top">
         <div class="col-10 text-center">
@@ -124,12 +125,9 @@
                                             <li class="nav-item">
                                                 <button class="nav-link" id="exit-tab" data-toggle="tab" data-target="#exit" type="button" role="tab" aria-controls="exit" aria-selected="false">Exit</button>
                                             </li>
-                                            @if (Model.Journal.Post != null)
-                                            {
-                                                <li class="nav-item">
-                                                    <button class="nav-link" id="post-tab" data-toggle="tab" data-target="#post" type="button" role="tab" aria-controls="post" aria-selected="false">Post</button>
-                                                </li>
-                                            }
+                                            <li class="nav-item">
+                                                <button class="nav-link" id="post-tab" data-toggle="tab" data-target="#post" type="button" role="tab" aria-controls="post" aria-selected="false">Post</button>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
@@ -145,24 +143,17 @@
                                     <div class="tab-pane fade" id="exit" role="tabpanel" aria-labelledby="exit-tab">
                                         <p id="showExit">@Model.Journal.Exit</p>
                                     </div>
-                                    @if (Model.Journal.Post != null)
-                                    {
-                                        <div class="tab-pane fade" id="post" role="tabpanel" aria-labelledby="post-tab">
-                                            <p id="showPost">Model.Journal.Post</p>
-                                        </div>
-                                        <div id="summernote" class="hidden-element">
-                                            <p id="editPost"></p>
-                                        </div>
-                                    }
+                                    <div class="tab-pane fade" id="post" role="tabpanel" aria-labelledby="post-tab">
+                                        <p id="showPost">@(Model.Journal.Post == null ? "Double click to add text" : Model.Journal.Post)</p>
+                                    </div>
                                     <div id="summernote" class="hidden-element">
-                                        <p id="editJournal"></p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                            <div id="journalEntry">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </div>
+                        <div id="journalEntry">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </div>
                     </div>
                     <!-- Journaling End  -->
                 </div>

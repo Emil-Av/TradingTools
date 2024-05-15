@@ -33,6 +33,22 @@ namespace TradingTools.Controllers
 
         }
 
+        [HttpPost]
+        public IActionResult UpdateJournal([FromBody] PaperTradesVM data)
+        {
+            Journal journal = _unitOfWork.Journal.Get(x => x.PaperTradeId == data.CurrentTrade.Id);
+            if (journal != null)
+            {
+                journal.Pre = data.Journal.Pre;
+                journal.During = data.Journal.During;
+                journal.Exit = data.Journal.Exit;
+                journal.Post = data.Journal.Post;
+                _unitOfWork.Journal.Update(journal);
+                _unitOfWork.Save();
+            }
+            return View();
+        }
+
         public IActionResult LoadTrade(string timeFrame, string strategy, string sampleSize, string trade)
         {
             userSettings = _unitOfWork.UserSettings.GetAll().First();
