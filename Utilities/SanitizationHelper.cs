@@ -24,7 +24,7 @@ namespace Utilities
     public static class SanitizationHelper
     {
         /// <summary>
-        ///  Sanitize an object using reflection
+        ///  Sanitizes an object using reflection.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>

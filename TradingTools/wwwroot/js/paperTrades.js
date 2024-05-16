@@ -33,7 +33,7 @@ $(document).ready(function () {
     * ************************
     */
 
-   // Send the data to the controller
+    // Send the data to the controller
     function UpdateJournal() {
         let dataToSend =
         {
@@ -60,6 +60,51 @@ $(document).ready(function () {
 
     // When the content is double clicked, it can be edited (summernote is displayed)
     $('#tabContent').on('dblclick', function () {
+        OpenEditor();
+    });
+
+    // On tab change
+    $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        SaveEditorText();
+        showedJournal = '#show' + CapitalizeFirstLetter($(e.target).attr('aria-controls')); // activated tab
+    });
+
+    // Open editor and show the buttons
+    $('#btnEdit').on('click', function () {
+        $(this).addClass('d-none');
+        $('.editorOnBtns').removeClass('d-none');
+        OpenEditor();
+    });
+
+    // Save the journal changes
+    $('#btnSave').on('click', function () {
+        SaveEditorText();
+        $('.editorOnBtns').addClass('d-none');
+        $('#btnEdit').removeClass('d-none');
+    });
+
+    // Close the editor and show 'Edit' button
+    // TODO: Changes are saved in the contentPage when they shouldn't. (Changes aren't save in the DB as expected)
+    $('#btnCancel').on('click', function () {
+        $('#summernote').summernote('destroy');
+        $('.editorOnBtns').addClass('d-none');
+        $('#btnEdit').removeClass('d-none');
+    });
+
+    // Save the journal in the DB
+    function SaveEditorText() {
+        if (isEditorShown) {
+            $(showedJournal).html($('#summernote').summernote('code'));
+            $(showedJournal).css('display', 'block');
+            $('#summernote').summernote('code', '');
+            $('#summernote').summernote('destroy');
+            isEditorShown = false;
+            UpdateJournal();
+        }
+    }
+
+    // Open the summernote editor
+    function OpenEditor() {
         // Hide the tabContent of the journal and show the summernote instead
         // Get the text from the tabContent
         var journalText = $(showedJournal).html();
@@ -70,22 +115,9 @@ $(document).ready(function () {
         // Display the editor
         $('#summernote').summernote('justifyLeft');
         isEditorShown = true;
-    });
+    }
 
-    // On tab change
-    $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        if (isEditorShown) {
-            $(showedJournal).html($('#summernote').summernote('code'));
-            $(showedJournal).css('display', 'block');
-            $('#summernote').summernote('code', '');
-            $('#summernote').summernote('destroy');
-            isEditorShown = false;
-            UpdateJournal();
-        }
-        showedJournal = '#show' + CapitalizeFirstLetter($(e.target).attr('aria-controls')); // activated tab
-    });
-
-
+    // Make the first char of a string upper case
     function CapitalizeFirstLetter(text) {
         return text.charAt(0).toUpperCase() + text.slice(1);
     }

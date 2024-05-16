@@ -1,7 +1,7 @@
 ﻿@model PaperTradesVM
 
 <partial name="~/Views/Shared/_LoadingIndicator.cshtml" />
-<input type="hidden" value="@Model.CurrentTrade.Id" id="currentTradeIdInput"/>
+<input type="hidden" value="@Model.CurrentTrade.Id" id="currentTradeIdInput" />
 <div class="hideMyContent" id="myContent">
     <div class="row justify-content-center align-items-top">
         <div class="col-10 text-center">
@@ -150,10 +150,21 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="card-footer d-flex justify-content-start mt-2">
+                                <div id="journalButtons">
+                                    <button class="btn btn-info" id="btnEdit">
+                                        <span class="text"><i class="fa-solid fa-pen-to-square mr-2"></i>Edit</span>
+                                    </button>
+                                    <button class="btn btn-info d-none editorOnBtns" id="btnSave">
+                                        <span class="text"><i class="fa-regular fa-floppy-disk fa-spin-pulse mr-2"></i>Save</span>
+                                    </button>
+                                    <button class="btn btn-secondary d-none editorOnBtns" id="btnCancel">
+                                        <span class="text"><i class="fa-solid fa-xmark mr-2"></i>Cancel</span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div id="journalEntry">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </div>
+
                     </div>
                     <!-- Journaling End  -->
                 </div>
