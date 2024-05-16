@@ -138,13 +138,13 @@
                                         <span id="showPre">@Html.Raw(Model.Journal.Pre)</span>
                                     </div>
                                     <div class="tab-pane fade" id="during" role="tabpanel" aria-labelledby="during-tab">
-                                        <p id="showDuring">@Model.Journal.During</p>
+                                        <p id="showDuring">@Html.Raw(Model.Journal.During)</p>
                                     </div>
                                     <div class="tab-pane fade" id="exit" role="tabpanel" aria-labelledby="exit-tab">
-                                        <p id="showExit">@Model.Journal.Exit</p>
+                                        <p id="showExit">@Html.Raw(Model.Journal.Exit)</p>
                                     </div>
                                     <div class="tab-pane fade" id="post" role="tabpanel" aria-labelledby="post-tab">
-                                        <p id="showPost">@(Model.Journal.Post == null ? "Double click to add text" : Model.Journal.Post)</p>
+                                        <p id="showPost">@(Model.Journal.Post == null ? "Double click to add text" : Html.Raw(Model.Journal.Post))</p>
                                     </div>
                                     <div id="summernote" class="hidden-element">
                                     </div>

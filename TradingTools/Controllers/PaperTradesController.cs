@@ -54,8 +54,7 @@ namespace TradingTools.Controllers
             if (data.Journal == null)
             {
                 // Notification error
-
-                return Json(new { response = "error" });
+                return Json(new { error = "Journal wasn't updated. Journal was null." });
             }
 
             SanitizationHelper.SanitizeObject(data.Journal);
@@ -70,7 +69,7 @@ namespace TradingTools.Controllers
                 _unitOfWork.Journal.Update(journal);
                 _unitOfWork.Save();
             }
-            return Json(new { response = "success" });
+            return Json(new { success = "Journal updated." });
         }
 
         public IActionResult LoadTrade(string timeFrame, string strategy, string sampleSize, string trade)

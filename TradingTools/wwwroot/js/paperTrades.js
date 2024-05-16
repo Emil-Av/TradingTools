@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    toastr.success('Are you the 6 fingered man?')
+
     /**
     * ******************************
     * Region global variables starts
@@ -54,12 +54,20 @@ $(document).ready(function () {
             dataType: 'JSON',
             data: JSON.stringify(dataToSend),
             success: function (response) {
+                if (response['success'] !== undefined) {
+
+                    toastr.success(response['success']);
+                }
+                else {
+                    toastr.error(response['error']);
+                }
             }
         })
     }
 
     // When the content is double clicked, it can be edited (summernote is displayed)
     $('#tabContent').on('dblclick', function () {
+        ToggleFooterButtons();
         OpenEditor();
     });
 
@@ -79,17 +87,28 @@ $(document).ready(function () {
     // Save the journal changes
     $('#btnSave').on('click', function () {
         SaveEditorText();
-        $('.editorOnBtns').addClass('d-none');
-        $('#btnEdit').removeClass('d-none');
+        ToggleFooterButtons();
     });
 
     // Close the editor and show 'Edit' button
     // TODO: Changes are saved in the contentPage when they shouldn't. (Changes aren't save in the DB as expected)
     $('#btnCancel').on('click', function () {
         $('#summernote').summernote('destroy');
-        $('.editorOnBtns').addClass('d-none');
-        $('#btnEdit').removeClass('d-none');
+        ToggleFooterButtons();
     });
+
+    function ToggleFooterButtons() {
+        if ($('#btnEdit').hasClass('d-none'))
+        {
+            $('#btnEdit').removeClass('d-none');
+            $('.editorOnBtns').addClass('d-none');
+        }
+        else
+        {
+            $('#btnEdit').addClass('d-none');
+            $('.editorOnBtns').removeClass('d-none');
+        }
+    }
 
     // Save the journal in the DB
     function SaveEditorText() {
@@ -108,6 +127,7 @@ $(document).ready(function () {
         // Hide the tabContent of the journal and show the summernote instead
         // Get the text from the tabContent
         var journalText = $(showedJournal).html();
+        console.log(journalText);
         // Hide the tabContent
         $(showedJournal).css('display', 'none');
         // Set the text into the editor
