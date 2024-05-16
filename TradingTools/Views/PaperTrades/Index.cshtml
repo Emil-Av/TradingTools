@@ -135,7 +135,7 @@
                             <div class="card-body">
                                 <div class="tab-content" id="tabContent">
                                     <div class="tab-pane fade show active" id="pre" role="tabpanel" aria-labelledby="pre-tab">
-                                        <p id="showPre">@Model.Journal.Pre</p>
+                                        <span id="showPre">@Html.Raw(Model.Journal.Pre)</span>
                                     </div>
                                     <div class="tab-pane fade" id="during" role="tabpanel" aria-labelledby="during-tab">
                                         <p id="showDuring">@Model.Journal.During</p>

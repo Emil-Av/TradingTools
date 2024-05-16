@@ -33,18 +33,18 @@ $(document).ready(function () {
     * ************************
     */
 
+   // Send the data to the controller
     function UpdateJournal() {
-        let tradeId = $('#currentTradeIdInput').val();
         let dataToSend =
         {
             CurrentTrade: {
-                Id: tradeId
+                Id: $('#currentTradeIdInput').val()
             },
             Journal: {
-                Pre: $('#showPre').text(),
-                During: $('#showDuring').text(),
-                Exit: $('#showExit').text(),
-                Post: $('#showPost').text()
+                Pre: $('#showPre').html(),
+                During: $('#showDuring').html(),
+                Exit: $('#showExit').html(),
+                Post: $('#showPost').html()
             }
         };
         $.ajax({
@@ -54,15 +54,15 @@ $(document).ready(function () {
             dataType: 'JSON',
             data: JSON.stringify(dataToSend),
             success: function (response) {
-                alert(response)
             }
         })
     }
 
+    // When the content is double clicked, it can be edited (summernote is displayed)
     $('#tabContent').on('dblclick', function () {
         // Hide the tabContent of the journal and show the summernote instead
         // Get the text from the tabContent
-        var journalText = $(showedJournal).text();
+        var journalText = $(showedJournal).html();
         // Hide the tabContent
         $(showedJournal).css('display', 'none');
         // Set the text into the editor
@@ -72,9 +72,10 @@ $(document).ready(function () {
         isEditorShown = true;
     });
 
+    // On tab change
     $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         if (isEditorShown) {
-            $(showedJournal).text($('#summernote').summernote('code'));
+            $(showedJournal).html($('#summernote').summernote('code'));
             $(showedJournal).css('display', 'block');
             $('#summernote').summernote('code', '');
             $('#summernote').summernote('destroy');

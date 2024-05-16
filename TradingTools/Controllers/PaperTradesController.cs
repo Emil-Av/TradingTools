@@ -16,15 +16,13 @@ using System.Web.Mvc.Html;
 using Utilities;
 using Models.ViewModels;
 using DataAccess.Repository;
+using System.Web.Helpers;
 
 namespace TradingTools.Controllers
 {
     public class PaperTradesController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        private UserSettings? userSettings;
-        public PaperTradesVM PaperTradesVM { get; set; }
+        #region Constructor
         public PaperTradesController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
@@ -33,9 +31,35 @@ namespace TradingTools.Controllers
 
         }
 
+        #endregion
+
+        #region Private Properties
+
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private UserSettings? userSettings;
+
+        #endregion
+
+        #region Public Properties
+        public PaperTradesVM PaperTradesVM { get; set; }
+
+        #endregion
+
+        #region Methods
+
         [HttpPost]
         public IActionResult UpdateJournal([FromBody] PaperTradesVM data)
         {
+            if (data.Journal == null)
+            {
+                // Notification error
+
+                return Json(new { response = "error" });
+            }
+
+            SanitizationHelper.SanitizeObject(data.Journal);
+
             Journal journal = _unitOfWork.Journal.Get(x => x.PaperTradeId == data.CurrentTrade.Id);
             if (journal != null)
             {
@@ -46,7 +70,7 @@ namespace TradingTools.Controllers
                 _unitOfWork.Journal.Update(journal);
                 _unitOfWork.Save();
             }
-            return View();
+            return Json(new { response = "success" });
         }
 
         public IActionResult LoadTrade(string timeFrame, string strategy, string sampleSize, string trade)
@@ -80,7 +104,8 @@ namespace TradingTools.Controllers
             PaperTradesVM.NumberSampleSizes = listSampleSizes.Count();
             PaperTradesVM.TradesInSampleSize = _unitOfWork.PaperTrade.GetAll(x => x.SampleSizeId == sampleSizeId).Count();
             PaperTradesVM.Journal = _unitOfWork.Journal.Get(x => x.PaperTradeId == PaperTradesVM.CurrentTrade.Id);
-
+            
+            SanitizationHelper.SanitizeObject(PaperTradesVM.Journal);
 
             return Json(new { paperTradesVM = PaperTradesVM });
         }
@@ -97,6 +122,7 @@ namespace TradingTools.Controllers
             // Get the number of trades for the sample size
             PaperTradesVM.TradesInSampleSize = _unitOfWork.PaperTrade.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.SampleSizeId == latestSampleSize).Count();
             PaperTradesVM.Journal = _unitOfWork.Journal.Get(x => x.PaperTradeId == PaperTradesVM.CurrentTrade.Id);
+            SanitizationHelper.SanitizeObject(PaperTradesVM.Journal);
             
             return View(PaperTradesVM);
         }
@@ -370,32 +396,7 @@ namespace TradingTools.Controllers
         }
     }
 
+    #endregion
 
-    public class NaturalStringComparer : IComparer<string>
-    {
-        public int Compare(string x, string y)
-        {
-            string[] xParts = Regex.Split(x.Replace(" ", ""), "([0-9]+)");
-            string[] yParts = Regex.Split(y.Replace(" ", ""), "([0-9]+)");
-
-            int minLength = Math.Min(xParts.Length, yParts.Length);
-            for (int i = 0; i < minLength; i++)
-            {
-                if (xParts[i] != yParts[i])
-                {
-                    if (int.TryParse(xParts[i], out int xNum) && int.TryParse(yParts[i], out int yNum))
-                    {
-                        return xNum.CompareTo(yNum);
-                    }
-                    else
-                    {
-                        return string.Compare(xParts[i], yParts[i], StringComparison.Ordinal);
-                    }
-                }
-            }
-
-            return xParts.Length.CompareTo(yParts.Length);
-        }
-    }
 }
 
