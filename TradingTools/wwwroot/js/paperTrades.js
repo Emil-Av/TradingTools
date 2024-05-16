@@ -1,5 +1,5 @@
 $(document).ready(function () {
-
+    toastr.success('Are you the 6 fingered man?')
     /**
     * ******************************
     * Region global variables starts
