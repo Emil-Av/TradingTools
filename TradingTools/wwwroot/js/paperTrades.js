@@ -110,7 +110,7 @@ $(document).ready(function () {
         }
     }
 
-    // Save the journal in the DB
+    // Save the journal in the DB and toggle the buttons
     function SaveEditorText() {
         isEditorShown = false;
         $(showedJournal).html($('#summernote').summernote('code'));
@@ -146,6 +146,31 @@ $(document).ready(function () {
     /**
     * ***************************
     * Region menu buttons starts
+    * ***************************
+    */
+
+    /**
+     * ***************************
+     * Card header menu starts
+     * ***************************
+     */
+
+    $('#headerMenu').on('click', '.dropdown-item', function () {
+        if ($(this).text() !== $('#currentMenu').text()) {
+            $('#currentMenu').text($(this).text());
+            $(this).addClass('bg-gray-400');
+
+            $('#headerMenu a').each(function () {
+                if ($(this).hasClass('bg-gray-400') && $(this).text() !== $('#currentMenu').text()) {
+                    $(this).removeClass('bg-gray-400');
+                }
+            });
+        }
+    });
+
+    /**
+    * ***************************
+    * Card header menu ends
     * ***************************
     */
 
@@ -220,6 +245,8 @@ $(document).ready(function () {
                     menuClicked.text(clickedMenuValue);
                     return;
                 }
+                // Set the new trade id
+                $("#currentTradeIdInput").val(response['paperTradesVM']['currentTrade']['id']);
                 SetMenuValues(trade);
                 LoadImages();
                 LoadJournals();
@@ -230,14 +257,16 @@ $(document).ready(function () {
 
     // Loads the journals
     function LoadJournals() {
+        // Activate the 'Pre' tab
         $('#pre-tab').click();
+        // Set the journals
         $('#pre').html(paperTradesVM['paperTradesVM']['journal']['pre']);
         $('#during').html(paperTradesVM['paperTradesVM']['journal']['during']);
         $('#exit').html(paperTradesVM['paperTradesVM']['journal']['exit']);
         $('#post').html(paperTradesVM['paperTradesVM']['journal']['post']);
     }
 
-    // Populates the drop down items after a new trade has been selected and sets the values in the spans.
+    // Populate the drop down items after a new trade has been selected and set the values in the spans.
     function SetMenuValues(displayedTrade) {
         var numberSampleSizes = paperTradesVM['paperTradesVM']['numberSampleSizes'];
         var tradesInSampleSize = paperTradesVM['paperTradesVM']['tradesInSampleSize'];
