@@ -135,18 +135,18 @@
                             <div class="card-body">
                                 <div class="tab-content" id="tabContent">
                                     <div class="tab-pane fade show active" id="pre" role="tabpanel" aria-labelledby="pre-tab">
-                                        <span id="showPre">@Html.Raw(Model.Journal.Pre)</span>
+                                        @Html.Raw(Model.Journal.Pre)
                                     </div>
                                     <div class="tab-pane fade" id="during" role="tabpanel" aria-labelledby="during-tab">
-                                        <p id="showDuring">@Html.Raw(Model.Journal.During)</p>
+                                        @Html.Raw(Model.Journal.During)
                                     </div>
                                     <div class="tab-pane fade" id="exit" role="tabpanel" aria-labelledby="exit-tab">
-                                        <p id="showExit">@Html.Raw(Model.Journal.Exit)</p>
+                                        @Html.Raw(Model.Journal.Exit)
                                     </div>
                                     <div class="tab-pane fade" id="post" role="tabpanel" aria-labelledby="post-tab">
-                                        <p id="showPost">@(Model.Journal.Post == null ? "Double click to add text" : Html.Raw(Model.Journal.Post))</p>
+                                        @(Model.Journal.Post == null ? "Double click to add text" : Html.Raw(Model.Journal.Post))
                                     </div>
-                                    <div id="summernote" class="hidden-element">
+                                    <div id="summernote" class="d-none">
                                     </div>
                                 </div>
                             </div>

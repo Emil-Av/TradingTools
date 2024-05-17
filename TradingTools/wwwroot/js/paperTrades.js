@@ -1,3 +1,5 @@
+
+// When switching trades and editing the journal, then switching to another trade, then back to the initial one, the edited text isn't changed but it seems to be saved in the DB
 $(document).ready(function () {
 
     /**
@@ -12,7 +14,7 @@ $(document).ready(function () {
     var showLatestTrade;
     // The model
     var paperTradesVM;
-    var showedJournal = '#showPre'; // Always the start value
+    var showedJournal = '#pre'; // Always the start value
     var isEditorShown = false;
 
     /**
@@ -41,10 +43,10 @@ $(document).ready(function () {
                 Id: $('#currentTradeIdInput').val()
             },
             Journal: {
-                Pre: $('#showPre').html(),
-                During: $('#showDuring').html(),
-                Exit: $('#showExit').html(),
-                Post: $('#showPost').html()
+                Pre: $('#pre').html(),
+                During: $('#during').html(),
+                Exit: $('#exit').html(),
+                Post: $('#post').html()
             }
         };
         $.ajax({
@@ -67,44 +69,42 @@ $(document).ready(function () {
 
     // When the content is double clicked, it can be edited (summernote is displayed)
     $('#tabContent').on('dblclick', function () {
-        ToggleFooterButtons();
         OpenEditor();
     });
 
     // On tab change
     $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        SaveEditorText();
-        showedJournal = '#show' + CapitalizeFirstLetter($(e.target).attr('aria-controls')); // activated tab
+        if (isEditorShown) {
+            SaveEditorText();
+        }
+        showedJournal = '#' + $(e.target).attr('aria-controls');
     });
 
     // Open editor and show the buttons
     $('#btnEdit').on('click', function () {
-        $(this).addClass('d-none');
-        $('.editorOnBtns').removeClass('d-none');
         OpenEditor();
     });
 
     // Save the journal changes
     $('#btnSave').on('click', function () {
         SaveEditorText();
-        ToggleFooterButtons();
     });
 
     // Close the editor and show 'Edit' button
     // TODO: Changes are saved in the contentPage when they shouldn't. (Changes aren't save in the DB as expected)
     $('#btnCancel').on('click', function () {
         $('#summernote').summernote('destroy');
+        $(showedJournal).removeClass('d-none');
+        isEditorShown = false;
         ToggleFooterButtons();
     });
 
     function ToggleFooterButtons() {
-        if ($('#btnEdit').hasClass('d-none'))
-        {
+        if ($('#btnEdit').hasClass('d-none')) {
             $('#btnEdit').removeClass('d-none');
             $('.editorOnBtns').addClass('d-none');
         }
-        else
-        {
+        else {
             $('#btnEdit').addClass('d-none');
             $('.editorOnBtns').removeClass('d-none');
         }
@@ -112,34 +112,28 @@ $(document).ready(function () {
 
     // Save the journal in the DB
     function SaveEditorText() {
-        if (isEditorShown) {
-            $(showedJournal).html($('#summernote').summernote('code'));
-            $(showedJournal).css('display', 'block');
-            $('#summernote').summernote('code', '');
-            $('#summernote').summernote('destroy');
-            isEditorShown = false;
-            UpdateJournal();
-        }
+        isEditorShown = false;
+        $(showedJournal).html($('#summernote').summernote('code'));
+        $(showedJournal).removeClass('d-none');
+        $('#summernote').summernote('code', '');
+        $('#summernote').summernote('destroy');
+        ToggleFooterButtons();
+        UpdateJournal();
     }
 
     // Open the summernote editor
     function OpenEditor() {
+        ToggleFooterButtons();
         // Hide the tabContent of the journal and show the summernote instead
         // Get the text from the tabContent
         var journalText = $(showedJournal).html();
-        console.log(journalText);
         // Hide the tabContent
-        $(showedJournal).css('display', 'none');
+        $(showedJournal).addClass('d-none');
         // Set the text into the editor
         $('#summernote').summernote('code', journalText);
         // Display the editor
         $('#summernote').summernote('justifyLeft');
         isEditorShown = true;
-    }
-
-    // Make the first char of a string upper case
-    function CapitalizeFirstLetter(text) {
-        return text.charAt(0).toUpperCase() + text.slice(1);
     }
 
     /**
@@ -228,10 +222,21 @@ $(document).ready(function () {
                 }
                 SetMenuValues(trade);
                 LoadImages();
+                LoadJournals();
                 SetSelectedItemClass();
             }
         })
     }
+
+    // Loads the journals
+    function LoadJournals() {
+        $('#pre-tab').click();
+        $('#pre').html(paperTradesVM['paperTradesVM']['journal']['pre']);
+        $('#during').html(paperTradesVM['paperTradesVM']['journal']['during']);
+        $('#exit').html(paperTradesVM['paperTradesVM']['journal']['exit']);
+        $('#post').html(paperTradesVM['paperTradesVM']['journal']['post']);
+    }
+
     // Populates the drop down items after a new trade has been selected and sets the values in the spans.
     function SetMenuValues(displayedTrade) {
         var numberSampleSizes = paperTradesVM['paperTradesVM']['numberSampleSizes'];
