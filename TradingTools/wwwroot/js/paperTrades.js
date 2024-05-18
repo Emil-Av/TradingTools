@@ -1,6 +1,6 @@
 
 // When switching trades and editing the journal, then switching to another trade, then back to the initial one, the edited text isn't changed but it seems to be saved in the DB
-$(document).ready(function () {
+$(function () {
 
     /**
     * ******************************
@@ -14,8 +14,9 @@ $(document).ready(function () {
     var showLatestTrade;
     // The model
     var paperTradesVM;
-    var showedJournal = '#pre'; // Always the start value
+    var showedTabContent = '#pre'; // Always the start value
     var isEditorShown = false;
+    var currentCardMenu;
 
     /**
     * ******************************
@@ -25,7 +26,7 @@ $(document).ready(function () {
 
     // After a .zip file is uploaded, the 'change' event is triggered, this submits the form and sends the .zip file to the controller
     $('#fileInput').on('change', function () {
-        $('#formUploadFile').submit();
+        $('#formUploadFile').trigger('submit');
     });
 
 
@@ -34,6 +35,39 @@ $(document).ready(function () {
     * Region summernote starts
     * ************************
     */
+
+    // Send the data to the controller
+    function UpdateReview() {
+        let dataToSend =
+        {
+            CurrentTrade: {
+                SampleSizeId: $('#currentSampleSizeIdInput').val()
+            },
+            Review: {
+                First: $('#first').html(),
+                Second: $('#second').html(),
+                Third: $('#third').html(),
+                Forth: $('#forth').html(),
+                summary: $('#summary').html()
+            }
+        };
+        $.ajax({
+            method: 'POST',
+            url: '/papertrades/updatereview',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'JSON',
+            data: JSON.stringify(dataToSend),
+            success: function (response) {
+                if (response['success'] !== undefined) {
+
+                    toastr.success(response['success']);
+                }
+                else {
+                    toastr.error(response['error']);
+                }
+            }
+        });
+    }
 
     // Send the data to the controller
     function UpdateJournal() {
@@ -57,14 +91,13 @@ $(document).ready(function () {
             data: JSON.stringify(dataToSend),
             success: function (response) {
                 if (response['success'] !== undefined) {
-
                     toastr.success(response['success']);
                 }
                 else {
                     toastr.error(response['error']);
                 }
             }
-        })
+        });
     }
 
     // When the content is double clicked, it can be edited (summernote is displayed)
@@ -77,7 +110,7 @@ $(document).ready(function () {
         if (isEditorShown) {
             SaveEditorText();
         }
-        showedJournal = '#' + $(e.target).attr('aria-controls');
+        showedTabContent = '#' + $(e.target).attr('aria-controls');
     });
 
     // Open editor and show the buttons
@@ -94,7 +127,7 @@ $(document).ready(function () {
     // TODO: Changes are saved in the contentPage when they shouldn't. (Changes aren't save in the DB as expected)
     $('#btnCancel').on('click', function () {
         $('#summernote').summernote('destroy');
-        $(showedJournal).removeClass('d-none');
+        $(showedTabContent).removeClass('d-none');
         isEditorShown = false;
         ToggleFooterButtons();
     });
@@ -113,12 +146,17 @@ $(document).ready(function () {
     // Save the journal in the DB and toggle the buttons
     function SaveEditorText() {
         isEditorShown = false;
-        $(showedJournal).html($('#summernote').summernote('code'));
-        $(showedJournal).removeClass('d-none');
+        $(showedTabContent).html($('#summernote').summernote('code'));
+        $(showedTabContent).removeClass('d-none');
         $('#summernote').summernote('code', '');
         $('#summernote').summernote('destroy');
         ToggleFooterButtons();
-        UpdateJournal();
+        if (currentCardMenu == 'Journal') {
+            UpdateJournal();
+        }
+        else {
+            UpdateReview();
+        }
     }
 
     // Open the summernote editor
@@ -126,11 +164,11 @@ $(document).ready(function () {
         ToggleFooterButtons();
         // Hide the tabContent of the journal and show the summernote instead
         // Get the text from the tabContent
-        var journalText = $(showedJournal).html();
+        let tabContent = $(showedTabContent).html();
         // Hide the tabContent
-        $(showedJournal).addClass('d-none');
+        $(showedTabContent).addClass('d-none');
         // Set the text into the editor
-        $('#summernote').summernote('code', journalText);
+        $('#summernote').summernote('code', tabContent);
         // Display the editor
         $('#summernote').summernote('justifyLeft');
         isEditorShown = true;
@@ -144,23 +182,39 @@ $(document).ready(function () {
 
 
     /**
-    * ***************************
-    * Region menu buttons starts
-    * ***************************
-    */
-
-    /**
      * ***************************
-     * Card header menu starts
+     * Card dropdown menu starts
      * ***************************
      */
 
     $('#headerMenu').on('click', '.dropdown-item', function () {
-        if ($(this).text() !== $('#currentMenu').text()) {
-            $('#currentMenu').text($(this).text());
+        currentCardMenu = $(this).text();
+
+        // Display Journal tabs
+        if (currentCardMenu == 'Journal') {
+            showedTabContent = '#pre';
+            $('#journalTabHeaders').removeClass('d-none');
+            $('#journalTabContent').removeClass('d-none');
+            $('#reviewTabHeaders').addClass('d-none');
+        }
+        // Display Review tabs
+        else {
+            showedTabContent = '#first';
+            $('#journalTabHeaders').addClass('d-none');
+            $('#journalTabContent').addClass('d-none');
+            $('#reviewTabHeaders').removeClass('d-none');
+            $('#reviewTabContent').removeClass('d-none');
+        }
+        $(showedTabContent + '-tab').trigger('click');
+
+        // Set the text of the card menu
+        if (currentCardMenu !== $('#currentMenu').text()) {
+            $('#currentMenu').text(currentCardMenu);
             $(this).addClass('bg-gray-400');
 
+            // Remove the bg color of the last selected item
             $('#headerMenu a').each(function () {
+                // if a dropdown item has the bg-gray-400 class and the text of the current item being iterated is different than the text in the #currentMenu, than that was the previously selected option
                 if ($(this).hasClass('bg-gray-400') && $(this).text() !== $('#currentMenu').text()) {
                     $(this).removeClass('bg-gray-400');
                 }
@@ -170,10 +224,16 @@ $(document).ready(function () {
 
     /**
     * ***************************
-    * Card header menu ends
+    * Card dropdown menu ends
     * ***************************
     */
 
+
+    /**
+    * ***************************
+    * Region menu buttons starts
+    * ***************************
+    */
     // Create key, value array: key is the button menu, value is the span element. The span element is the selected value from the dropdown menu.
     var menuButtons =
     {
@@ -224,7 +284,6 @@ $(document).ready(function () {
                 }
             })
         }
-
     }
     // API Call to load the selected trade
     function LoadTradeAsync(timeFrame, strategy, sampleSize, trade) {
@@ -247,18 +306,29 @@ $(document).ready(function () {
                 }
                 // Set the new trade id
                 $("#currentTradeIdInput").val(response['paperTradesVM']['currentTrade']['id']);
+                $("#currentSampleSizeIdInput").val(response['paperTradesVM']['currentTrade']['samplesizeid']);
                 SetMenuValues(trade);
-                LoadImages();
-                LoadJournals();
                 SetSelectedItemClass();
+                LoadImages();
+                LoadJournal();
+                LoadReview();
             }
-        })
+        });
     }
 
-    // Loads the journals
-    function LoadJournals() {
+    // Loads the review of the sample size
+    function LoadReview() {
+        $('#first').html(paperTradesVM['paperTradesVM']['review']['first']);
+        $('#second').html(paperTradesVM['paperTradesVM']['review']['second']);
+        $('#third').html(paperTradesVM['paperTradesVM']['review']['third']);
+        $('#forth').html(paperTradesVM['paperTradesVM']['review']['forth']);
+        $('#summary').html(paperTradesVM['paperTradesVM']['review']['summary']);
+    }
+
+    // Loads the journal of the trade
+    function LoadJournal() {
         // Activate the 'Pre' tab
-        $('#pre-tab').click();
+        $('#pre-tab').trigger('click');
         // Set the journals
         $('#pre').html(paperTradesVM['paperTradesVM']['journal']['pre']);
         $('#during').html(paperTradesVM['paperTradesVM']['journal']['during']);
@@ -332,6 +402,5 @@ $(document).ready(function () {
     * Region menu buttons ends
     * ***************************
     */
-});
-
+})
 

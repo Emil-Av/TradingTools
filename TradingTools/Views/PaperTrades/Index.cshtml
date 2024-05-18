@@ -2,6 +2,7 @@
 
 <partial name="~/Views/Shared/_LoadingIndicator.cshtml" />
 <input type="hidden" value="@Model.CurrentTrade.Id" id="currentTradeIdInput" />
+<input type="hidden" value="@Model.CurrentTrade.SampleSizeId" id="currentSampleSizeIdInput" />
 <div class="hideMyContent" id="myContent">
     <div class="row justify-content-center align-items-top">
         <div class="col-10 text-center">
@@ -116,7 +117,7 @@
                                         <!-- Header drop down menu begin -->
                                         <div class="dropdown">
                                             <a class="dropdown-toggle" role="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <span id="currentMenu">Journal</span>
+                                                <span id="currentMenu" class="min-width-60">Journal</span>
                                             </a>
                                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="headerMenu">
                                                 <a class="dropdown-item bg-gray-400" role="button">Journal</a>
@@ -127,7 +128,7 @@
                                     </div>
                                     <!-- Header tabs begin -->
                                     <div class="col mr-md-5 d-flex justify-content-center">
-                                        <div id="journalTabHeaders" class="d-none">
+                                        <div id="journalTabHeaders">
                                             <ul class="nav nav-tabs" id="journalTabs" role="tablist">
                                                 <li class="nav-item" role="presentation">
                                                     <button class="nav-link active" id="pre-tab" data-toggle="tab" data-target="#pre" type="button" role="tab" aria-controls="pre" aria-selected="true">Pre</button>
@@ -143,7 +144,7 @@
                                                 </li>
                                             </ul>
                                         </div>
-                                        <div id="reviewTabHeaders">
+                                        <div id="reviewTabHeaders" class="d-none">
                                             <ul class="nav nav-tabs" id="reviewTabs" role="tablist">
                                                 <li class="nav-item" role="presentation">
                                                     <button class="nav-link active" id="first-tab" data-toggle="tab" data-target="#first" type="button" role="tab" aria-controls="first" aria-selected="true">First</button>
@@ -158,7 +159,7 @@
                                                     <button class="nav-link" id="forth-tab" data-toggle="tab" data-target="#forth" type="button" role="tab" aria-controls="forth" aria-selected="false">Forth</button>
                                                 </li>
                                                 <li class="nav-item">
-                                                    <button class="nav-link" id="endReview-tab" data-toggle="tab" data-target="#endReview" type="button" role="tab" aria-controls="endReview" aria-selected="false">End Review</button>
+                                                    <button class="nav-link" id="summary-tab" data-toggle="tab" data-target="#summary" type="button" role="tab" aria-controls="summary" aria-selected="false">Summary</button>
                                                 </li>
                                             </ul>
                                         </div>
@@ -185,8 +186,6 @@
                                         <div class="tab-pane fade tundora text-left" id="post" role="tabpanel" aria-labelledby="post-tab">
                                             @(Model.Journal.Post == null ? "Double click to add text" : Html.Raw(Model.Journal.Post))
                                         </div>
-                                        <div id="summernote" class="d-none">
-                                        </div>
                                     </div>
                                 </div>
                                 <!-- Journal content ends -->
@@ -203,9 +202,9 @@
                                         </div>
                                         <div class="tab-pane fade tundora text-left" id="summary" role="tabpanel" aria-labelledby="summary-tab">
                                         </div>
-                                        <div id="summernote" class="d-none">
-                                        </div>
                                     </div>
+                                </div>
+                                <div id="summernote" class="d-none">
                                 </div>
                                 <!-- Review content ends -->
                             </div>
@@ -217,7 +216,7 @@
                                         <span class="text"><i class="fa-solid fa-pen-to-square mr-2"></i>Edit</span>
                                     </button>
                                     <button class="btn btn-primary d-none editorOnBtns" id="btnSave">
-                                        <span class="text"><i class="fa-regular fa-floppy-disk fa-spin-pulse mr-2"></i>Save</span>
+                                        <span class="text"><i class="fa-regular fa-floppy-disk mr-2"></i>Save</span>
                                     </button>
                                     <button class="btn btn-secondary d-none editorOnBtns" id="btnCancel">
                                         <span class="text"><i class="fa-solid fa-xmark mr-2"></i>Cancel</span>

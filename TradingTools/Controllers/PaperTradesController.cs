@@ -47,6 +47,35 @@ namespace TradingTools.Controllers
         #endregion
 
         #region Methods
+        [HttpPost]
+
+        public IActionResult updatereview([FromBody] PaperTradesVM data)
+        {
+            if (data.Review == null)
+            {
+                return Json(new { error = "Review wasn't updated. Review was null" });
+            }
+
+            SanitizationHelper.SanitizeObject(data.Review);
+
+            Review review = _unitOfWork.Review.Get(x => x.SampleSizeId == data.CurrentTrade.SampleSizeId);
+            if (review != null)
+            {
+                review.First = data.Review.First;
+                review.Second = data.Review.Second;
+                review.Third = data.Review.Third;
+                review.Forth = data.Review.Forth;
+                review.Summary = data.Review.Summary;
+                _unitOfWork.Review.Update(review);
+                _unitOfWork.Save();
+
+                return Json(new { success = "Review updated." });
+            }
+            else
+            {
+                return Json(new { error = $"The review for sample size with ID {data.CurrentTrade.SampleSizeId} wasn't found in the data base." });
+            }
+        }
 
         [HttpPost]
         public IActionResult UpdateJournal([FromBody] PaperTradesVM data)
@@ -214,9 +243,7 @@ namespace TradingTools.Controllers
                                     currentSampleSizeId = _unitOfWork.SampleSize.GetAll().
                                                                                 Select(x => x.Id).OrderByDescending(id => id).FirstOrDefault();
 
-                                    review.TradeType = TradeType.PaperTrade;
-                                    review.TimeFrame = trade.TimeFrame;
-                                    review.Strategy = trade.Strategy;
+                                    review.SampleSizeId = currentSampleSizeId;
                                     _unitOfWork.Review.Add(review);
                                     _unitOfWork.Save();
                                 }
@@ -320,7 +347,7 @@ namespace TradingTools.Controllers
                             foreach (XElement node in nodes)
                             {
                                 XElement element = XElement.Parse(node.ToString());
-                                review.SampleSizeReview += string.IsNullOrEmpty(element.Value) ? "\n" : element.Value;
+                                //review.SampleSizeReview += string.IsNullOrEmpty(element.Value) ? "\n" : element.Value;
                             }
                         }
                     }

@@ -23,10 +23,11 @@ namespace DataAccess.Repository
             Review? objFromDb = _db.Reviews.FirstOrDefault(x => x.Id == review.Id);
             if (objFromDb != null)
             {
-                objFromDb.SampleSizeReview = review.SampleSizeReview;
-                objFromDb.Strategy = review.Strategy;
-                objFromDb.TimeFrame = review.TimeFrame;
-                objFromDb.TradeType = review.TradeType;
+                objFromDb.First = review.First;
+                objFromDb.Second = review.Second;
+                objFromDb.Third = review.Third;
+                objFromDb.Forth = review.Forth;
+                objFromDb.Summary = objFromDb.Summary;
             }
         }
     }

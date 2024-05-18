@@ -5,3 +5,8 @@
 .tundora {
     color: #4A4A4A;
 }
+
+.min-width-60 {
+    min-width: 60px;
+    display: inline-block;
+}

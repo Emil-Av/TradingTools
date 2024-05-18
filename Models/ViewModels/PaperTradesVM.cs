@@ -15,6 +15,8 @@ namespace Models.ViewModels
 
         public Journal Journal { get; set; }
 
+        public Review Review { get; set; }
+
         // The number of sample sizes for a strategy and time frame
         public int NumberSampleSizes { get; set; }
 

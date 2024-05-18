@@ -13,10 +13,16 @@ namespace Models
     public class Review
     {
         public int Id { get; set; }
-        public string? SampleSizeReview { get; set; }
-        public Strategy? Strategy { get; set; }
-        public TimeFrame? TimeFrame { get; set; }
-        public TradeType TradeType { get; set; }
+        public string? First { get; set; }
+        public string? Second { get; set; }
+        public string? Third { get; set; }
+        public string? Forth { get; set; }
+        public string? Summary { get; set; }
 
+        // Navigation property
+        public int SampleSizeId { get; set; }
+        [ForeignKey(nameof(SampleSizeId))]
+
+        public SampleSize? SampleSize { get; set; }
     }
 }
