@@ -19,7 +19,7 @@ namespace DataAccess.Repository
         public Repository(ApplicationDbContext db)
         {
             _db = db;
-            this.dbSet = _db.Set<T>();
+            dbSet = _db.Set<T>();
         }
 
         public void Add(T entity)

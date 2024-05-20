@@ -16,8 +16,7 @@ namespace DataAccess.Data
         public DbSet<Journal> Journals { get; set; }
 
         public DbSet<Review> Reviews { get; set; }
-
-        public DbSet<SampleSize> SamplesSizes { get; set; }
+        public DbSet<SampleSize> SampleSizes { get; set; }
 
         public DbSet<UserSettings> UserSettings { get; set; }
 

@@ -49,7 +49,7 @@ namespace TradingTools.Controllers
         #region Methods
         [HttpPost]
 
-        public IActionResult updatereview([FromBody] PaperTradesVM data)
+        public IActionResult UpdateReview([FromBody] PaperTradesVM data)
         {
             if (data.Review == null)
             {
@@ -57,7 +57,6 @@ namespace TradingTools.Controllers
             }
 
             SanitizationHelper.SanitizeObject(data.Review);
-
             Review review = _unitOfWork.Review.Get(x => x.SampleSizeId == data.CurrentTrade.SampleSizeId);
             if (review != null)
             {
@@ -132,8 +131,9 @@ namespace TradingTools.Controllers
             PaperTradesVM.NumberSampleSizes = listSampleSizes.Count();
             PaperTradesVM.TradesInSampleSize = _unitOfWork.PaperTrade.GetAll(x => x.SampleSizeId == sampleSizeId).Count();
             PaperTradesVM.Journal = _unitOfWork.Journal.Get(x => x.PaperTradeId == PaperTradesVM.CurrentTrade.Id);
-            
             SanitizationHelper.SanitizeObject(PaperTradesVM.Journal);
+            PaperTradesVM.Review = _unitOfWork.Review.Get(x => x.SampleSizeId == PaperTradesVM.CurrentTrade.SampleSizeId);
+            SanitizationHelper.SanitizeObject(PaperTradesVM.Review);
 
             return Json(new { paperTradesVM = PaperTradesVM });
         }
@@ -151,6 +151,8 @@ namespace TradingTools.Controllers
             PaperTradesVM.TradesInSampleSize = _unitOfWork.PaperTrade.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.SampleSizeId == latestSampleSize).Count();
             PaperTradesVM.Journal = _unitOfWork.Journal.Get(x => x.PaperTradeId == PaperTradesVM.CurrentTrade.Id);
             SanitizationHelper.SanitizeObject(PaperTradesVM.Journal);
+            PaperTradesVM.Review = _unitOfWork.Review.Get(x => x.SampleSizeId == PaperTradesVM.CurrentTrade.SampleSizeId);
+            SanitizationHelper.SanitizeObject(PaperTradesVM.Review);
             
             return View(PaperTradesVM);
         }
@@ -186,7 +188,6 @@ namespace TradingTools.Controllers
                         int currentSampleSizeId = 0;
                         PaperTrade? trade = null;
                         Journal? journal = null;
-                        Review? review = null;
                         SampleSize? sampleSize = null;
                         List<ZipArchiveEntry> sortedEntries = archive.Entries.
                                                                         OrderBy(e => e.FullName, new NaturalStringComparer()).ToList();
@@ -232,20 +233,15 @@ namespace TradingTools.Controllers
                                 // First sample size of the loop or a new one
                                 if (lastSampleSize != currentSampleSize || lastTimeFrame != currentTimeFrame)
                                 {
-                                    review = new Review();
                                     lastTimeFrame = currentTimeFrame;
                                     lastSampleSize = currentSampleSize;
                                     sampleSize = new SampleSize();
-                                    sampleSize.Strategy = trade.Strategy;
-                                    sampleSize.TimeFrame = trade.TimeFrame;
+                                    sampleSize.Strategy = (Strategy)trade.Strategy;
+                                    sampleSize.TimeFrame = (TimeFrame)trade.TimeFrame;
                                     _unitOfWork.SampleSize.Add(sampleSize);
                                     _unitOfWork.Save();
                                     currentSampleSizeId = _unitOfWork.SampleSize.GetAll().
                                                                                 Select(x => x.Id).OrderByDescending(id => id).FirstOrDefault();
-
-                                    review.SampleSizeId = currentSampleSizeId;
-                                    _unitOfWork.Review.Add(review);
-                                    _unitOfWork.Save();
                                 }
 
                                 if (!canCreateNewTrade)
@@ -267,10 +263,6 @@ namespace TradingTools.Controllers
                                     {
                                         ParseODTJournalFile(entry, journal);
 
-                                    }
-                                    else
-                                    {
-                                        ParseODTReviewFile(entry, review);
                                     }
                                 }
                                 catch
@@ -330,30 +322,6 @@ namespace TradingTools.Controllers
             return currentFolder;
         }
 
-        void ParseODTReviewFile(ZipArchiveEntry entry, Review review)
-        {
-            using (Stream stream = entry.Open())
-            {
-                using (ZipArchive archive = new ZipArchive(stream))
-                {
-                    ZipArchiveEntry contentEntry = archive.GetEntry("content.xml");
-                    if (contentEntry != null)
-                    {
-                        using (StreamReader reader = new StreamReader(contentEntry.Open()))
-                        {
-                            string xmlContent = reader.ReadToEnd();
-                            XDocument xmlDoc = XDocument.Parse(xmlContent);
-                            List<XElement> nodes = xmlDoc.Descendants().Where(e => e.Name.LocalName == "p").ToList();
-                            foreach (XElement node in nodes)
-                            {
-                                XElement element = XElement.Parse(node.ToString());
-                                //review.SampleSizeReview += string.IsNullOrEmpty(element.Value) ? "\n" : element.Value;
-                            }
-                        }
-                    }
-                }
-            }
-        }
 
         void ParseODTJournalFile(ZipArchiveEntry entry, Journal journal)
         {

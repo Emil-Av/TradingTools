@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240520153746_RenameOldTableToNewTable")]
+    partial class RenameOldTableToNewTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -138,39 +141,6 @@ namespace DataAccess.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Models.Review", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("First")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Forth")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("SampleSizeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Second")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Summary")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Third")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SampleSizeId");
-
-                    b.ToTable("Reviews");
-                });
-
             modelBuilder.Entity("Models.SampleSize", b =>
                 {
                     b.Property<int>("Id")
@@ -227,15 +197,6 @@ namespace DataAccess.Migrations
                         .HasForeignKey("SampleSizeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("SampleSize");
-                });
-
-            modelBuilder.Entity("Models.Review", b =>
-                {
-                    b.HasOne("Models.SampleSize", "SampleSize")
-                        .WithMany()
-                        .HasForeignKey("SampleSizeId");
 
                     b.Navigation("SampleSize");
                 });

@@ -120,7 +120,7 @@
                                                 <span id="currentMenu" class="min-width-60">Journal</span>
                                             </a>
                                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="headerMenu">
-                                                <a class="dropdown-item bg-gray-400" role="button">Journal</a>
+                                                <a class="dropdown-item bg-gray-400" role="button" id="cardMenuJournal">Journal</a>
                                                 <a class="dropdown-item" role="button">Review</a>
                                             </div>
                                         </div>
@@ -190,17 +190,22 @@
                                 </div>
                                 <!-- Journal content ends -->
                                 <!-- Review content begins -->
-                                <div id="reviewTabContent">
+                                <div id="reviewTabContent" class="d-none">
                                     <div class="tab-content" id="tabContent">
                                         <div class="tab-pane fade show active tundora text-left" id="first" role="tabpanel" aria-labelledby="first-tab">
+                                            @Html.Raw(Model.Review.First)
                                         </div>
                                         <div class="tab-pane fade tundora text-left" id="second" role="tabpanel" aria-labelledby="second-tab">
+                                            @Html.Raw(Model.Review.Second)
                                         </div>
                                         <div class="tab-pane fade tundora text-left" id="third" role="tabpanel" aria-labelledby="third-tab">
+                                            @Html.Raw(Model.Review.Third)
                                         </div>
                                         <div class="tab-pane fade tundora text-left" id="forth" role="tabpanel" aria-labelledby="forth-tab">
+                                            @Html.Raw(Model.Review.Forth)
                                         </div>
                                         <div class="tab-pane fade tundora text-left" id="summary" role="tabpanel" aria-labelledby="summary-tab">
+                                            @Html.Raw(Model.Review.Summary)
                                         </div>
                                     </div>
                                 </div>

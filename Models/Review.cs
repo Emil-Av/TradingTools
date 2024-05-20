@@ -20,9 +20,9 @@ namespace Models
         public string? Summary { get; set; }
 
         // Navigation property
-        public int SampleSizeId { get; set; }
+        public int? SampleSizeId { get; set; }
         [ForeignKey(nameof(SampleSizeId))]
 
-        public SampleSize? SampleSize { get; set; }
+        public SampleSize SampleSize { get; set; }
     }
 }

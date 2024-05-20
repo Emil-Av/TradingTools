@@ -14,9 +14,9 @@ $(function () {
     var showLatestTrade;
     // The model
     var paperTradesVM;
-    var showedTabContent = '#pre'; // Always the start value
+    var currentTab = '#pre'; // Always the start value
     var isEditorShown = false;
-    var currentCardMenu;
+    var currentCardMenu = 'Journal';
 
     /**
     * ******************************
@@ -110,7 +110,7 @@ $(function () {
         if (isEditorShown) {
             SaveEditorText();
         }
-        showedTabContent = '#' + $(e.target).attr('aria-controls');
+        currentTab = '#' + $(e.target).attr('aria-controls');
     });
 
     // Open editor and show the buttons
@@ -127,7 +127,7 @@ $(function () {
     // TODO: Changes are saved in the contentPage when they shouldn't. (Changes aren't save in the DB as expected)
     $('#btnCancel').on('click', function () {
         $('#summernote').summernote('destroy');
-        $(showedTabContent).removeClass('d-none');
+        $(currentTab).removeClass('d-none');
         isEditorShown = false;
         ToggleFooterButtons();
     });
@@ -146,16 +146,26 @@ $(function () {
     // Save the journal in the DB and toggle the buttons
     function SaveEditorText() {
         isEditorShown = false;
-        $(showedTabContent).html($('#summernote').summernote('code'));
-        $(showedTabContent).removeClass('d-none');
+        // Save the text from the editor
+        var editorText = $($('#summernote').summernote('code')).text().trim();
+        // Save the text from the tab
+        var oldTabContent = $(currentTab).text().trim();
+        // Set the content of the tab to the value of the editor
+        $(currentTab).html($('#summernote').summernote('code'));
+        // Show the tab content
+        $(currentTab).removeClass('d-none');
+        // Close the editor
         $('#summernote').summernote('code', '');
         $('#summernote').summernote('destroy');
         ToggleFooterButtons();
-        if (currentCardMenu == 'Journal') {
-            UpdateJournal();
-        }
-        else {
-            UpdateReview();
+        // If a change has been made, save it
+        if (editorText !== oldTabContent) {
+            if (currentCardMenu === 'Journal') {
+                UpdateJournal();
+            }
+            else {
+                UpdateReview();
+            }
         }
     }
 
@@ -164,11 +174,11 @@ $(function () {
         ToggleFooterButtons();
         // Hide the tabContent of the journal and show the summernote instead
         // Get the text from the tabContent
-        let tabContent = $(showedTabContent).html();
+        let currentTabContent = $(currentTab).html();
         // Hide the tabContent
-        $(showedTabContent).addClass('d-none');
+        $(currentTab).addClass('d-none');
         // Set the text into the editor
-        $('#summernote').summernote('code', tabContent);
+        $('#summernote').summernote('code', currentTabContent);
         // Display the editor
         $('#summernote').summernote('justifyLeft');
         isEditorShown = true;
@@ -188,24 +198,26 @@ $(function () {
      */
 
     $('#headerMenu').on('click', '.dropdown-item', function () {
+        if (isEditorShown) {
+            SaveEditorText();
+        }
         currentCardMenu = $(this).text();
-
         // Display Journal tabs
         if (currentCardMenu == 'Journal') {
-            showedTabContent = '#pre';
+            currentTab = '#pre';
             $('#journalTabHeaders').removeClass('d-none');
             $('#journalTabContent').removeClass('d-none');
             $('#reviewTabHeaders').addClass('d-none');
+            $('#reviewTabContent').addClass('d-none');
         }
         // Display Review tabs
         else {
-            showedTabContent = '#first';
+            currentTab = '#first';
             $('#journalTabHeaders').addClass('d-none');
             $('#journalTabContent').addClass('d-none');
             $('#reviewTabHeaders').removeClass('d-none');
             $('#reviewTabContent').removeClass('d-none');
         }
-        $(showedTabContent + '-tab').trigger('click');
 
         // Set the text of the card menu
         if (currentCardMenu !== $('#currentMenu').text()) {
@@ -271,7 +283,7 @@ $(function () {
         })(key);
     }
 
-    // Mark the selected drop down item
+    // Mark the selected drop down item of the buttons on the top
     function SetSelectedItemClass() {
         // Set the "selected item" color
         for (var key in menuButtons) {
@@ -285,7 +297,7 @@ $(function () {
             })
         }
     }
-    // API Call to load the selected trade
+    // API call to load the selected trade
     function LoadTradeAsync(timeFrame, strategy, sampleSize, trade) {
         $.ajax({
             method: 'POST',
@@ -306,18 +318,22 @@ $(function () {
                 }
                 // Set the new trade id
                 $("#currentTradeIdInput").val(response['paperTradesVM']['currentTrade']['id']);
+                // Set the sample size id
                 $("#currentSampleSizeIdInput").val(response['paperTradesVM']['currentTrade']['samplesizeid']);
                 SetMenuValues(trade);
                 SetSelectedItemClass();
                 LoadImages();
-                LoadJournal();
                 LoadReview();
+                LoadJournal();
             }
         });
     }
 
     // Loads the review of the sample size
     function LoadReview() {
+        // Activate the 'First' tab
+        $('#first-tab').trigger('click');
+        // Set the values
         $('#first').html(paperTradesVM['paperTradesVM']['review']['first']);
         $('#second').html(paperTradesVM['paperTradesVM']['review']['second']);
         $('#third').html(paperTradesVM['paperTradesVM']['review']['third']);
@@ -329,7 +345,7 @@ $(function () {
     function LoadJournal() {
         // Activate the 'Pre' tab
         $('#pre-tab').trigger('click');
-        // Set the journals
+        // Set the values
         $('#pre').html(paperTradesVM['paperTradesVM']['journal']['pre']);
         $('#during').html(paperTradesVM['paperTradesVM']['journal']['during']);
         $('#exit').html(paperTradesVM['paperTradesVM']['journal']['exit']);
@@ -338,6 +354,7 @@ $(function () {
 
     // Populate the drop down items after a new trade has been selected and set the values in the spans.
     function SetMenuValues(displayedTrade) {
+        // Menu Buttons
         var numberSampleSizes = paperTradesVM['paperTradesVM']['numberSampleSizes'];
         var tradesInSampleSize = paperTradesVM['paperTradesVM']['tradesInSampleSize'];
         // Set the SampleSize menu
@@ -363,6 +380,10 @@ $(function () {
             trades += '<a class="dropdown-item" role="button">' + i + '</a>'
         }
         $('#menuTrade').html(trades);
+
+        // Menu card header
+        currentCardMenu = 'Journal';
+        $('#cardMenuJournal').trigger('click');
     }
 
     // Load the images into the carousel

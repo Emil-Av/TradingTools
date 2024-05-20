@@ -27,7 +27,7 @@ namespace DataAccess.Repository
                 objFromDb.Second = review.Second;
                 objFromDb.Third = review.Third;
                 objFromDb.Forth = review.Forth;
-                objFromDb.Summary = objFromDb.Summary;
+                objFromDb.Summary = review.Summary;
             }
         }
     }

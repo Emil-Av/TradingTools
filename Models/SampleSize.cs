@@ -10,8 +10,8 @@ namespace Models
     {
         public int Id { get; set; }
 
-        public Strategy? Strategy { get; set; }
+        public Strategy Strategy { get; set; }
 
-        public TimeFrame? TimeFrame { get; set; }
+        public TimeFrame TimeFrame { get; set; }
     }
 }
