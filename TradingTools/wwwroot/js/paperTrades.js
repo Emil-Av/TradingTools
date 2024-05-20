@@ -128,6 +128,7 @@ $(function () {
     $('#btnCancel').on('click', function () {
         $('#summernote').summernote('destroy');
         $(currentTab).removeClass('d-none');
+        $('#test').addClass('card-body');
         isEditorShown = false;
         ToggleFooterButtons();
     });
@@ -145,6 +146,7 @@ $(function () {
 
     // Save the journal in the DB and toggle the buttons
     function SaveEditorText() {
+        $('#test').addClass('card-body');
         isEditorShown = false;
         // Save the text from the editor
         var editorText = $($('#summernote').summernote('code')).text().trim();
@@ -171,6 +173,7 @@ $(function () {
 
     // Open the summernote editor
     function OpenEditor() {
+        $('#test').removeClass('card-body');
         ToggleFooterButtons();
         // Hide the tabContent of the journal and show the summernote instead
         // Get the text from the tabContent
