@@ -1,5 +1,5 @@
 
-// When switching trades and editing the journal, then switching to another trade, then back to the initial one, the edited text isn't changed but it seems to be saved in the DB
+// Summernote doesn't accept !(*@W@!#*&@). See console. In Review double click doesn't open the editor
 $(function () {
 
     /**
