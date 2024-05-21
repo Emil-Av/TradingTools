@@ -170,10 +170,10 @@
                             <!-- Header Menu ends -->
 
                             <!-- Card body begins -->
-                            <div class="card-body" id="test">
+                            <div class="card-body" id="cardBody">
                                 <!-- Journal content begins -->
                                 <div id="journalTabContent">
-                                    <div class="tab-content" id="tabContent">
+                                    <div class="tab-content" id="tabContentJournal">
                                         <div class="tab-pane fade show active tundora text-left" id="pre" role="tabpanel" aria-labelledby="pre-tab">
                                             @Html.Raw(Model.Journal.Pre)
                                         </div>
@@ -191,7 +191,7 @@
                                 <!-- Journal content ends -->
                                 <!-- Review content begins -->
                                 <div id="reviewTabContent" class="d-none">
-                                    <div class="tab-content" id="tabContent">
+                                    <div class="tab-content" id="tabContentReview">
                                         <div class="tab-pane fade show active tundora text-left" id="first" role="tabpanel" aria-labelledby="first-tab">
                                             @Html.Raw(Model.Review.First)
                                         </div>

@@ -1,5 +1,5 @@
 
-// Summernote doesn't accept !(*@W@!#*&@). See console. In Review double click doesn't open the editor
+// Summernote sometimes opens with the cursor in the middle, then that causes errors. Check Review
 $(function () {
 
     /**
@@ -31,9 +31,9 @@ $(function () {
 
 
     /**
-    * ************************
+    * *************************
     * Region summernote starts
-    * ************************
+    * *************************
     */
 
     // Send the data to the controller
@@ -101,10 +101,13 @@ $(function () {
     }
 
     // When the content is double clicked, it can be edited (summernote is displayed)
-    $('#tabContent').on('dblclick', function () {
+    $('#tabContentJournal').on('dblclick', function () {
         OpenEditor();
     });
 
+    $('#tabContentReview').on('dblclick', function () {
+        OpenEditor();
+    });
     // On tab change
     $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         if (isEditorShown) {
@@ -128,7 +131,7 @@ $(function () {
     $('#btnCancel').on('click', function () {
         $('#summernote').summernote('destroy');
         $(currentTab).removeClass('d-none');
-        $('#test').addClass('card-body');
+        $('#cardBody').addClass('card-body');
         isEditorShown = false;
         ToggleFooterButtons();
     });
@@ -146,7 +149,7 @@ $(function () {
 
     // Save the journal in the DB and toggle the buttons
     function SaveEditorText() {
-        $('#test').addClass('card-body');
+        $('#cardBody').addClass('card-body');
         isEditorShown = false;
         // Save the text from the editor
         var editorText = $($('#summernote').summernote('code')).text().trim();
@@ -173,7 +176,7 @@ $(function () {
 
     // Open the summernote editor
     function OpenEditor() {
-        $('#test').removeClass('card-body');
+        $('#cardBody').removeClass('card-body');
         ToggleFooterButtons();
         // Hide the tabContent of the journal and show the summernote instead
         // Get the text from the tabContent
@@ -182,8 +185,8 @@ $(function () {
         $(currentTab).addClass('d-none');
         // Set the text into the editor
         $('#summernote').summernote('code', currentTabContent);
-        // Display the editor
         $('#summernote').summernote('justifyLeft');
+        // Display the editor
         isEditorShown = true;
     }
 
