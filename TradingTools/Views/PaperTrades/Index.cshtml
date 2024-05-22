@@ -1,9 +1,7 @@
 ﻿@model PaperTradesVM
 
-<partial name="~/Views/Shared/_LoadingIndicator.cshtml" />
 <input type="hidden" value="@Model.CurrentTrade.Id" id="currentTradeIdInput" />
 <input type="hidden" value="@Model.CurrentTrade.SampleSizeId" id="currentSampleSizeIdInput" />
-<div class="hideMyContent" id="myContent">
     <div class="row justify-content-center align-items-top">
         <div class="col-10 text-center">
             <h2>
@@ -248,7 +246,6 @@
             }
         </div>
     </div>
-</div>
 @section Scripts {
     <script src="~/js/paperTrades.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
