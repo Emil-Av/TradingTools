@@ -1,26 +1,84 @@
-﻿<script src="https://cdn.tailwindcss.com"></script>
+﻿@{
+    ViewData["Title"] = "Trade Calculator";
+}
+
 <div class="row justify-content-center align-items-top">
     <div class="col-10 text-center">
         <h2>Calculator Setup</h2>
     </div>
-    <div class="container mb-4">
-        <div class="row justify-content-center">
-            <div class="col-md-8 grid-margin stretch-card">
-                <div class="card">
-                    <div class="card-body">
-                        <form>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Trade Account Risk %</label>
-                                        <input type="number" class="form-control"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- place the commented card below this line -->
+    <div class="card-body bg-gradient-dark rounded-lg col-4">
+        <form>
+            <table class="table table-borderless table-sm">
+                <thead>
+                    <tr class="mt-2">
+                        <th scope="col" colspan="2" class="text-white border-bottom">Calculator Setup</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <label class="text-white mr-3">Trade Account Risk %</label>
+                            <input type="text" class="form-control bg-gray-500 w-50 text-center" min="0" />
+                        </td>
+                        <td>
+                            <label class="text-white mr-3">Account Size</label>
+                            <input type="text" class="form-control bg-gray-500 w-50 text-center" min="0" />
+                        </td>
+                       
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="text-white mr-3">Trade Account Risk $</label>
+                            <input type="text" disabled value="25" class="form-control bg-gray-300 w-50 text-center" min="0" />
+                        </td>
+                        <td>
+                            <label class="text-white mr-3">Scale Out %</label>
+                            <input type="text" value="25" class="form-control bg-gray-300 w-50 text-center" min="0" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="text-white mr-3">Exchange position Size Limit %</label>
+                            <input type="text" value="25" class="form-control bg-gray-300  w-50 text-center" min="0" />
+                        </td>
+                        <td>
+                            <label class="text-white mr-3">Trade Fee % (multiplied by 4)</label>
+                            <input type="text" value="25" class="form-control bg-gray-300  w-50 text-center" min="0" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="text-white mr-3">Acceptable Slippage %</label>
+                            <input type="text" value="25" class="form-control bg-gray-300  w-50 text-center" min="0" />
+                        </td>
+                    </tr>
+                    <tr>
+                        
+
+                    </tr>
+
+                </tbody>
+            </table>
+        </form>
     </div>
 </div>
+
+@* <div class="card-body bg-gradient-secondary rounded-lg col-md-4">
+    <form>
+        <div class="row col-md-8">
+            <div class="form-group form-inline">
+                <label class="text-white mr-3 d-block">Trade Account Risk %</label>
+                <input type="text" class="form-control bg-gray-500 w-25 text-center d-block" min="0" />
+            </div>
+            <div class="form-group form-inline">
+                <label class="text-white mr-3 d-block">Trade Account Risk $</label>
+                <input type="text" disabled value="25" class="form-control bg-gray-300 w-25 text-center d-block" min="0" />
+            </div>
+            <div class="form-group form-inline">
+                <label class="text-white mr-3 d-block">Exchange Position Size Limit &</label>
+                <input type="text" value="25" class="form-control bg-gray-300 w-25 text-center d-block" min="0" />
+            </div>
+        </div>
+    </form>
+</div> *@
