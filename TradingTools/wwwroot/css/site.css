@@ -10,3 +10,13 @@
     min-width: 60px;
     display: inline-block;
 }
+
+.table-xs th,
+.table-xs td {
+    padding: 0.1rem;
+    font-size: 0.9rem;
+}
+.row.flex-column {
+    display: flex;
+    flex-direction: column;
+}
