@@ -58,168 +58,198 @@
                 </table>
             </form>
         </div>
-        <div class="card-body bg-gradient-dark rounded-lg col-8 mt-4">
+        <div class="card-body bg-gradient-dark rounded-lg col-12 col-md-8 col-lg-8 mt-4">
             <form id="formCalculator">
-                <table class="table table-borderless table-sm table-xs">
+                <table class="table table-borderless table-sm table-xs w-100">
                     <thead>
                         <tr class="mt-2">
                             <th scope="col" colspan="4" class="text-white border-bottom">Calculator</th>
                         </tr>
                     </thead>
                     <tbody>
+                        <!--Row 1-->
                         <tr>
-                            <!--Column 1-->
                             <td>
-                                <div class="form-group">
-                                    <label class="text-white form-check-label mr-3">USD Risk</label>
-                                    <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white mr-3 form-check-label">Strategy</label>
-                                    <select type="text" class="form-control bg-gradient-light text-center" min="0">
-                                        <option>First Bar Above/Below</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white form-check-label mr-3">Initial Entry</label>
-                                    <input type="text" class="form-control bg-gradient-light text-center" min="0" />
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white form-check-label mr-3">1-1 Profit</label>
-                                    <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white form-check-label mr-3">Loss</label>
-                                    <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
-                                </div>
-                            </td>
-                            <!--Column 2-->
-                            <td>
-                                <div class="form-group">
-                                    <label class="text-white form-check-label mr-3">Symbol</label>
-                                    <input type="text" class="form-control bg-gradient-light text-center" min="0" />
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white mr-3 form-check-label">Side</label>
-                                    <select type="text" class="form-control bg-gradient-light text-center" min="0">
-                                        <option>Long</option>
-                                        <option>Short</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white form-check-label mr-3">Limit</label>
-                                    <input type="text" class="form-control bg-gradient-light text-center" min="0" />
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white form-check-label mr-3">Pos Profit %</label>
-                                    <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white form-check-label mr-3">Pos Loss %</label>
-                                    <button type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
-                                </div>
-                            </td>
-                            <!--Column 3-->
-                            <td>
-                                <div class="form-group invisible">
-                                    <label class="text-white form-check-label mr-3"></label>
-                                    <input type="text" class="form-control bg-gradient-light text-center" min="0" />
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white mr-3 form-check-label">Side</label>
-                                    <select type="text" class="form-control bg-gradient-light text-center" min="0">
-                                        <option>Long</option>
-                                        <option>Short</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white form-check-label mr-3">Limit</label>
-                                    <input type="text" class="form-control bg-gradient-light text-center" min="0" />
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white form-check-label mr-3">Pos Profit %</label>
-                                    <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white form-check-label mr-3">Pos Loss %</label>
-                                    <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
-                                </div>
-                            </td>
-                            <!--Column 4-->
-                            <td>
-                                <div class="form-group invisible">
-                                    <label class="text-white form-check-label mr-3">Symbol</label>
-                                    <input type="text" class="form-control bg-gradient-light text-center" min="0" />
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white mr-3 form-check-label">Side</label>
-                                    <select type="text" class="form-control bg-gradient-light text-center" min="0">
-                                        <option>Long</option>
-                                        <option>Short</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white form-check-label mr-3">Limit</label>
-                                    <input type="text" class="form-control bg-gradient-light text-center" min="0" />
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white form-check-label mr-3">Pos Profit %</label>
-                                    <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white form-check-label mr-3">Pos Loss %</label>
-                                    <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
-                                </div>
-                            </td>
-                            <!--Column 5-->
-                            <td>
-                                <div class="form-group invisible">
-                                    <label class="text-white form-check-label mr-3">Symbol</label>
-                                    <input type="text" class="form-control bg-gradient-light text-center" min="0" />
-                                </div>
-                                <div class="form-group ml-2">
-                                    <label for="buttonSet" class="text-white form-check-label invisible w-50">Set settings</label>
-                                    <button name="buttonSet" class="btn btn-primary w-50 form-control" min="0">
-                                        <i class="fa-solid fa-arrows-rotate mr-2"></i>
-                                        Set
-                                    </button>
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white form-check-label mr-3">Limit</label>
-                                    <input type="text" class="form-control bg-gradient-light text-center" min="0" />
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white form-check-label mr-3">Pos Profit %</label>
-                                    <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-white form-check-label mr-3">Pos Loss %</label>
-                                    <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                                <div class="d-flex flex-wrap">
+                                    <div class="form-group col-12 col-md-4">
+                                        <label class="text-white form-check-label mr-3">USD Risk</label>
+                                        <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                                    </div>
+                                    <div class="form-group col-12 col-md-4">
+                                        <label class="text-white form-check-label mr-3">Symbol</label>
+                                        <input type="text" class="form-control bg-gradient-light text-center" min="0" />
+                                    </div>
                                 </div>
                             </td>
                         </tr>
-                        @*   <tr>
-                        <td>
+                        <!--Row 2-->
+                        <tr>
+                            <td>
+                                <div class="d-flex flex-wrap">
+                                    <div class="form-group col-12 col-md-6 col-lg-2">
+                                        <label class="text-white mr-3 form-check-label">Strategy</label>
+                                        <select type="text" class="form-control bg-gradient-light text-center" min="0">
+                                            <option>First Bar Above/Below</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-12 col-md-6 col-lg-2">
+                                        <label class="text-white mr-3 form-check-label">Side</label>
+                                        <select type="text" class="form-control bg-gradient-light text-center" min="0">
+                                            <option>Long</option>
+                                            <option>Short</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-12 col-md-6 col-lg-2">
+                                        <label class="text-white mr-3 form-check-label">Market</label>
+                                        <select type="text" class="form-control bg-gradient-light text-center" min="0">
+                                            <option>Margin</option>
+                                            <option>Spot</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-12 col-md-6 col-lg-2">
+                                        <label class="text-white mr-3 form-check-label">Precision</label>
+                                        <input type="text" class="form-control bg-gradient-light text-center" min="0" />
+                                    </div>
+                                    <div class="form-group col-12 col-md-6 col-lg-2 align-items-bottom">
+                                        <label class="form-check-label invisible">asd</label>
+                                        <button name="buttonSet" class="form-control btn btn-primary">
+                                            <i class="fa-solid fa-arrows-rotate mr-2"></i>
+                                            Set
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        @*
+                        <!--Column 1-->
+                        <td class="col-12 col-md-2">
+                        <div class="form-group">
+                        <label class="text-white form-check-label mr-3">USD Risk</label>
+                        <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                        </div>
+                        <div class="form-group">
                         <label class="text-white mr-3 form-check-label">Strategy</label>
-                        <select class="form-control bg-gradient-secondary w-50 text-center">
-                        <option value="value">text</option>
+                        <select type="text" class="form-control bg-gradient-light text-center" min="0">
+                        <option>First Bar Above/Below</option>
                         </select>
+                        </div>
+                        <div class="form-group">
+                        <label class="text-white form-check-label mr-3">Initial Entry</label>
+                        <input type="text" class="form-control bg-gradient-light text-center" min="0" />
+                        </div>
+                        <div class="form-group">
+                        <label class="text-white form-check-label mr-3">1-1 Profit</label>
+                        <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                        </div>
+                        <div class="form-group">
+                        <label class="text-white form-check-label mr-3">Loss</label>
+                        <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                        </div>
                         </td>
-                        <td>
+                        <!--Column 2-->
+                        <td class="col-12 col-md-2">
+                        <div class="form-group">
+                        <label class="text-white form-check-label mr-3">Symbol</label>
+                        <input type="text" class="form-control bg-gradient-light text-center" min="0" />
+                        </div>
+                        <div class="form-group">
                         <label class="text-white mr-3 form-check-label">Side</label>
-                        <select class="form-control bg-gradient-secondary w-50 text-center">
+                        <select type="text" class="form-control bg-gradient-light text-center" min="0">
+                        <option>Long</option>
+                        <option>Short</option>
                         </select>
+                        </div>
+                        <div class="form-group">
+                        <label class="text-white form-check-label mr-3">Limit</label>
+                        <input type="text" class="form-control bg-gradient-light text-center" min="0" />
+                        </div>
+                        <div class="form-group">
+                        <label class="text-white form-check-label mr-3">Pos Profit %</label>
+                        <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                        </div>
+                        <div class="form-group">
+                        <label class="text-white form-check-label mr-3">Pos Loss %</label>
+                        <button type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                        </div>
                         </td>
-                        <td>
-                        <label class="text-white mr-3 form-check-label">Marg/Exch</label>
-                        <select class="form-control bg-gradient-secondary w-50 text-center">
+                        <!--Column 3-->
+                        <td class="col-12 col-md-2">
+                        <div class="form-group d-none">
+                        <label class="text-white form-check-label mr-3">Muss weg</label>
+                        <input type="text" class="form-control bg-gradient-light text-center" min="0" />
+                        </div>
+                        <div class="form-group">
+                        <label class="text-white mr-3 form-check-label">Side</label>
+                        <select type="text" class="form-control bg-gradient-light text-center" min="0">
+                        <option>Long</option>
+                        <option>Short</option>
                         </select>
+                        </div>
+                        <div class="form-group">
+                        <label class="text-white form-check-label mr-3">Limit</label>
+                        <input type="text" class="form-control bg-gradient-light text-center" min="0" />
+                        </div>
+                        <div class="form-group">
+                        <label class="text-white form-check-label mr-3">Pos Profit %</label>
+                        <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                        </div>
+                        <div class="form-group">
+                        <label class="text-white form-check-label mr-3">Pos Loss %</label>
+                        <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                        </div>
                         </td>
-                        <td>
-                        <label class="text-white mr-3 form-check-label">Decimal Places</label>
-                        <input type="text" value="" class="form-control bg-gradient-light w-50 text-center" min="0" />
+                        <!--Column 4-->
+                        <td class="col-12 col-md-2">
+                        <div class="form-group invisible">
+                        <label class="text-white form-check-label mr-3">Symbol</label>
+                        <input type="text" class="form-control bg-gradient-light text-center" min="0" />
+                        </div>
+                        <div class="form-group">
+                        <label class="text-white mr-3 form-check-label">Side</label>
+                        <select type="text" class="form-control bg-gradient-light text-center" min="0">
+                        <option>Long</option>
+                        <option>Short</option>
+                        </select>
+                        </div>
+                        <div class="form-group">
+                        <label class="text-white form-check-label mr-3">Limit</label>
+                        <input type="text" class="form-control bg-gradient-light text-center" min="0" />
+                        </div>
+                        <div class="form-group">
+                        <label class="text-white form-check-label mr-3">Pos Profit %</label>
+                        <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                        </div>
+                        <div class="form-group">
+                        <label class="text-white form-check-label mr-3">Pos Loss %</label>
+                        <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                        </div>
                         </td>
-                        </tr> *@
+                        <!--Column 5-->
+                        <td class="col-12 col-md-2">
+                        <div class="form-group invisible">
+                        <label class="text-white form-check-label mr-3">Symbol</label>
+                        <input type="text" class="form-control bg-gradient-light text-center" min="0" />
+                        </div>
+                        <div class="form-group ml-2">
+                        <label for="buttonSet" class="text-white form-check-label invisible w-50">Set settings</label>
+                        <button name="buttonSet" class="btn btn-primary w-50 form-control" min="0">
+                        <i class="fa-solid fa-arrows-rotate mr-2"></i>
+                        Set
+                        </button>
+                        </div>
+                        <div class="form-group">
+                        <label class="text-white form-check-label mr-3">Limit</label>
+                        <input type="text" class="form-control bg-gradient-light text-center" min="0" />
+                        </div>
+                        <div class="form-group">
+                        <label class="text-white form-check-label mr-3">Pos Profit %</label>
+                        <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                        </div>
+                        <div class="form-group">
+                        <label class="text-white form-check-label mr-3">Pos Loss %</label>
+                        <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                        </div>
+                        </td> *@
                     </tbody>
                 </table>
             </form>
