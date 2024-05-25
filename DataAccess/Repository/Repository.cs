@@ -27,7 +27,7 @@ namespace DataAccess.Repository
             dbSet.Add(entity);
         }
 
-        public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
+        public async Task<T> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
         {
             IQueryable<T> query;
             if (tracked)
@@ -48,10 +48,10 @@ namespace DataAccess.Repository
                 }
             }
 
-            return query.FirstOrDefault();
+            return await query.FirstOrDefaultAsync();
         }
 
-        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter, string? includeProperties = null) 
+        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter, string? includeProperties = null) 
         {
             IQueryable<T> query = dbSet;
             if (filter != null)
@@ -67,7 +67,7 @@ namespace DataAccess.Repository
                 }
             }
 
-            return query.ToList();
+            return await query.ToListAsync();
         }
 
         public void Remove(T entity)

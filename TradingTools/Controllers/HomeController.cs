@@ -23,9 +23,10 @@ namespace TradingTools.Controllers
         /// <summary>
         ///  Creates new user settings.
         /// </summary>
-        private void CheckOrCreateUserSettings()
+        private async Task CheckOrCreateUserSettings()
         {
-            if (_unitOfWork.UserSettings.GetAll().ToList().Count == 0)
+            int usetSettingsCount = (await _unitOfWork.UserSettings.GetAllAsync()).Count;
+            if (usetSettingsCount == 0)
             {
                 _unitOfWork.UserSettings.Add(new UserSettings()
                 {

@@ -317,11 +317,12 @@ $(function () {
 
             },
             success: function (response) {
-                paperTradesVM = response;
-                if (response == null) {
+                if (response['error'] !== undefined) {
+                    toastr.error(response['error']);
                     menuClicked.text(clickedMenuValue);
                     return;
                 }
+                paperTradesVM = response;
                 // Set the new trade id
                 $("#currentTradeIdInput").val(response['paperTradesVM']['currentTrade']['id']);
                 // Set the sample size id

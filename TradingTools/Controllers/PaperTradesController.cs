@@ -49,7 +49,7 @@ namespace TradingTools.Controllers
         #region Methods
         [HttpPost]
 
-        public IActionResult UpdateReview([FromBody] PaperTradesVM data)
+        public async Task<IActionResult> UpdateReview([FromBody] PaperTradesVM data)
         {
             if (data.Review == null)
             {
@@ -57,7 +57,7 @@ namespace TradingTools.Controllers
             }
 
             SanitizationHelper.SanitizeObject(data.Review);
-            Review review = _unitOfWork.Review.Get(x => x.SampleSizeId == data.CurrentTrade.SampleSizeId);
+            Review review = await _unitOfWork.Review.GetAsync(x => x.SampleSizeId == data.CurrentTrade.SampleSizeId);
             if (review != null)
             {
                 review.First = data.Review.First;
@@ -77,7 +77,7 @@ namespace TradingTools.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateJournal([FromBody] PaperTradesVM data)
+        public async Task<IActionResult> UpdateJournal([FromBody] PaperTradesVM data)
         {
             if (data.Journal == null)
             {
@@ -87,7 +87,7 @@ namespace TradingTools.Controllers
 
             SanitizationHelper.SanitizeObject(data.Journal);
 
-            Journal journal = _unitOfWork.Journal.Get(x => x.PaperTradeId == data.CurrentTrade.Id);
+            Journal journal = await _unitOfWork.Journal.GetAsync(x => x.PaperTradeId == data.CurrentTrade.Id);
             if (journal != null)
             {
                 journal.Pre = data.Journal.Pre;
@@ -100,25 +100,24 @@ namespace TradingTools.Controllers
             return Json(new { success = "Journal updated." });
         }
 
-        public IActionResult LoadTrade(string timeFrame, string strategy, string sampleSize, string trade)
+        public async Task<IActionResult> LoadTrade(string timeFrame, string strategy, string sampleSize, string trade)
         {
-            userSettings = _unitOfWork.UserSettings.GetAll().First();
+            userSettings = (await _unitOfWork.UserSettings.GetAllAsync()).First();
             TimeFrame timeFrame1 = MyEnumConverter.SetTimeFrameFromString(timeFrame);
             Strategy strategy1 = MyEnumConverter.SetStrategyFromString(strategy);
             _ = int.TryParse(sampleSize, out int sampleSize1);
             _ = int.TryParse(trade, out int trade1);
 
 
-            List<SampleSize> listSampleSizes = _unitOfWork.SampleSize.GetAll(x => x.Strategy == strategy1 && x.TimeFrame == timeFrame1).OrderByDescending(x => x.Id).ToList();
+            List<SampleSize> listSampleSizes = (await _unitOfWork.SampleSize.GetAllAsync(x => x.Strategy == strategy1 && x.TimeFrame == timeFrame1)).OrderByDescending(x => x.Id).ToList();
             // If no sample size is found for the strategy and time frame, then there are no trades for them
             if (listSampleSizes.Count == 0)
             {
-                TempData["error"] = $"No trades for {strategy1} strategy on the {timeFrame1} chart.";
-                return Json(null);
+                return Json(new {error = $"No trades for {strategy1} strategy on the {timeFrame1} chart." });
             }
             // the paramater "sampleSize1" represents the sampleSize number in descending order (e.g. 3 is the third sample size for the time frame and strategy)
             int sampleSizeId = listSampleSizes[sampleSize1 - 1].Id;
-            List<PaperTrade> listTrades = _unitOfWork.PaperTrade.GetAll(x => x.SampleSizeId == sampleSizeId).ToList();
+            List<PaperTrade> listTrades = await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == sampleSizeId);
             // If for example a different time frame is selected (or new strategy or new sample size), but this time frame has only 5 trades but the selected trade > 5, then display the latest trade of the sample size
             if (listTrades.Count < trade1)
             {
@@ -129,29 +128,29 @@ namespace TradingTools.Controllers
                 PaperTradesVM.CurrentTrade = listTrades[trade1 - 1];
             }
             PaperTradesVM.NumberSampleSizes = listSampleSizes.Count();
-            PaperTradesVM.TradesInSampleSize = _unitOfWork.PaperTrade.GetAll(x => x.SampleSizeId == sampleSizeId).Count();
-            PaperTradesVM.Journal = _unitOfWork.Journal.Get(x => x.PaperTradeId == PaperTradesVM.CurrentTrade.Id);
+            PaperTradesVM.TradesInSampleSize = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == sampleSizeId)).Count();
+            PaperTradesVM.Journal = await _unitOfWork.Journal.GetAsync(x => x.PaperTradeId == PaperTradesVM.CurrentTrade.Id);
             SanitizationHelper.SanitizeObject(PaperTradesVM.Journal);
-            PaperTradesVM.Review = _unitOfWork.Review.Get(x => x.SampleSizeId == PaperTradesVM.CurrentTrade.SampleSizeId);
+            PaperTradesVM.Review = await _unitOfWork.Review.GetAsync(x => x.SampleSizeId == PaperTradesVM.CurrentTrade.SampleSizeId);
             SanitizationHelper.SanitizeObject(PaperTradesVM.Review);
 
             return Json(new { paperTradesVM = PaperTradesVM });
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             // Currently no users, so there is only one data record
-            userSettings = _unitOfWork.UserSettings.GetAll().First();
+            userSettings = (await _unitOfWork.UserSettings.GetAllAsync()).First();
             // Get the latest sample size for the strategy and time frame
-            int? latestSampleSize = _unitOfWork.SampleSize.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy).OrderByDescending(x => x.Id).FirstOrDefault()?.Id;
+            int? latestSampleSize = (await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy)).OrderByDescending(x => x.Id).FirstOrDefault()?.Id;
             // Get the last trade of the sample size
-            PaperTradesVM.CurrentTrade = _unitOfWork.PaperTrade.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.SampleSizeId == latestSampleSize).OrderByDescending(x => x.Id).FirstOrDefault();
+            PaperTradesVM.CurrentTrade = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.SampleSizeId == latestSampleSize)).OrderByDescending(x => x.Id).FirstOrDefault();
             // Get the number of sample sizes for the time frame and strategy
-            PaperTradesVM.NumberSampleSizes = _unitOfWork.SampleSize.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy).Count();
+            PaperTradesVM.NumberSampleSizes = (await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy)).Count();
             // Get the number of trades for the sample size
-            PaperTradesVM.TradesInSampleSize = _unitOfWork.PaperTrade.GetAll(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.SampleSizeId == latestSampleSize).Count();
-            PaperTradesVM.Journal = _unitOfWork.Journal.Get(x => x.PaperTradeId == PaperTradesVM.CurrentTrade.Id);
+            PaperTradesVM.TradesInSampleSize = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.SampleSizeId == latestSampleSize)).Count();
+            PaperTradesVM.Journal = await _unitOfWork.Journal.GetAsync(x => x.PaperTradeId == PaperTradesVM.CurrentTrade.Id);
             SanitizationHelper.SanitizeObject(PaperTradesVM.Journal);
-            PaperTradesVM.Review = _unitOfWork.Review.Get(x => x.SampleSizeId == PaperTradesVM.CurrentTrade.SampleSizeId);
+            PaperTradesVM.Review = await _unitOfWork.Review.GetAsync(x => x.SampleSizeId == PaperTradesVM.CurrentTrade.SampleSizeId);
             SanitizationHelper.SanitizeObject(PaperTradesVM.Review);
             
             return View(PaperTradesVM);
@@ -163,7 +162,7 @@ namespace TradingTools.Controllers
         /// <param name="zipFile"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult UploadTrades(IFormFile zipFile)
+        public async Task<IActionResult> UploadTrades(IFormFile zipFile)
         {
             // Check if the submitted file is a zip file
             if (zipFile == null || Path.GetExtension(zipFile.FileName).ToLower() != ".zip")
@@ -206,7 +205,7 @@ namespace TradingTools.Controllers
                                     {
                                         _unitOfWork.PaperTrade.Add(trade);
                                         _unitOfWork.Save();
-                                        lastTradeId = _unitOfWork.PaperTrade.GetAll().
+                                        lastTradeId = (await _unitOfWork.PaperTrade.GetAllAsync()).
                                                                             Select(x => x.Id).OrderByDescending(id => id).FirstOrDefault();
                                         journal.PaperTradeId = lastTradeId;
                                         _unitOfWork.Journal.Add(journal);
@@ -240,7 +239,7 @@ namespace TradingTools.Controllers
                                     sampleSize.TimeFrame = (TimeFrame)trade.TimeFrame;
                                     _unitOfWork.SampleSize.Add(sampleSize);
                                     _unitOfWork.Save();
-                                    currentSampleSizeId = _unitOfWork.SampleSize.GetAll().
+                                    currentSampleSizeId = (await _unitOfWork.SampleSize.GetAllAsync()).
                                                                                 Select(x => x.Id).OrderByDescending(id => id).FirstOrDefault();
                                 }
 
