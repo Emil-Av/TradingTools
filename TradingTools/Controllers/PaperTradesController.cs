@@ -103,17 +103,43 @@ namespace TradingTools.Controllers
         public async Task<IActionResult> LoadTrade(string timeFrame, string strategy, string sampleSize, string trade)
         {
             userSettings = (await _unitOfWork.UserSettings.GetAllAsync()).First();
-            TimeFrame timeFrame1 = MyEnumConverter.SetTimeFrameFromString(timeFrame);
-            Strategy strategy1 = MyEnumConverter.SetStrategyFromString(strategy);
-            _ = int.TryParse(sampleSize, out int sampleSize1);
-            _ = int.TryParse(trade, out int trade1);
+            TimeFrame timeFrame1;
+            Strategy strategy1;
+            // Check and parse the paramaters
+            try
+            {
+                timeFrame1 = MyEnumConverter.SetTimeFrameFromString(timeFrame);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = $"Error loading the trade. Wrong paramaters: {ex.Message}" });
+            }
+
+            try
+            {
+                strategy1 = MyEnumConverter.SetStrategyFromString(strategy);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = $"Error loading the trade. Wrong paramaters: {ex.Message}" });
+            }
+
+            if (!int.TryParse(sampleSize, out int sampleSize1))
+            {
+                return Json(new { error = $"Error loading the trade. Wrong paramater: Could not parse the sample size id" });
+            }
+
+            if (int.TryParse(trade, out int trade1))
+            {
+                return Json(new { error = $"Error loading the trade. Wrong paramater: Could not parse the trade id" });
+            }
 
 
             List<SampleSize> listSampleSizes = (await _unitOfWork.SampleSize.GetAllAsync(x => x.Strategy == strategy1 && x.TimeFrame == timeFrame1)).OrderByDescending(x => x.Id).ToList();
             // If no sample size is found for the strategy and time frame, then there are no trades for them
             if (listSampleSizes.Count == 0)
             {
-                return Json(new {error = $"No trades for {strategy1} strategy on the {timeFrame1} chart." });
+                return Json(new { error = $"No trades for {strategy1} strategy on the {timeFrame1} chart." });
             }
             // the paramater "sampleSize1" represents the sampleSize number in descending order (e.g. 3 is the third sample size for the time frame and strategy)
             int sampleSizeId = listSampleSizes[sampleSize1 - 1].Id;
@@ -127,6 +153,7 @@ namespace TradingTools.Controllers
             {
                 PaperTradesVM.CurrentTrade = listTrades[trade1 - 1];
             }
+            // Set the values for the ajax response
             PaperTradesVM.NumberSampleSizes = listSampleSizes.Count();
             PaperTradesVM.TradesInSampleSize = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == sampleSizeId)).Count();
             PaperTradesVM.Journal = await _unitOfWork.Journal.GetAsync(x => x.PaperTradeId == PaperTradesVM.CurrentTrade.Id);
@@ -134,6 +161,7 @@ namespace TradingTools.Controllers
             PaperTradesVM.Review = await _unitOfWork.Review.GetAsync(x => x.SampleSizeId == PaperTradesVM.CurrentTrade.SampleSizeId);
             SanitizationHelper.SanitizeObject(PaperTradesVM.Review);
 
+            // Send the response
             return Json(new { paperTradesVM = PaperTradesVM });
         }
         public async Task<IActionResult> Index()
@@ -152,7 +180,7 @@ namespace TradingTools.Controllers
             SanitizationHelper.SanitizeObject(PaperTradesVM.Journal);
             PaperTradesVM.Review = await _unitOfWork.Review.GetAsync(x => x.SampleSizeId == PaperTradesVM.CurrentTrade.SampleSizeId);
             SanitizationHelper.SanitizeObject(PaperTradesVM.Review);
-            
+
             return View(PaperTradesVM);
         }
 
@@ -344,25 +372,21 @@ namespace TradingTools.Controllers
                                 {
                                     lastJournal = "[Pre]";
                                     continue;
-
                                 }
                                 else if (element.Value.Contains("[During]"))
                                 {
                                     lastJournal = "[During]";
                                     continue;
-
                                 }
                                 else if (element.Value.Contains("[Exit]"))
                                 {
                                     lastJournal = "[Exit]";
                                     continue;
-
                                 }
                                 else if (element.Value.Contains("[Post]"))
                                 {
                                     lastJournal = "[Post]";
                                     continue;
-
                                 }
 
                                 if (lastJournal.Equals("[Pre]"))

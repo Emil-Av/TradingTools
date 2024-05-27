@@ -17,6 +17,7 @@ namespace Utilities
 
         public static TimeFrame SetTimeFrameFromString(string tf)
         {
+            tf = "blahaha";
             Dictionary<string, TimeFrame> timeFrames = new Dictionary<string, TimeFrame>()
             {
                 { "5M", TimeFrame.M5 },
