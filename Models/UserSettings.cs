@@ -22,5 +22,17 @@ namespace Models
         ///  Last used strategy in PaperTrades
         /// </summary>
         public Strategy PTStrategy { get; set; }    
+
+        public double AccountSize { get; set; }
+
+        public double TradeRisk { get; set; }
+
+        public double ExchSizeLimit { get; set; }
+
+        public double MaxSlippage { get; set; }
+
+        public double TradeFee { get; set; }
+
+        public double ScaleOut { get; set; }
     }
 }

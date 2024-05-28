@@ -4,70 +4,49 @@
 
 <div class="row justify-content-center align-items-start">
     <div class="col-10 text-center">
-        <h2>Calculator Setup</h2>
+        <h2>Trade Calculator</h2>
     </div>
     <div class="col-10 d-flex flex-column align-items-center">
-        <!-- place the commented card below this line -->
-        <div class="card-body bg-gradient-secondary rounded-lg col-6">
-            <form id="formCalculatorSetup">
-                <table class="table table-borderless table-sm table-xs">
-                    <thead>
-                        <tr class="mt-2">
-                            <th scope="col" colspan="2" class="text-white border-bottom">Calculator Setup</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <label class="text-white form-check-label mr-3 text-nowrap">Trade Account Risk %</label>
-                                <input type="text" class="form-control bg-gradient-light w-50 text-center" min="0" />
-                            </td>
-                            <td>
-                                <label class="text-white mr-3 form-check-label text-nowrap">Account Size</label>
-                                <input type="text" class="form-control bg-gradient-light w-50 text-center" min="0" />
-                            </td>
-
-                        </tr>
-                        <tr>
-                            <td>
-                                <label class="text-white mr-3 form-check-label text-nowrap">Trade Account Risk $</label>
-                                <input type="text" disabled class="form-control bg-gradient-secondary w-50 text-center" min="0" />
-                            </td>
-                            <td>
-                                <label class="text-white mr-3 form-check-label text-nowrap">Scale Out %</label>
-                                <input type="text" value="" class="form-control bg-gradient-light w-50 text-center" min="0" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label class="text-white mr-3 form-check-label text-nowrap">Exchange position Size Limit %</label>
-                                <input type="text" value="" class="form-control bg-gradient-light  w-50 text-center" min="0" />
-                            </td>
-                            <td>
-                                <label class="text-white mr-3 form-check-label text-nowrap">Trade Fee % (multiplied by 4)</label>
-                                <input type="text" value="" class="form-control bg-gradient-light  w-50 text-center" min="0" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label class="text-white mr-3 form-check-label text-nowrap">Acceptable Slippage %</label>
-                                <input type="text" value="" class="form-control bg-gradient-light  w-50 text-center" min="0" />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </form>
-        </div>
         <div class="card-body bg-gradient-dark rounded-lg col-md-8 col-lg-8 mt-4 px-2">
             <form id="formCalculator">
                 <table class="table table-borderless table-sm table-xs">
                     <thead>
                         <tr class="mt-2">
-                            <th scope="col" colspan="4" class="text-white border-bottom">Calculator</th>
+                            <th scope="col" colspan="4" class="text-white border-bottom">Calculator Setup</th>
                         </tr>
                     </thead>
                     <tbody>
                         <!--Row 1-->
+                        <tr>
+                            <td>
+                                <div class="d-flex flex-wrap">
+                                    <div class="form-group col-12 col-md-6 col-lg-2">
+                                        <label class="text-white form-check-label mr-3 text-nowrap">Account Size</label>
+                                        <input type="text" value="" class="form-control bg-gray-500 text-center editableInput" min="0" />
+                                    </div>
+                                    <div class="form-group col-12 col-md-6 col-lg-2">
+                                        <label class="text-white form-check-label mr-3 text-nowrap">Trade Risk</label>
+                                        <input type="text" class="form-control bg-gray-500 text-center editableInput" min="0" />
+                                    </div>
+                                    <div class="form-group col-12 col-md-6 col-lg-2">
+                                        <label class="text-white form-check-label mr-3 text-nowrap">Exch Size Limit</label>
+                                        <input type="text" value="" class="form-control bg-gray-500 text-center editableInput" min="0" />
+                                    </div>
+                                    <div class="form-group col-12 col-md-6 col-lg-2">
+                                        <label class="text-white form-check-label mr-3 text-nowrap">Max Slippage</label>
+                                        <input type="text" value="" class="form-control bg-gray-500 text-center editableInput" min="0" />
+                                    </div>
+                                    <div class="form-group col-12 col-md-6 col-lg-2">
+                                        <label class="text-white form-check-label mr-3 text-nowrap">Trade Fee (x4)</label>
+                                        <input type="text" value="" class="form-control bg-gray-500 text-center editableInput" min="0" />
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="col" colspan="4" class="text-white border-bottom">Calculator</th>
+                        </tr>
+                        <!--Row 2-->
                         <tr>
                             <td>
                                 <div class="d-flex flex-wrap">
@@ -77,12 +56,16 @@
                                     </div>
                                     <div class="form-group col-12 col-md-6 col-lg-2">
                                         <label class="text-white form-check-label mr-3 text-nowrap">Symbol</label>
-                                        <input type="text" class="form-control bg-gradient-light text-center" min="0" />
+                                        <input type="text" class="form-control bg-gradient-light text-center" placeholder="<enter pair>" min="0" />
+                                    </div>
+                                    <div class="form-group col-12 col-md-6 col-lg-2">
+                                        <label class="text-white form-check-label mr-3 text-nowrap">Scale Out %</label>
+                                        <input type="text" value="" class="form-control bg-gray-500 text-center editableInput" min="0" />
                                     </div>
                                 </div>
                             </td>
                         </tr>
-                        <!--Row 2-->
+                        <!--Row 3-->
                         <tr>
                             <td>
                                 <div class="d-flex flex-wrap">
@@ -108,7 +91,7 @@
                                     </div>
                                     <div class="form-group col-12 col-md-6 col-lg-2">
                                         <label class="text-white mr-3 form-check-label text-nowrap">Precision</label>
-                                        <input type="text" class="form-control bg-gradient-light text-center" min="0" />
+                                        <input type="text" class="form-control bg-gray-500 text-center editableInput" min="0" />
                                     </div>
                                     <div class="form-group col-12 col-md-6 col-lg-2 align-self-end">
                                         <label class="form-check-label invisible text-nowrap"></label>
@@ -126,21 +109,21 @@
                                 <div class="mb-4"></div>
                             </td>
                         </tr>
-                        <!--Row 3-->
+                        <!--Row 4-->
                         <tr>
                             <td>
                                 <div class="d-flex flex-wrap    ">
                                     <div class="form-group col-12 col-md-6 col-lg-2">
                                         <label class="text-white form-check-label mr-3 text-nowrap">Entry</label>
-                                        <input type="text" class="form-control bg-gradient-light text-center" min="0" />
+                                        <input type="text" class="form-control bg-gradient-light text-center" id="entryInput" placeholder="<enter price>" min="0" />
                                     </div>
                                     <div class="form-group col-12 col-md-6 col-lg-2">
-                                        <label class="text-white form-check-label text-nowrap mr-3">USD Risk</label>
-                                        <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                                        <label class="text-white form-check-label text-nowrap mr-3">Limit</label>
+                                        <input type="text" value="12345" disabled class="form-control bg-gradient-secondary text-center text-warning" min="0" />
                                     </div>
                                     <div class="form-group col-12 col-md-6 col-lg-2">
                                         <label class="text-white form-check-label mr-3 text-nowrap">Stop</label>
-                                        <input type="text" class="form-control bg-gradient-light text-center" min="0" />
+                                        <input type="text" class="form-control bg-gradient-light text-center" id="stopInput" placeholder="<enter price>" min="0" />
                                     </div>
                                     <div class="form-group col-12 col-md-6 col-lg-2">
                                         <label class="text-white form-check-label mr-3 text-nowrap">Entry Size</label>
@@ -148,12 +131,12 @@
                                     </div>
                                     <div class="form-group col-12 col-md-6 col-lg-2">
                                         <label class="text-white form-check-label mr-3 text-nowrap">Entry Qty</label>
-                                        <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                                        <input type="text" value="12345" disabled class="form-control bg-gradient-secondary text-center text-warning" min="0" />
                                     </div>
                                 </div>
                             </td>
                         </tr>
-                        <!--Row 4-->
+                        <!--Row 5-->
                         <tr>
                             <td>
                                 <div class="d-flex flex-wrap    ">
@@ -171,16 +154,16 @@
                                     </div>
                                     <div class="form-group col-12 col-md-6 col-lg-2">
                                         <label class="text-white form-check-label mr-3 text-nowrap">Best Target</label>
-                                        <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                                        <input type="text" value="12345" disabled class="form-control bg-gradient-secondary text-center text-warning" min="0" />
                                     </div>
                                     <div class="form-group col-12 col-md-6 col-lg-2">
                                         <label class="text-white form-check-label mr-3 text-nowrap">OCO Qty</label>
-                                        <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                                        <input type="text" value="12345" disabled class="form-control bg-gradient-secondary text-center text-info" min="0" />
                                     </div>
                                 </div>
                             </td>
                         </tr>
-                        <!--Row 5-->
+                        <!--Row 6-->
                         <tr>
                             <td>
                                 <div class="d-flex flex-wrap    ">
@@ -198,11 +181,11 @@
                                     </div>
                                     <div class="form-group col-12 col-md-6 col-lg-2">
                                         <label class="text-white form-check-label mr-3 text-nowrap">Worst Target</label>
-                                        <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                                        <input type="text" value="12345" disabled class="form-control bg-gradient-secondary text-center text-info" min="0" />
                                     </div>
                                     <div class="form-group col-12 col-md-6 col-lg-2">
                                         <label class="text-white form-check-label mr-3 text-nowrap">Stop Qty</label>
-                                        <input type="text" disabled class="form-control bg-gradient-secondary text-center" min="0" />
+                                        <input type="text" value="12345" disabled class="form-control bg-gradient-secondary text-center text-info" min="0" />
                                     </div>
                                 </div>
                             </td>
@@ -213,3 +196,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/calculator.js"></script>
+}
