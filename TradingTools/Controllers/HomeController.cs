@@ -3,6 +3,7 @@ using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Utilities.Enums;
 
 namespace TradingTools.Controllers
 {

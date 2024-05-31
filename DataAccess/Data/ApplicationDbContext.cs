@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Models;
+using Utilities.Enums;
 
 namespace DataAccess.Data
 {
@@ -16,9 +17,12 @@ namespace DataAccess.Data
         public DbSet<Journal> Journals { get; set; }
 
         public DbSet<Review> Reviews { get; set; }
+
         public DbSet<SampleSize> SampleSizes { get; set; }
 
         public DbSet<UserSettings> UserSettings { get; set; }
+
+        public DbSet<ResearchTrade> ResearchTrades { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

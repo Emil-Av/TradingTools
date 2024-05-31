@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240531115305_AddColumnResearchTrades")]
+    partial class AddColumnResearchTrades
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -149,15 +152,6 @@ namespace DataAccess.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("FullATRMarketGaveSmth")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("FullATRMaxRR")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FullATROneToOneHitOn")
-                        .HasColumnType("int");
-
                     b.Property<bool>("Is4HTrending")
                         .HasColumnType("bit");
 
@@ -188,18 +182,6 @@ namespace DataAccess.Migrations
                     b.Property<bool>("IsEntryBeforePreviousSwingOnTrigger")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsFullATRBreakeven")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFullATRLoss")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFullATROneToFiveHit")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFullATROneToThreeHit")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsLoss")
                         .HasColumnType("bit");
 
@@ -227,8 +209,8 @@ namespace DataAccess.Migrations
                     b.Property<bool>("MarketGaveSmth")
                         .HasColumnType("bit");
 
-                    b.Property<int>("MaxRR")
-                        .HasColumnType("int");
+                    b.Property<decimal>("MaxRR")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("OneToOneHitOn")
                         .HasColumnType("int");

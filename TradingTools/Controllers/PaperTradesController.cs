@@ -1,22 +1,13 @@
-﻿using DataAccess.Data;
-using DataAccess.Repository.IRepository;
+﻿using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Models;
-using NuGet.Protocol;
 using System.Diagnostics;
 using System.IO.Compression;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml;
 using System.Xml.Linq;
-using System.Linq;
-using static NuGet.Packaging.PackagingConstants;
-using System.ComponentModel;
-using System.Web.Mvc.Html;
 using Utilities;
 using Models.ViewModels;
-using DataAccess.Repository;
-using System.Web.Helpers;
+using Utilities.Enums;
+
 
 namespace TradingTools.Controllers
 {

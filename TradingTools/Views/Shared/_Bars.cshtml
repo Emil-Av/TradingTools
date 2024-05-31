@@ -38,12 +38,16 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="#">Trades</a>
                 <a class="collapse-item" asp-controller="PaperTrades" asp-action="Index">Paper Trades</a>
-                <a class="collapse-item" href="#">Research</a>
-                <a class="collapse-item" href="#">Journal</a>
             </div>
         </div>
     </li>
-
+    <!-- Nav Item - Research -->
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Research" asp-action="Index">
+            <i class="fa-brands fa-researchgate"></i>
+            <span>Research</span>
+        </a>
+    </li>
     <!-- Nav Item - Calculator -->
     <li class="nav-item">
         <a class="nav-link" asp-controller="Calculator" asp-action="Index">

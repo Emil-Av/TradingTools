@@ -1,4 +1,8 @@
-﻿@model PaperTradesVM
+﻿@{
+    ViewData["Title"] = "Paper Trades";
+}
+
+@model PaperTradesVM
 
 <input type="hidden" value="@Model.CurrentTrade.Id" id="currentTradeIdInput" />
 <input type="hidden" value="@Model.CurrentTrade.SampleSizeId" id="currentSampleSizeIdInput" />
@@ -236,8 +240,8 @@
             else
             {
                 // Upload trades (when the DB is empty)
-                <form method="post" enctype="multipart/form-data" id="formUploadFile" asp-action="UploadTrades">
-                    <input type="file" name="zipFile" id="fileInput" style="display:none" accept=".zip" />
+                <form method="post" enctype="multipart/form-data" id="formUploadFile" asp-controller="Research" asp-action="UploadTrades">
+                    <input type="file" name="zipFile" id="fileInput" class="d-none" accept=".zip" />
                     <a class="button d-flex flex-column align-items-center justify-content-center mt-5" role="button" id="uploadFileButton" onclick="document.getElementById('fileInput').click()">
                         <i class="fa-regular fa-folder-open fa-2xl mb-3"></i>
                         <span>Upload Trades</span>

@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240531125743_removeResearchTable")]
+    partial class removeResearchTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -136,118 +139,6 @@ namespace DataAccess.Migrations
                             Symbol = "BTCUSD",
                             TimeFrame = 1
                         });
-                });
-
-            modelBuilder.Entity("Models.ResearchTrade", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("FullATRMarketGaveSmth")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("FullATRMaxRR")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FullATROneToOneHitOn")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Is4HTrending")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsBreakeven")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDTrending")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEntryAfter3To5Bars")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEntryAfter5Bars")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEntryAfteriBar")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEntryAtPreviousSwingOnTrigger")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEntryBeforePreviousSwingOn4H")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEntryBeforePreviousSwingOnD")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEntryBeforePreviousSwingOnTrigger")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFullATRBreakeven")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFullATRLoss")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFullATROneToFiveHit")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFullATROneToThreeHit")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsLoss")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsMomentumTrade")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsOneToFiveHit")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsOneToThreeHit")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSignalBarInTradeDirection")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSignalBarStrongReversal")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsTrendTrade")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsTriggerTrending")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("MarketGaveSmth")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("MaxRR")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OneToOneHitOn")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ScreenshotsUrls")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Side")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Strategy")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TimeFrame")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ResearchTrades");
                 });
 
             modelBuilder.Entity("Models.Review", b =>
