@@ -22,6 +22,8 @@ namespace DataAccess.Repository
 
         public IUserSettingsRepository UserSettings { get; private set; }
 
+        public IResearchTradeRepository ResearchTrade { get; private set; }
+
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
@@ -30,6 +32,7 @@ namespace DataAccess.Repository
             Journal = new JournalRepository(_db);
             SampleSize = new SampleSizeRepository(_db);
             UserSettings = new UserSettingsRepository(_db);
+            ResearchTrade = new ResearchTradeRespoitory(_db);
         }
 
         public void Save()

@@ -11,7 +11,7 @@ $(function () {
     // menuClicked, clickedMenuValue: When a new trade has to be loaded, one of the buttons has to be clicked (either TimeFrame, Strategy..). In case no trade exists for the selection, set the last value. Used in LoadTradeAsync()
     var menuClicked;
     var clickedMenuValue;
-    var showLatestTrade;
+    var showLastTrade;
     // The model
     var paperTradesVM;
     var currentTab = '#pre'; // Always the start value
@@ -272,10 +272,10 @@ $(function () {
                 clickedMenuValue = $(menuButtons[key]).text();
                 // If the time frame,the strategy or the sample size has changed, then the latest trade must always be displayed. Used in SetMenuValues()
                 if (key != '#menuTrade') {
-                    showLatestTrade = true;
+                    showLastTrade = true;
                 }
                 else {
-                    showLatestTrade = false;
+                    showLastTrade = false;
                 }
 
                 // Set the new value
@@ -284,7 +284,8 @@ $(function () {
                 LoadTradeAsync($('#currentTimeFrame').text(),
                     $('#currentStrategy').text(),
                     $('#currentSampleSize').text(),
-                    $('#currentTrade').text());
+                    $('#currentTrade').text(),
+                    showLastTrade);
             });
         })(key);
     }
@@ -304,7 +305,7 @@ $(function () {
         }
     }
     // API call to load the selected trade
-    function LoadTradeAsync(timeFrame, strategy, sampleSize, trade) {
+    function LoadTradeAsync(timeFrame, strategy, sampleSize, trade, showLastTrade) {
         $.ajax({
             method: 'POST',
             url: '/papertrades/loadtrade',
@@ -313,7 +314,8 @@ $(function () {
                 timeFrame: timeFrame,
                 strategy: strategy,
                 sampleSize: sampleSize,
-                trade: trade
+                trade: trade,
+                showLastTrade: showLastTrade
 
             },
             success: function (response) {
@@ -374,7 +376,7 @@ $(function () {
         $('#menuSampleSize').html(sampleSizes);
 
         // Set the Trades menu
-        if (showLatestTrade === true) {
+        if (showLastTrade === true) {
             $('#currentTrade').text(tradesInSampleSize);
         }
         else {

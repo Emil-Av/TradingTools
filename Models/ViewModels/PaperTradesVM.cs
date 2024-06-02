@@ -8,6 +8,10 @@ namespace Models.ViewModels
 {
     public class PaperTradesVM
     {
+        public PaperTradesVM()
+        {
+                
+        }
         // The trade being displayed
         public PaperTrade CurrentTrade { get; set; }
 

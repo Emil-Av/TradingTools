@@ -91,7 +91,7 @@ namespace TradingTools.Controllers
             return Json(new { success = "Journal updated." });
         }
 
-        public async Task<IActionResult> LoadTrade(string timeFrame, string strategy, string sampleSize, string trade)
+        public async Task<IActionResult> LoadTrade(string timeFrame, string strategy, string sampleSize, string trade, string showLastTrade)
         {
             userSettings = (await _unitOfWork.UserSettings.GetAllAsync()).First();
             TimeFrame timeFrame1;
@@ -120,23 +120,36 @@ namespace TradingTools.Controllers
                 return Json(new { error = $"Error loading the trade. Wrong paramater: Could not parse the sample size id" });
             }
 
-            if (int.TryParse(trade, out int trade1))
+            if (!int.TryParse(trade, out int trade1))
             {
                 return Json(new { error = $"Error loading the trade. Wrong paramater: Could not parse the trade id" });
             }
+            if (!bool.TryParse(showLastTrade, out bool showLastTrade1))
+            {
+                return Json(new { error = $"Error loading the trade. Wrong paramater: Could not parse showLastTrade" });
+            }
 
-
-            List<SampleSize> listSampleSizes = (await _unitOfWork.SampleSize.GetAllAsync(x => x.Strategy == strategy1 && x.TimeFrame == timeFrame1)).OrderByDescending(x => x.Id).ToList();
+            //List<SampleSize> listSampleSizes = (await _unitOfWork.SampleSize.GetAllAsync(x => x.Strategy == strategy1 && x.TimeFrame == timeFrame1)).OrderByDescending(x => x.Id).ToList();
+            List<SampleSize> listSampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.Strategy == strategy1 && x.TimeFrame == timeFrame1);
             // If no sample size is found for the strategy and time frame, then there are no trades for them
             if (listSampleSizes.Count == 0)
             {
                 return Json(new { error = $"No trades for {strategy1} strategy on the {timeFrame1} chart." });
             }
-            // the paramater "sampleSize1" represents the sampleSize number in descending order (e.g. 3 is the third sample size for the time frame and strategy)
-            int sampleSizeId = listSampleSizes[sampleSize1 - 1].Id;
+            int sampleSizeId;
+            if (!showLastTrade1)
+            {
+                // the paramater "sampleSize1" represents the sampleSize number in descending order (e.g. 3 is the third sample size for the time frame and strategy)
+                sampleSizeId = listSampleSizes[sampleSize1 - 1].Id;
+            }
+            else
+            {
+                sampleSizeId = listSampleSizes.LastOrDefault().Id;
+            }
+            
             List<PaperTrade> listTrades = await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == sampleSizeId);
-            // If for example a different time frame is selected (or new strategy or new sample size), but this time frame has only 5 trades but the selected trade > 5, then display the latest trade of the sample size
-            if (listTrades.Count < trade1)
+            // If for example a different time frame or new strategy or new sample size is selected, then display the latest trade of the sample size
+            if (showLastTrade1)
             {
                 PaperTradesVM.CurrentTrade = listTrades.LastOrDefault();
             }
@@ -163,6 +176,11 @@ namespace TradingTools.Controllers
             int? latestSampleSize = (await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy)).OrderByDescending(x => x.Id).FirstOrDefault()?.Id;
             // Get the last trade of the sample size
             PaperTradesVM.CurrentTrade = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.SampleSizeId == latestSampleSize)).OrderByDescending(x => x.Id).FirstOrDefault();
+            // No trades yet
+            if (PaperTradesVM.CurrentTrade == null)
+            {
+                return View(PaperTradesVM);
+            }
             // Get the number of sample sizes for the time frame and strategy
             PaperTradesVM.NumberSampleSizes = (await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy)).Count();
             // Get the number of trades for the sample size
@@ -176,7 +194,7 @@ namespace TradingTools.Controllers
         }
 
         /// <summary>
-        ///  Method to process the uploaded .zip file. The .zip file has to have the following structure: mainFolder\Strategy\TimeFrame\SampleSize\TradeNumber\files. Reviews.odt has to be in the SampleSize folder.
+        ///  Method to process the uploaded .zip file. The .zip file has to have the following structure: PaperTrades\Strategy\TimeFrame\SampleSize\TradeNumber\files. Reviews.odt has to be in the SampleSize folder.
         /// </summary>
         /// <param name="zipFile"></param>
         /// <returns></returns>
@@ -209,8 +227,6 @@ namespace TradingTools.Controllers
                         SampleSize? sampleSize = null;
                         List<ZipArchiveEntry> sortedEntries = archive.Entries.
                                                                         OrderBy(e => e.FullName, new NaturalStringComparer()).ToList();
-                        List<string> folders = new List<string>();
-
                         foreach (var entry in sortedEntries)
                         {
                             // Entry is a folder
@@ -219,7 +235,7 @@ namespace TradingTools.Controllers
                                 if (canCreateNewTrade)
                                 {
                                     int lastTradeId = 0;
-                                    // Loop is running > 1 time
+                                    // Loop is running > 1 time (first time trade is null)
                                     if (trade != null)
                                     {
                                         _unitOfWork.PaperTrade.Add(trade);
@@ -232,7 +248,6 @@ namespace TradingTools.Controllers
                                     }
                                     journal = new Journal();
                                     trade = new PaperTrade();
-                                    folders.Clear();
                                 }
                                 canCreateNewTrade = false;
                                 continue;
@@ -260,11 +275,16 @@ namespace TradingTools.Controllers
                                     _unitOfWork.Save();
                                     currentSampleSizeId = (await _unitOfWork.SampleSize.GetAllAsync()).
                                                                                 Select(x => x.Id).OrderByDescending(id => id).FirstOrDefault();
+                                    // Each sample size has it's own review
+                                    Review review = new Review();
+                                    review.SampleSizeId = currentSampleSizeId;
+                                    _unitOfWork.Review.Add(review);
+                                    _unitOfWork.Save();
                                 }
 
                                 if (!canCreateNewTrade)
                                 {
-                                    currentFolder = CreateFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath, folders);
+                                    currentFolder = SiteHelper.CreateScreenshotFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath);
                                 }
 
                                 try
@@ -308,38 +328,6 @@ namespace TradingTools.Controllers
 
             return RedirectToAction("Index");
         }
-
-        string CreateFolders(string[] tradeInfo, string currentFolder, string entryFullName, string wwwRootPath, List<string> folders)
-        {
-            // wwwroot\Trades folder
-            currentFolder = Path.Combine(wwwRootPath, tradeInfo[0]);
-            // Get all subfolders
-            for (int i = 1; i <= 4; i++)
-            {
-                // No need for "Reviews" folder
-                if (!tradeInfo[i].Contains("Reviews"))
-                {
-                    folders.Add(tradeInfo[i]);
-                }
-            }
-            // Create the wwwroot\Trades folder
-            if (!Directory.Exists(currentFolder))
-            {
-                Directory.CreateDirectory(currentFolder);
-            }
-            // Create all subfolders
-            for (int i = 0; i < folders.Count; i++)
-            {
-                currentFolder = Path.Combine(currentFolder, folders[i]);
-                if (!Directory.Exists(currentFolder))
-                {
-                    Directory.CreateDirectory(currentFolder);
-                }
-            }
-
-            return currentFolder;
-        }
-
 
         void ParseODTJournalFile(ZipArchiveEntry entry, Journal journal)
         {
