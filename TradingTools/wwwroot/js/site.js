@@ -1,9 +1,9 @@
 ﻿
 // Hide the menu if it's clicked outside of it
 $(document).on('click', function (event) {
-    var menu = $('#menuTrades');
+    var menu = $('#dropdownBtnTrades');
     var target = $(event.target);
-    var isClickInsideMenu = target.closest('#menuTrades').length > 0;
+    var isClickInsideMenu = target.closest('#dropdownBtnTrades').length > 0;
 
     if (!isClickInsideMenu && menu.hasClass('show')) {
         // If the click is outside of the menu and the menu is open, collapse it

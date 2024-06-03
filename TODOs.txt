@@ -1,0 +1,2 @@
+1. In PaperTradesView, when LoadTrade() is called and there are no trades for the paramaters, the buttons first change to the new paramaters, then the info notification comes, then they reset to the original values. The values must be reset only when trades are available.
+2. In PaperTradesView, the SampleSize span is not set property

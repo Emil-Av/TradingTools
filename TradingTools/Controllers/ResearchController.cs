@@ -63,7 +63,7 @@ namespace TradingTools.Controllers
                         ResearchTrade researchTrade = null;
                         TimeFrame researchedTF;
                         int tradeIndex = 0;
-                        int currentTrade = 0;
+                        int spanTrade = 0;
                         foreach (var entry in sortedEntries)
                         {
                             if (entry.FullName.Contains(".csv"))
@@ -146,7 +146,7 @@ namespace TradingTools.Controllers
                                 else
                                 {
                                     ResearchTrade trade = await _unitOfWork.ResearchTrade.GetAsync(x => x.Id == tradeIds[tradeIndex]);
-                                    if (tradeIndex == currentTrade)
+                                    if (tradeIndex == spanTrade)
                                     {
 
                                         //trade.ScreenshotsUrls.Add

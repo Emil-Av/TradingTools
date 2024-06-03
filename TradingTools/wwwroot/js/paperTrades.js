@@ -1,4 +1,3 @@
-
 // Summernote sometimes opens with the cursor in the middle, then that causes errors. Check Review
 $(function () {
 
@@ -12,6 +11,7 @@ $(function () {
     var menuClicked;
     var clickedMenuValue;
     var showLastTrade;
+    var sampleSizeChanged;
     // The model
     var paperTradesVM;
     var currentTab = '#pre'; // Always the start value
@@ -40,8 +40,8 @@ $(function () {
     function UpdateReview() {
         let dataToSend =
         {
-            CurrentTrade: {
-                SampleSizeId: $('#currentSampleSizeIdInput').val()
+            spanTrade: {
+                SampleSizeId: $('#spanSampleSizeIdInput').val()
             },
             Review: {
                 First: $('#first').html(),
@@ -73,8 +73,8 @@ $(function () {
     function UpdateJournal() {
         let dataToSend =
         {
-            CurrentTrade: {
-                Id: $('#currentTradeIdInput').val()
+            spanTrade: {
+                Id: $('#spanTradeIdInput').val()
             },
             Journal: {
                 Pre: $('#pre').html(),
@@ -255,10 +255,10 @@ $(function () {
     // Create key, value array: key is the button menu, value is the span element. The span element is the selected value from the dropdown menu.
     var menuButtons =
     {
-        '#menuTimeFrame': '#currentTimeFrame',
-        '#menuStrategy': '#currentStrategy',
-        '#menuSampleSize': '#currentSampleSize',
-        '#menuTrade': '#currentTrade'
+        '#dropdownBtnTimeFrame': '#spanTimeFrame',
+        '#dropdownBtnStrategy': '#spanStrategy',
+        '#dropdownBtnSampleSize': '#spanSampleSize',
+        '#dropdownBtnTrade': '#spanTrade'
     };
 
     // Attach a click event for each <a> element of each menu.
@@ -271,21 +271,29 @@ $(function () {
                 menuClicked = $(menuButtons[key]);
                 clickedMenuValue = $(menuButtons[key]).text();
                 // If the time frame,the strategy or the sample size has changed, then the latest trade must always be displayed. Used in SetMenuValues()
-                if (key != '#menuTrade') {
+                if (key != '#dropdownBtnTrade') {
                     showLastTrade = true;
                 }
                 else {
                     showLastTrade = false;
                 }
 
+                if (key == '#dropdownBtnSampleSize') {
+                    sampleSizeChanged = true;
+                }
+                else {
+                    sampleSizeChanged = false;
+                }
+
                 // Set the new value
                 var value = $(this).text();
                 $(menuButtons[key]).text(value);
-                LoadTradeAsync($('#currentTimeFrame').text(),
-                    $('#currentStrategy').text(),
-                    $('#currentSampleSize').text(),
-                    $('#currentTrade').text(),
-                    showLastTrade);
+                LoadTradeAsync( $('#spanTimeFrame').text(),
+                                $('#spanStrategy').text(),
+                                $('#spanSampleSize').text(),
+                                $('#spanTrade').text(),
+                                showLastTrade,
+                                sampleSizeChanged);
             });
         })(key);
     }
@@ -305,7 +313,7 @@ $(function () {
         }
     }
     // API call to load the selected trade
-    function LoadTradeAsync(timeFrame, strategy, sampleSize, trade, showLastTrade) {
+    function LoadTradeAsync(timeFrame, strategy, sampleSize, trade, showLastTrade, sampleSizeChanged) {
         $.ajax({
             method: 'POST',
             url: '/papertrades/loadtrade',
@@ -315,21 +323,29 @@ $(function () {
                 strategy: strategy,
                 sampleSize: sampleSize,
                 trade: trade,
-                showLastTrade: showLastTrade
+                showLastTrade: showLastTrade,
+                sampleSizeChanged: sampleSizeChanged
 
             },
             success: function (response) {
                 if (response['error'] !== undefined) {
                     toastr.error(response['error']);
+                    // Set the old value
+                    menuClicked.text(clickedMenuValue);
+                    return;
+                }
+                else if (response['info'] !== undefined) {
+                    toastr.info(response['info']);
+                    // Set the old value
                     menuClicked.text(clickedMenuValue);
                     return;
                 }
                 paperTradesVM = response;
                 // Set the new trade id
-                $("#currentTradeIdInput").val(response['paperTradesVM']['currentTrade']['id']);
+                $("#spanTradeIdInput").val(response['paperTradesVM']['spanTrade']['id']);
                 // Set the sample size id
-                $("#currentSampleSizeIdInput").val(response['paperTradesVM']['currentTrade']['samplesizeid']);
-                SetMenuValues(trade);
+                $("#spanSampleSizeIdInput").val(response['paperTradesVM']['spanTrade']['samplesizeid']);
+                SetMenuValues(sampleSize, trade);
                 SetSelectedItemClass();
                 LoadImages();
                 LoadReview();
@@ -362,33 +378,38 @@ $(function () {
     }
 
     // Populate the drop down items after a new trade has been selected and set the values in the spans.
-    function SetMenuValues(displayedTrade) {
+    function SetMenuValues(displayedSampleSize, displayedTrade) {
         // Menu Buttons
         var numberSampleSizes = paperTradesVM['paperTradesVM']['numberSampleSizes'];
         var tradesInSampleSize = paperTradesVM['paperTradesVM']['tradesInSampleSize'];
         // Set the SampleSize menu
-        $('#currentSampleSize').text(numberSampleSizes);
-        $('#menuSampleSize').empty();
+        if (sampleSizeChanged || !showLastTrade) {
+            $('#spanSampleSize').text(displayedSampleSize);
+        }
+        else {
+            $('#spanSampleSize').text(displayedSampleSize);
+        }
+        $('#dropdownBtnSampleSize').empty();
         var sampleSizes = '';
         for (var i = numberSampleSizes; i > 0; i--) {
             sampleSizes += '<a class="dropdown-item" role="button">' + i + '</a>';
         }
-        $('#menuSampleSize').html(sampleSizes);
 
+        $('#dropdownBtnSampleSize').html(sampleSizes);
         // Set the Trades menu
         if (showLastTrade === true) {
-            $('#currentTrade').text(tradesInSampleSize);
+            $('#spanTrade').text(tradesInSampleSize);
         }
         else {
-            $('#currentTrade').text(displayedTrade);
+            $('#spanTrade').text(displayedTrade);
         }
-        $('#menuTrade').empty();
 
+        $('#dropdownBtnTrade').empty();
         var trades = '';
         for (var i = tradesInSampleSize; i > 0; i--) {
             trades += '<a class="dropdown-item" role="button">' + i + '</a>'
         }
-        $('#menuTrade').html(trades);
+        $('#dropdownBtnTrade').html(trades);
 
         // Menu card header
         currentCardMenu = 'Journal';
@@ -398,7 +419,7 @@ $(function () {
     // Load the images into the carousel
     function LoadImages() {
         $('#imageContainer').empty();
-        var screenshots = paperTradesVM['paperTradesVM']['currentTrade']['screenshotsUrls'];
+        var screenshots = paperTradesVM['paperTradesVM']['spanTrade']['screenshotsUrls'];
 
         var newCarouselHtml = '<ol class="carousel-indicators">';
         for (var i = 0; i < screenshots.length; i++) {
