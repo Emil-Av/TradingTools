@@ -26,5 +26,7 @@ namespace Models.ViewModels
 
         // The current number of trades for the latest sample size
         public int TradesInSampleSize { get; set; }
+
+        public int CurrentSampleSize { get; set; }
     }
 }

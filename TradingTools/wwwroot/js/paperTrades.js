@@ -40,7 +40,7 @@ $(function () {
     function UpdateReview() {
         let dataToSend =
         {
-            spanTrade: {
+            CurrentTrade: {
                 SampleSizeId: $('#spanSampleSizeIdInput').val()
             },
             Review: {
@@ -73,7 +73,7 @@ $(function () {
     function UpdateJournal() {
         let dataToSend =
         {
-            spanTrade: {
+            CurrentTrade: {
                 Id: $('#spanTradeIdInput').val()
             },
             Journal: {
@@ -342,10 +342,10 @@ $(function () {
                 }
                 paperTradesVM = response;
                 // Set the new trade id
-                $("#spanTradeIdInput").val(response['paperTradesVM']['spanTrade']['id']);
+                $("#spanTradeIdInput").val(response['paperTradesVM']['currentTrade']['id']);
                 // Set the sample size id
-                $("#spanSampleSizeIdInput").val(response['paperTradesVM']['spanTrade']['samplesizeid']);
-                SetMenuValues(sampleSize, trade);
+                $("#spanSampleSizeIdInput").val(response['paperTradesVM']['currentTrade']['samplesizeid']);
+                SetMenuValues(trade);
                 SetSelectedItemClass();
                 LoadImages();
                 LoadReview();
@@ -378,17 +378,12 @@ $(function () {
     }
 
     // Populate the drop down items after a new trade has been selected and set the values in the spans.
-    function SetMenuValues(displayedSampleSize, displayedTrade) {
+    function SetMenuValues(displayedTrade) {
         // Menu Buttons
         var numberSampleSizes = paperTradesVM['paperTradesVM']['numberSampleSizes'];
         var tradesInSampleSize = paperTradesVM['paperTradesVM']['tradesInSampleSize'];
         // Set the SampleSize menu
-        if (sampleSizeChanged || !showLastTrade) {
-            $('#spanSampleSize').text(displayedSampleSize);
-        }
-        else {
-            $('#spanSampleSize').text(displayedSampleSize);
-        }
+        $('#spanSampleSize').text(paperTradesVM['paperTradesVM']['currentSampleSize']);
         $('#dropdownBtnSampleSize').empty();
         var sampleSizes = '';
         for (var i = numberSampleSizes; i > 0; i--) {
@@ -419,7 +414,7 @@ $(function () {
     // Load the images into the carousel
     function LoadImages() {
         $('#imageContainer').empty();
-        var screenshots = paperTradesVM['paperTradesVM']['spanTrade']['screenshotsUrls'];
+        var screenshots = paperTradesVM['paperTradesVM']['currentTrade']['screenshotsUrls'];
 
         var newCarouselHtml = '<ol class="carousel-indicators">';
         for (var i = 0; i < screenshots.length; i++) {

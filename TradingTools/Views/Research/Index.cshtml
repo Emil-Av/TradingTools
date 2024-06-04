@@ -7,9 +7,9 @@
 <div class="row justify-content-center align-items-top">
     <div class="col-10 text-center">
         <h2>
-            @(Model.spanTrade != null ? "Research" : "No researched strategies yet")
+            @(Model.CurrentTrade != null ? "Research" : "No researched strategies yet")
         </h2>
-        @if (Model.spanTrade != null)
+        @if (Model.CurrentTrade != null)
         {
             <!-- Menus -->
             <div class="container mb-4">
@@ -19,7 +19,7 @@
                         <div class="dropdown">
                             <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Time Frame: <span id="spanTimeFrame">@MyEnumConverter.SetTimeFrameFromEnum(Model.spanTrade.TimeFrame)</span>
+                                Time Frame: <span id="spanTimeFrame">@MyEnumConverter.SetTimeFrameFromEnum(Model.CurrentTrade.TimeFrame)</span>
                             </button>
                             <div class="dropdown-menu animated--fade-in" id="dropdownBtnTimeFrame" aria-labelledby="dropdownMenuButton">
                                 @foreach (TimeFrame tf in Enum.GetValues(typeof(TimeFrame)))
@@ -33,7 +33,7 @@
                     <div class="col-auto p-2">
                         <div class="dropdown">
                             <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Strategy: <span id="spanStrategy">@MyEnumConverter.SetStrategyFromEnum(Model.spanTrade.Strategy)</span>
+                                Strategy: <span id="spanStrategy">@MyEnumConverter.SetStrategyFromEnum(Model.CurrentTrade.Strategy)</span>
                             </button>
                             <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
                                 @foreach (Strategy strategy in Enum.GetValues(typeof(Strategy)))
@@ -79,17 +79,17 @@
                     <div id="carouselTrades" class="carousel slide" data-interval="false">
                         <div id="imageContainer">
                             <ol class="carousel-indicators">
-                                @for (int i = 0; i < Model.spanTrade.ScreenshotsUrls.Count; i++)
+                                @for (int i = 0; i < Model.CurrentTrade.ScreenshotsUrls.Count; i++)
                                 {
                                     <li data-bs-target="#carouselTrades" data-slide-to="@(i)" @(i == 0 ? "class=\"active\"" : "")></li>
                                 }
                             </ol>
                             <div class="carousel-inner">
 
-                                @for (int i = 0; i < Model.spanTrade.ScreenshotsUrls.Count; i++)
+                                @for (int i = 0; i < Model.CurrentTrade.ScreenshotsUrls.Count; i++)
                                 {
                                     <div class="@(i == 0? "carousel-item active" : "carousel-item")">
-                                        <img src="@Model.spanTrade.ScreenshotsUrls[i]" class="d-block w-100" alt="...">
+                                        <img src="@Model.CurrentTrade.ScreenshotsUrls[i]" class="d-block w-100" alt="...">
                                     </div>
                                 }
                             </div>
