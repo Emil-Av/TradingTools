@@ -8,7 +8,7 @@ namespace Utilities
 {
     public static class SiteHelper
     {
-        public static string CreateScreenshotFolders(string[] tradeInfo, string currentFolder, string entryFullName, string wwwRootPath)
+        public static string CreateScreenshotFolders(string[] tradeInfo, string currentFolder, string entryFullName, string wwwRootPath, int numberFolderToCreate)
         {
             List<string> folders = new List<string>();
             // wwwroot\Screenshots
@@ -25,7 +25,7 @@ namespace Utilities
                 Directory.CreateDirectory(currentFolder);
             }
             // Get all subfolders
-            for (int i = 1; i <= 4; i++)
+            for (int i = 1; i <= numberFolderToCreate; i++)
             {
                 // No need for "Reviews" folder (when the method is called from PapersView)
                 if (!tradeInfo[i].Contains("Reviews"))

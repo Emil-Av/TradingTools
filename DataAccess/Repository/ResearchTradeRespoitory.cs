@@ -21,7 +21,11 @@ namespace DataAccess.Repository
 
         public void Update(ResearchTrade researchTrade)
         {
-
+            ResearchTrade? objFromDb = _db.ResearchTrades.FirstOrDefault(x => x.Id == researchTrade.Id);
+            if (objFromDb != null) 
+            {
+                objFromDb.ScreenshotsUrls = researchTrade.ScreenshotsUrls;
+            }
         }
     }
 }

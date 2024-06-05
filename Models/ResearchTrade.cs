@@ -13,7 +13,6 @@ namespace Models
         public int Id { get; set; }
 
         public List<string>? ScreenshotsUrls { get; set; }
-
         /// <summary>
         ///  Risk to reward ratio 1:1.
         /// </summary>

@@ -289,7 +289,7 @@ namespace TradingTools.Controllers
 
                                 if (!canCreateNewTrade)
                                 {
-                                    currentFolder = SiteHelper.CreateScreenshotFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath);
+                                    currentFolder = SiteHelper.CreateScreenshotFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath, 4);
                                 }
 
                                 try

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Models;
 using Models.ViewModels;
 using System.Data;
+using System.Diagnostics;
 using System.IO.Compression;
 using System.Reflection.Metadata.Ecma335;
 using Utilities;
@@ -15,10 +16,11 @@ namespace TradingTools.Controllers
     public class ResearchController : Controller
     {
         #region Constructor
-        public ResearchController(IUnitOfWork unitOfWork)
+        public ResearchController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
             ResearchVM = new ResearchVM();
+            _webHostEnvironment = webHostEnvironment;
         }
 
         #endregion
@@ -26,6 +28,7 @@ namespace TradingTools.Controllers
         #region Private Properties
 
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         #endregion
 
@@ -49,6 +52,7 @@ namespace TradingTools.Controllers
             {
                 // return notification error
             }
+            string wwwRootPath = _webHostEnvironment.WebRootPath;
 
             try
             {
@@ -64,6 +68,7 @@ namespace TradingTools.Controllers
                         TimeFrame researchedTF;
                         int tradeIndex = 0;
                         int currentTrade = 0;
+                        string currentFolder = string.Empty;
                         foreach (var entry in sortedEntries)
                         {
                             if (entry.FullName.Contains(".csv"))
@@ -77,7 +82,7 @@ namespace TradingTools.Controllers
                                     var csvData = await ReadCsvFileAsync(csvStream);
                                     if (csvData != null)
                                     {
-                                        
+
                                         for (int i = 0; i < csvData.Count; i++)
                                         {
                                             // First row is column names
@@ -85,6 +90,7 @@ namespace TradingTools.Controllers
                                             {
                                                 continue;
                                             }
+                                            // Half ATR
                                             if (i % 2 != 0)
                                             {
                                                 researchTrade = new ResearchTrade();
@@ -111,6 +117,7 @@ namespace TradingTools.Controllers
                                                 researchTrade.IsSignalBarInTradeDirection = csvData[i][19] == "Yes" ? true : false;
                                                 researchTrade.Comment = csvData[i][22];
                                             }
+                                            // Full ATR
                                             else
                                             {
                                                 researchTrade.FullATROneToOneHitOn = csvData[i][1].Length > 0 ? int.Parse(csvData[i][1]) : 0;
@@ -129,28 +136,37 @@ namespace TradingTools.Controllers
                             }
                             else
                             {
-                                List<int> tradeIds = (await _unitOfWork.ResearchTrade.GetAllAsync()).Select(x => x.Id).ToList();
-                                // The folder's name
-                                if (entry.FullName.EndsWith('/'))
+                                // Split the name to get the folder's name
+                                string[] tradeInfo = entry.FullName.Split('/');
+                                // What is left is "Trade x", x is the number of the trade. Remove "Trade" to get the number.
+                                string tempTradeInfo = tradeInfo[1].Replace("Trade", "").Trim();
+                                if (Int32.TryParse(tempTradeInfo, out int tempTradeIndex))
                                 {
-                                    // Split the name to get the folder's name
-                                    string[] tradeInfo = entry.FullName.Split('/');
-                                    // What is left is "Trade x", x is the number of the trade. Remove "Trade" to get the number.
-                                    string tempTradeInfo = tradeInfo[1].Replace("Trade", "").Trim();
-                                    if (Int32.TryParse(tempTradeInfo, out int tempTradeIndex))
-                                    {
-                                        tradeIndex = tempTradeIndex - 1;
-                                    }
+                                    tradeIndex = tempTradeIndex - 1;
                                 }
+                                currentFolder = SiteHelper.CreateScreenshotFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath, 1);
+                                List<int> tradeIds = (await _unitOfWork.ResearchTrade.GetAllAsync()).Select(x => x.Id).ToList();
                                 // Inside the folder with the screenshots
-                                else
+                                if (entry.FullName.EndsWith(".png"))
                                 {
-                                    ResearchTrade trade = await _unitOfWork.ResearchTrade.GetAsync(x => x.Id == tradeIds[tradeIndex]);
-                                    if (tradeIndex == currentTrade)
-                                    {
 
-                                        //trade.ScreenshotsUrls.Add
+                                    ResearchTrade trade = await _unitOfWork.ResearchTrade.GetAsync(x => x.Id == tradeIds[tradeIndex]);
+                                    if (trade.ScreenshotsUrls == null)
+                                    {
+                                        trade.ScreenshotsUrls = new List<string>();
                                     }
+
+                                    //if (tradeIndex != currentTrade || tradeIndex == 0)
+                                    //{
+                                    //    trade.ScreenshotsUrls = new List<string>();
+                                    //}
+                                    entry.ExtractToFile(Path.Combine(currentFolder, entry.Name));
+                                    string screenshotName = entry.FullName.Split('/').Last();
+                                    string screenshotPath = currentFolder.Replace(wwwRootPath, "").Replace("\\\\", "/");
+                                    trade.ScreenshotsUrls.Add(Path.Combine(screenshotPath, screenshotName));
+                                    _unitOfWork.ResearchTrade.Update(trade);
+                                    _unitOfWork.Save();
+                                    
                                 }
                             }
                         }
@@ -159,7 +175,8 @@ namespace TradingTools.Controllers
             }
             catch (Exception ex)
             {
-
+                Debug.WriteLine($"Error parsing the csv file. Error message: {ex.Message}");
+                TempData["error"] = $"Error parsing the csv file. Error message: {ex.Message}";
             }
 
             async Task<List<List<string>>> ReadCsvFileAsync(Stream csvStream)
