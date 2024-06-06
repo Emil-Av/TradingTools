@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Models;
-using Utilities.Enums;
 
 namespace DataAccess.Data
 {
@@ -22,7 +21,7 @@ namespace DataAccess.Data
 
         public DbSet<UserSettings> UserSettings { get; set; }
 
-        public DbSet<ResearchTrade> ResearchTrades { get; set; }
+        public DbSet<Research> Research { get; set; }
 
         //protected override void OnModelCreating(ModelBuilder modelBuilder)
         //{

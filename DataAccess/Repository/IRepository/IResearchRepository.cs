@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository.IRepository
 {
-    public interface IResearchTradeRepository : IRepository<ResearchTrade>
+    public interface IResearchRepository : IRepository<Research>
     {
-        void Update(ResearchTrade researchTrade);
+        void Update(Research researchTrade);
     }
 }

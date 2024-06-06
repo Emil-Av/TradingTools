@@ -40,8 +40,10 @@ namespace TradingTools.Controllers
 
         #region Methods
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            ResearchVM.CurrentTrade = (await _unitOfWork.Research.GetAllAsync()).LastOrDefault();
+
             return View(ResearchVM);
         }
 
@@ -64,7 +66,7 @@ namespace TradingTools.Controllers
                     using (var archive = new ZipArchive(zipStream))
                     {
                         List<ZipArchiveEntry> sortedEntries = archive.Entries.OrderBy(e => e.FullName, new NaturalStringComparer()).ToList();
-                        ResearchTrade researchTrade = null;
+                        Research researchTrade = null;
                         TimeFrame researchedTF;
                         int tradeIndex = 0;
                         int currentTrade = 0;
@@ -93,7 +95,7 @@ namespace TradingTools.Controllers
                                             // Half ATR
                                             if (i % 2 != 0)
                                             {
-                                                researchTrade = new ResearchTrade();
+                                                researchTrade = new Research();
                                                 researchTrade.OneToOneHitOn = csvData[i][1].Length > 0 ? int.Parse(csvData[i][1]) : 0;
                                                 researchTrade.IsOneToThreeHit = csvData[i][2] == "Yes" ? true : false;
                                                 researchTrade.IsOneToFiveHit = csvData[i][3] == "Yes" ? true : false;
@@ -127,7 +129,7 @@ namespace TradingTools.Controllers
                                                 researchTrade.IsFullATRLoss = csvData[i][5] == "Yes" ? true : false;
                                                 researchTrade.FullATRMaxRR = csvData[i][6].Length > 0 ? int.Parse(csvData[i][6].Split('-')[1]) : 0;
                                                 researchTrade.MarketGaveSmth = csvData[i][7].Length > 0 ? true : false;
-                                                _unitOfWork.ResearchTrade.Add(researchTrade);
+                                                _unitOfWork.Research.Add(researchTrade);
                                                 _unitOfWork.Save();
                                             }
                                         }
@@ -144,13 +146,13 @@ namespace TradingTools.Controllers
                                 {
                                     tradeIndex = tempTradeIndex - 1;
                                 }
-                                currentFolder = SiteHelper.CreateScreenshotFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath, 1);
-                                List<int> tradeIds = (await _unitOfWork.ResearchTrade.GetAllAsync()).Select(x => x.Id).ToList();
+                                currentFolder = AppHelper.CreateScreenshotFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath, 1);
+                                List<int> tradeIds = (await _unitOfWork.Research.GetAllAsync()).Select(x => x.Id).ToList();
                                 // Inside the folder with the screenshots
                                 if (entry.FullName.EndsWith(".png"))
                                 {
 
-                                    ResearchTrade trade = await _unitOfWork.ResearchTrade.GetAsync(x => x.Id == tradeIds[tradeIndex]);
+                                    Research trade = await _unitOfWork.Research.GetAsync(x => x.Id == tradeIds[tradeIndex]);
                                     if (trade.ScreenshotsUrls == null)
                                     {
                                         trade.ScreenshotsUrls = new List<string>();
@@ -164,7 +166,7 @@ namespace TradingTools.Controllers
                                     string screenshotName = entry.FullName.Split('/').Last();
                                     string screenshotPath = currentFolder.Replace(wwwRootPath, "").Replace("\\\\", "/");
                                     trade.ScreenshotsUrls.Add(Path.Combine(screenshotPath, screenshotName));
-                                    _unitOfWork.ResearchTrade.Update(trade);
+                                    _unitOfWork.Research.Update(trade);
                                     _unitOfWork.Save();
                                     
                                 }

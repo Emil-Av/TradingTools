@@ -14,66 +14,70 @@
             <!-- Menus -->
             <div class="container mb-4">
                 <div class="row justify-content-center">
-                    <!-- Menu Time Frame -->
-                    <div class="col-auto p-2">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Time Frame: <span id="spanTimeFrame">@MyEnumConverter.SetTimeFrameFromEnum(Model.CurrentTrade.TimeFrame)</span>
-                            </button>
-                            <div class="dropdown-menu animated--fade-in" id="dropdownBtnTimeFrame" aria-labelledby="dropdownMenuButton">
-                                @foreach (TimeFrame tf in Enum.GetValues(typeof(TimeFrame)))
-                                {
-                                    <a class="dropdown-item" href="#">@MyEnumConverter.SetTimeFrameFromEnum(tf)</a>
-                                }
+                    <div class="col-auto d-flex align-items-center">
+                        <!-- Menu Time Frame -->
+                        <div class="p-2">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Time Frame: <span id="spanTimeFrame">@MyEnumConverter.SetTimeFrameFromEnum(Model.CurrentTrade.TimeFrame)</span>
+                                </button>
+                                <div class="dropdown-menu animated--fade-in" id="dropdownBtnTimeFrame" aria-labelledby="dropdownMenuButton">
+                                    @foreach (TimeFrame tf in Enum.GetValues(typeof(TimeFrame)))
+                                    {
+                                        <a class="dropdown-item" href="#">@MyEnumConverter.SetTimeFrameFromEnum(tf)</a>
+                                    }
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- Menu Strategy -->
-                    <div class="col-auto p-2">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Strategy: <span id="spanStrategy">@MyEnumConverter.SetStrategyFromEnum(Model.CurrentTrade.Strategy)</span>
-                            </button>
-                            <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
-                                @foreach (Strategy strategy in Enum.GetValues(typeof(Strategy)))
-                                {
-                                    <a class="dropdown-item" href="#">@MyEnumConverter.SetStrategyFromEnum(strategy)</a>
-                                }
+                        <!-- Menu Strategy -->
+                        <div class="p-2">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Strategy: <span id="spanStrategy">@MyEnumConverter.SetStrategyFromEnum(Model.CurrentTrade.Strategy)</span>
+                                </button>
+                                <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
+                                    @foreach (Strategy strategy in Enum.GetValues(typeof(Strategy)))
+                                    {
+                                        <a class="dropdown-item" href="#">@MyEnumConverter.SetStrategyFromEnum(strategy)</a>
+                                    }
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- Menu Sample Size -->
-                    <div class="col-auto p-2">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Sample Size: <span id="spanSampleSize">@(Model.NumberSampleSizes)</span>
-                            </button>
-                            <div class="dropdown-menu animated--fade-in" id="dropdownBtnSampleSize" aria-labelledby="dropdownMenuButton">
-                                @for (int i = 0; i < Model.NumberSampleSizes; i++)
-                                {
-                                    <a class="dropdown-item" href="#">@(Model.NumberSampleSizes - i)</a>
-                                }
+                        <!-- Menu Sample Size -->
+                        <div class="p-2">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Sample Size: <span id="spanSampleSize">@(Model.NumberSampleSizes)</span>
+                                </button>
+                                <div class="dropdown-menu animated--fade-in" id="dropdownBtnSampleSize" aria-labelledby="dropdownMenuButton">
+                                    @for (int i = 0; i < Model.NumberSampleSizes; i++)
+                                    {
+                                        <a class="dropdown-item" href="#">@(Model.NumberSampleSizes - i)</a>
+                                    }
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- Menu Trade -->
-                    <div class="col-auto p-2">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Trade: <span id="spanTrade">@Model.TradesInSampleSize</span>
-                            </button>
-                            <div class="dropdown-menu animated--fade-in" id="dropdownBtnTrade" aria-labelledby="dropdownMenuButton">
-                                @for (int i = 0; i < Model.TradesInSampleSize; i++)
-                                {
-                                    <a class="dropdown-item" role="button">@(Model.TradesInSampleSize - i)</a>
-                                }
+                        <!-- Menu Trade -->
+                        <div class="p-2">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <button type="button" class="btn btn-primary">
+                                        <i class="fa-regular fa-square-caret-left fa-lg"></i>
+                                    </button>
+                                </div>
+                                <input type="text" class="form-control text-center bg-gray-100" />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-primary">
+                                        <i class="fa-regular fa-square-caret-right fa-lg"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- Images -->
+            <!-- Screenshots -->
             <div class="row justify-content-center">
                 <div class="col-10">
                     <div id="carouselTrades" class="carousel slide" data-interval="false">
@@ -106,68 +110,9 @@
                 </div>
             </div>
 
-            <!-- Journaling begin -->
             <div class="row justify-content-center mt-3">
                 <div class="col-10 text-center">
                     <div class="card shadow mb-4">
-                        <!-- Header Menu begin-->
-                        <div class="card-header py-3">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <!-- Header drop down menu begin -->
-                                    <div class="dropdown">
-                                        <a class="dropdown-toggle" role="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <span id="currentMenu" class="min-width-60">Journal</span>
-                                        </a>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="headerMenu">
-                                            <a class="dropdown-item bg-gray-400" role="button" id="cardMenuJournal">Journal</a>
-                                            <a class="dropdown-item" role="button">Review</a>
-                                        </div>
-                                    </div>
-                                    <!-- Header drop down menu end -->
-                                </div>
-                                <!-- Header tabs begin -->
-                                <div class="col mr-md-5 d-flex justify-content-center">
-                                    <div id="journalTabHeaders">
-                                        <ul class="nav nav-tabs" id="journalTabs" role="tablist">
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link active" id="pre-tab" data-toggle="tab" data-target="#pre" type="button" role="tab" aria-controls="pre" aria-selected="true">Pre</button>
-                                            </li>
-                                            <li class="nav-item">
-                                                <button class="nav-link" id="during-tab" data-toggle="tab" data-target="#during" type="button" role="tab" aria-controls="during" aria-selected="false">During</button>
-                                            </li>
-                                            <li class="nav-item">
-                                                <button class="nav-link" id="exit-tab" data-toggle="tab" data-target="#exit" type="button" role="tab" aria-controls="exit" aria-selected="false">Exit</button>
-                                            </li>
-                                            <li class="nav-item">
-                                                <button class="nav-link" id="post-tab" data-toggle="tab" data-target="#post" type="button" role="tab" aria-controls="post" aria-selected="false">Post</button>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div id="reviewTabHeaders" class="d-none">
-                                        <ul class="nav nav-tabs" id="reviewTabs" role="tablist">
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link active" id="first-tab" data-toggle="tab" data-target="#first" type="button" role="tab" aria-controls="first" aria-selected="true">First</button>
-                                            </li>
-                                            <li class="nav-item">
-                                                <button class="nav-link" id="second-tab" data-toggle="tab" data-target="#second" type="button" role="tab" aria-controls="second" aria-selected="false">Second</button>
-                                            </li>
-                                            <li class="nav-item">
-                                                <button class="nav-link" id="third-tab" data-toggle="tab" data-target="#third" type="button" role="tab" aria-controls="third" aria-selected="false">Third</button>
-                                            </li>
-                                            <li class="nav-item">
-                                                <button class="nav-link" id="forth-tab" data-toggle="tab" data-target="#forth" type="button" role="tab" aria-controls="forth" aria-selected="false">Forth</button>
-                                            </li>
-                                            <li class="nav-item">
-                                                <button class="nav-link" id="summary-tab" data-toggle="tab" data-target="#summary" type="button" role="tab" aria-controls="summary" aria-selected="false">Summary</button>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <!-- Header tabs ends -->
-                            </div>
-                        </div>
-                        <!-- Header Menu ends -->
                         <!-- Card body begins -->
                         <div class="card-body" id="cardBody">
                         </div>
@@ -191,7 +136,6 @@
                 </div>
 
             </div>
-            <!-- Journaling End  -->
         }
         else
         {

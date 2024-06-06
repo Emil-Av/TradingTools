@@ -8,7 +8,7 @@ using Utilities.Enums;
 
 namespace Models
 {
-    public class ResearchTrade 
+    public class Research 
     {
         public int Id { get; set; }
 

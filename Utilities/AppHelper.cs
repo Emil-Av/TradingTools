@@ -6,8 +6,20 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
-    public static class SiteHelper
+    /// <summary>
+    ///  Provides static methods used in throghout the app.
+    /// </summary>
+    public static class AppHelper
     {
+        /// <summary>
+        ///  Creates the folders in wwwroot\Screenshots for the screenshots when uploading a .zip file for PaperTrades or Research
+        /// </summary>
+        /// <param name="tradeInfo"></param>
+        /// <param name="currentFolder"></param>
+        /// <param name="entryFullName"></param>
+        /// <param name="wwwRootPath"></param>
+        /// <param name="numberFolderToCreate"></param>
+        /// <returns></returns>
         public static string CreateScreenshotFolders(string[] tradeInfo, string currentFolder, string entryFullName, string wwwRootPath, int numberFolderToCreate)
         {
             List<string> folders = new List<string>();

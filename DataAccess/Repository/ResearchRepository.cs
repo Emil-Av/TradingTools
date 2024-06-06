@@ -10,19 +10,19 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository
 {
-    internal class ResearchTradeRespoitory : Repository<ResearchTrade>, IResearchTradeRepository
+    internal class ResearchRepository : Repository<Research>, IResearchRepository
     {
         private ApplicationDbContext _db;
 
-        public ResearchTradeRespoitory(ApplicationDbContext db) : base(db)
+        public ResearchRepository(ApplicationDbContext db) : base(db)
         {
             _db = db;
         }
 
-        public void Update(ResearchTrade researchTrade)
+        public void Update(Research researchTrade)
         {
-            ResearchTrade? objFromDb = _db.ResearchTrades.FirstOrDefault(x => x.Id == researchTrade.Id);
-            if (objFromDb != null) 
+            Research? objFromDb = _db.Research.FirstOrDefault(x => x.Id == researchTrade.Id);
+            if (objFromDb != null)
             {
                 objFromDb.ScreenshotsUrls = researchTrade.ScreenshotsUrls;
             }

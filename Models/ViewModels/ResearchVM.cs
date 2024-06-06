@@ -8,7 +8,7 @@ namespace Models.ViewModels
 {
     public class ResearchVM
     {
-        public ResearchTrade CurrentTrade { get; set; }
+        public Research CurrentTrade { get; set; }
 
         // The number of sample sizes for a strategy and time frame
         public int NumberSampleSizes { get; set; }
