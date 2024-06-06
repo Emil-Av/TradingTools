@@ -9,22 +9,23 @@
     <input type="hidden" value="@Model.CurrentTrade.Id" id="spanTradeIdInput" />
     <input type="hidden" value="@Model.CurrentTrade.SampleSizeId" id="spanSampleSizeIdInput" />
 }
-    <div class="row justify-content-center align-items-top">
-        <div class="col-10 text-center">
-            <h2>
+<div class="row justify-content-center align-items-top">
+    <div class="col-10 text-center">
+        <h2>
             @(Model.CurrentTrade != null ? "Paper Trades" : "No Paper Trades Yet")
-            </h2>
+        </h2>
         @if (Model.CurrentTrade != null)
-            {
-                <!-- Menus -->
-                <div class="container mb-4">
-                    <div class="row justify-content-center">
+        {
+            <!-- Menus -->
+            <div class="container mb-4">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-md-auto d-flex align-items-center flex-wrap justify-content-center">
                         <!-- Menu Time Frame -->
                         <div class="col-auto p-2">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Time Frame: <span id="spanTimeFrame">@MyEnumConverter.SetTimeFrameFromEnum(Model.CurrentTrade.TimeFrame)</span>
+                                    Time Frame: <span id="spanTimeFrame">@MyEnumConverter.SetTimeFrameFromEnum(Model.CurrentTrade.TimeFrame)</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="dropdownBtnTimeFrame" aria-labelledby="dropdownMenuButton">
                                     @foreach (TimeFrame tf in Enum.GetValues(typeof(TimeFrame)))
@@ -38,7 +39,7 @@
                         <div class="col-auto p-2">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Strategy: <span id="spanStrategy">@MyEnumConverter.SetStrategyFromEnum(Model.CurrentTrade.Strategy)</span>
+                                    Strategy: <span id="spanStrategy">@MyEnumConverter.SetStrategyFromEnum(Model.CurrentTrade.Strategy)</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
                                     @foreach (Strategy strategy in Enum.GetValues(typeof(Strategy)))
@@ -78,181 +79,181 @@
                         </div>
                     </div>
                 </div>
-                <!-- Screenshots -->
-                <div class="row justify-content-center">
-                    <div class="col-10">
-                        <div id="carouselTrades" class="carousel slide" data-interval="false">
-                            <div id="imageContainer">
-                                <ol class="carousel-indicators">
+            </div>
+            <!-- Screenshots -->
+            <div class="row justify-content-center">
+                <div class="col-10">
+                    <div id="carouselTrades" class="carousel slide" data-interval="false">
+                        <div id="imageContainer">
+                            <ol class="carousel-indicators">
                                 @for (int i = 0; i < Model.CurrentTrade.ScreenshotsUrls.Count; i++)
-                                    {
-                                        <li data-bs-target="#carouselTrades" data-slide-to="@(i)" @(i == 0 ? "class=\"active\"" : "")></li>
-                                    }
-                                </ol>
-                                <div class="carousel-inner">
+                                {
+                                    <li data-bs-target="#carouselTrades" data-slide-to="@(i)" @(i == 0 ? "class=\"active\"" : "")></li>
+                                }
+                            </ol>
+                            <div class="carousel-inner">
 
                                 @for (int i = 0; i < Model.CurrentTrade.ScreenshotsUrls.Count; i++)
-                                    {
-                                        <div class="@(i == 0? "carousel-item active" : "carousel-item")">
+                                {
+                                    <div class="@(i == 0? "carousel-item active" : "carousel-item")">
                                         <img src="@Model.CurrentTrade.ScreenshotsUrls[i]" class="d-block w-100" alt="...">
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <a class="carousel-control-prev" href="#carouselTrades" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselTrades" type="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Journaling begin -->
+            <div class="row justify-content-center mt-3">
+                <div class="col-10 text-center">
+                    <div class="card shadow mb-4">
+                        <!-- Header Menu begin-->
+                        <div class="card-header py-3">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <!-- Header drop down menu begin -->
+                                    <div class="dropdown">
+                                        <a class="dropdown-toggle" role="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span id="currentMenu" class="min-width-60">Journal</span>
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="headerMenu">
+                                            <a class="dropdown-item bg-gray-400" role="button" id="cardMenuJournal">Journal</a>
+                                            <a class="dropdown-item" role="button">Review</a>
                                         </div>
-                                    }
+                                    </div>
+                                    <!-- Header drop down menu end -->
+                                </div>
+                                <!-- Header tabs begin -->
+                                <div class="col mr-md-5 d-flex justify-content-center">
+                                    <div id="journalTabHeaders">
+                                        <ul class="nav nav-tabs" id="journalTabs" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="pre-tab" data-toggle="tab" data-target="#pre" type="button" role="tab" aria-controls="pre" aria-selected="true">Pre</button>
+                                            </li>
+                                            <li class="nav-item">
+                                                <button class="nav-link" id="during-tab" data-toggle="tab" data-target="#during" type="button" role="tab" aria-controls="during" aria-selected="false">During</button>
+                                            </li>
+                                            <li class="nav-item">
+                                                <button class="nav-link" id="exit-tab" data-toggle="tab" data-target="#exit" type="button" role="tab" aria-controls="exit" aria-selected="false">Exit</button>
+                                            </li>
+                                            <li class="nav-item">
+                                                <button class="nav-link" id="post-tab" data-toggle="tab" data-target="#post" type="button" role="tab" aria-controls="post" aria-selected="false">Post</button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div id="reviewTabHeaders" class="d-none">
+                                        <ul class="nav nav-tabs" id="reviewTabs" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="first-tab" data-toggle="tab" data-target="#first" type="button" role="tab" aria-controls="first" aria-selected="true">First</button>
+                                            </li>
+                                            <li class="nav-item">
+                                                <button class="nav-link" id="second-tab" data-toggle="tab" data-target="#second" type="button" role="tab" aria-controls="second" aria-selected="false">Second</button>
+                                            </li>
+                                            <li class="nav-item">
+                                                <button class="nav-link" id="third-tab" data-toggle="tab" data-target="#third" type="button" role="tab" aria-controls="third" aria-selected="false">Third</button>
+                                            </li>
+                                            <li class="nav-item">
+                                                <button class="nav-link" id="forth-tab" data-toggle="tab" data-target="#forth" type="button" role="tab" aria-controls="forth" aria-selected="false">Forth</button>
+                                            </li>
+                                            <li class="nav-item">
+                                                <button class="nav-link" id="summary-tab" data-toggle="tab" data-target="#summary" type="button" role="tab" aria-controls="summary" aria-selected="false">Summary</button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- Header tabs ends -->
+                            </div>
+                        </div>
+                        <!-- Header Menu ends -->
+                        <!-- Card body begins -->
+                        <div class="card-body" id="cardBody">
+                            <!-- Journal content begins -->
+                            <div id="journalTabContent">
+                                <div class="tab-content" id="tabContentJournal">
+                                    <div class="tab-pane fade show active tundora text-left" id="pre" role="tabpanel" aria-labelledby="pre-tab">
+                                        @Html.Raw(Model.Journal.Pre)
+                                    </div>
+                                    <div class="tab-pane fade tundora text-left" id="during" role="tabpanel" aria-labelledby="during-tab">
+                                        @Html.Raw(Model.Journal.During)
+                                    </div>
+                                    <div class="tab-pane fade tundora text-left" id="exit" role="tabpanel" aria-labelledby="exit-tab">
+                                        @Html.Raw(Model.Journal.Exit)
+                                    </div>
+                                    <div class="tab-pane fade tundora text-left" id="post" role="tabpanel" aria-labelledby="post-tab">
+                                        @(Model.Journal.Post == null ? "Double click to add text" : Html.Raw(Model.Journal.Post))
+                                    </div>
                                 </div>
                             </div>
-                            <a class="carousel-control-prev" href="#carouselTrades" role="button" data-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="sr-only">Previous</span>
-                            </a>
-                            <a class="carousel-control-next" href="#carouselTrades" type="button" data-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="sr-only">Next</span>
-                            </a>
+                            <!-- Journal content ends -->
+                            <!-- Review content begins -->
+                            <div id="reviewTabContent" class="d-none">
+                                <div class="tab-content" id="tabContentReview">
+                                    <div class="tab-pane fade show active tundora text-left" id="first" role="tabpanel" aria-labelledby="first-tab">
+                                        @Html.Raw(Model.Review.First)
+                                    </div>
+                                    <div class="tab-pane fade tundora text-left" id="second" role="tabpanel" aria-labelledby="second-tab">
+                                        @Html.Raw(Model.Review.Second)
+                                    </div>
+                                    <div class="tab-pane fade tundora text-left" id="third" role="tabpanel" aria-labelledby="third-tab">
+                                        @Html.Raw(Model.Review.Third)
+                                    </div>
+                                    <div class="tab-pane fade tundora text-left" id="forth" role="tabpanel" aria-labelledby="forth-tab">
+                                        @Html.Raw(Model.Review.Forth)
+                                    </div>
+                                    <div class="tab-pane fade tundora text-left" id="summary" role="tabpanel" aria-labelledby="summary-tab">
+                                        @Html.Raw(Model.Review.Summary)
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="summernote" class="d-none">
+                            </div>
+                            <!-- Review content ends -->
                         </div>
+                        <!-- Card body ends -->
+                        <!-- Footer body begins -->
+                        <div class="card-footer d-flex justify-content-start mt-2">
+                            <div id="journalButtons">
+                                <button class="btn btn-primary" id="btnEdit">
+                                    <span class="text"><i class="fa-solid fa-pen-to-square mr-2"></i>Edit</span>
+                                </button>
+                                <button class="btn btn-primary d-none editorOnBtns" id="btnSave">
+                                    <span class="text"><i class="fa-regular fa-floppy-disk mr-2"></i>Save</span>
+                                </button>
+                                <button class="btn btn-secondary d-none editorOnBtns" id="btnCancel">
+                                    <span class="text"><i class="fa-solid fa-xmark mr-2"></i>Cancel</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Footer body ends -->
                     </div>
                 </div>
 
-                <!-- Journaling begin -->
-                <div class="row justify-content-center mt-3">
-                    <div class="col-10 text-center">
-                        <div class="card shadow mb-4">
-                            <!-- Header Menu begin-->
-                            <div class="card-header py-3">
-                                <div class="row align-items-center">
-                                    <div class="col-auto">
-                                        <!-- Header drop down menu begin -->
-                                        <div class="dropdown">
-                                            <a class="dropdown-toggle" role="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <span id="currentMenu" class="min-width-60">Journal</span>
-                                            </a>
-                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="headerMenu">
-                                                <a class="dropdown-item bg-gray-400" role="button" id="cardMenuJournal">Journal</a>
-                                                <a class="dropdown-item" role="button">Review</a>
-                                            </div>
-                                        </div>
-                                        <!-- Header drop down menu end -->
-                                    </div>
-                                    <!-- Header tabs begin -->
-                                    <div class="col mr-md-5 d-flex justify-content-center">
-                                        <div id="journalTabHeaders">
-                                            <ul class="nav nav-tabs" id="journalTabs" role="tablist">
-                                                <li class="nav-item" role="presentation">
-                                                    <button class="nav-link active" id="pre-tab" data-toggle="tab" data-target="#pre" type="button" role="tab" aria-controls="pre" aria-selected="true">Pre</button>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <button class="nav-link" id="during-tab" data-toggle="tab" data-target="#during" type="button" role="tab" aria-controls="during" aria-selected="false">During</button>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <button class="nav-link" id="exit-tab" data-toggle="tab" data-target="#exit" type="button" role="tab" aria-controls="exit" aria-selected="false">Exit</button>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <button class="nav-link" id="post-tab" data-toggle="tab" data-target="#post" type="button" role="tab" aria-controls="post" aria-selected="false">Post</button>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div id="reviewTabHeaders" class="d-none">
-                                            <ul class="nav nav-tabs" id="reviewTabs" role="tablist">
-                                                <li class="nav-item" role="presentation">
-                                                    <button class="nav-link active" id="first-tab" data-toggle="tab" data-target="#first" type="button" role="tab" aria-controls="first" aria-selected="true">First</button>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <button class="nav-link" id="second-tab" data-toggle="tab" data-target="#second" type="button" role="tab" aria-controls="second" aria-selected="false">Second</button>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <button class="nav-link" id="third-tab" data-toggle="tab" data-target="#third" type="button" role="tab" aria-controls="third" aria-selected="false">Third</button>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <button class="nav-link" id="forth-tab" data-toggle="tab" data-target="#forth" type="button" role="tab" aria-controls="forth" aria-selected="false">Forth</button>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <button class="nav-link" id="summary-tab" data-toggle="tab" data-target="#summary" type="button" role="tab" aria-controls="summary" aria-selected="false">Summary</button>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <!-- Header tabs ends -->
-                                </div>
-                            </div>
-                            <!-- Header Menu ends -->
-
-                            <!-- Card body begins -->
-                            <div class="card-body" id="cardBody">
-                                <!-- Journal content begins -->
-                                <div id="journalTabContent">
-                                    <div class="tab-content" id="tabContentJournal">
-                                        <div class="tab-pane fade show active tundora text-left" id="pre" role="tabpanel" aria-labelledby="pre-tab">
-                                            @Html.Raw(Model.Journal.Pre)
-                                        </div>
-                                        <div class="tab-pane fade tundora text-left" id="during" role="tabpanel" aria-labelledby="during-tab">
-                                            @Html.Raw(Model.Journal.During)
-                                        </div>
-                                        <div class="tab-pane fade tundora text-left" id="exit" role="tabpanel" aria-labelledby="exit-tab">
-                                            @Html.Raw(Model.Journal.Exit)
-                                        </div>
-                                        <div class="tab-pane fade tundora text-left" id="post" role="tabpanel" aria-labelledby="post-tab">
-                                            @(Model.Journal.Post == null ? "Double click to add text" : Html.Raw(Model.Journal.Post))
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Journal content ends -->
-                                <!-- Review content begins -->
-                                <div id="reviewTabContent" class="d-none">
-                                    <div class="tab-content" id="tabContentReview">
-                                        <div class="tab-pane fade show active tundora text-left" id="first" role="tabpanel" aria-labelledby="first-tab">
-                                            @Html.Raw(Model.Review.First)
-                                        </div>
-                                        <div class="tab-pane fade tundora text-left" id="second" role="tabpanel" aria-labelledby="second-tab">
-                                            @Html.Raw(Model.Review.Second)
-                                        </div>
-                                        <div class="tab-pane fade tundora text-left" id="third" role="tabpanel" aria-labelledby="third-tab">
-                                            @Html.Raw(Model.Review.Third)
-                                        </div>
-                                        <div class="tab-pane fade tundora text-left" id="forth" role="tabpanel" aria-labelledby="forth-tab">
-                                            @Html.Raw(Model.Review.Forth)
-                                        </div>
-                                        <div class="tab-pane fade tundora text-left" id="summary" role="tabpanel" aria-labelledby="summary-tab">
-                                            @Html.Raw(Model.Review.Summary)
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="summernote" class="d-none">
-                                </div>
-                                <!-- Review content ends -->
-                            </div>
-                            <!-- Card body ends -->
-                            <!-- Footer body begins -->
-                            <div class="card-footer d-flex justify-content-start mt-2">
-                                <div id="journalButtons">
-                                    <button class="btn btn-primary" id="btnEdit">
-                                        <span class="text"><i class="fa-solid fa-pen-to-square mr-2"></i>Edit</span>
-                                    </button>
-                                    <button class="btn btn-primary d-none editorOnBtns" id="btnSave">
-                                        <span class="text"><i class="fa-regular fa-floppy-disk mr-2"></i>Save</span>
-                                    </button>
-                                    <button class="btn btn-secondary d-none editorOnBtns" id="btnCancel">
-                                        <span class="text"><i class="fa-solid fa-xmark mr-2"></i>Cancel</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <!-- Footer body ends -->
-                        </div>
-                    </div>
-
-                </div>
-                <!-- Journaling End  -->
-            }
-            else
-            {
-                // Upload trades (when the DB is empty)
-                <form method="post" enctype="multipart/form-data" id="formUploadFile" asp-action="UploadTrades">
-                    <input type="file" name="zipFile" id="fileInput" class="d-none" accept=".zip" />
-                    <a class="button d-flex flex-column align-items-center justify-content-center mt-5" role="button" id="uploadFileButton" onclick="document.getElementById('fileInput').click()">
-                        <i class="fa-regular fa-folder-open fa-2xl mb-3"></i>
-                        <span>Upload Trades</span>
-                    </a>
-                </form>
-            }
-        </div>
+            </div>
+            <!-- Journaling End  -->
+        }
+        else
+        {
+            // Upload trades (when the DB is empty)
+            <form method="post" enctype="multipart/form-data" id="formUploadFile" asp-action="UploadTrades">
+                <input type="file" name="zipFile" id="fileInput" class="d-none" accept=".zip" />
+                <a class="button d-flex flex-column align-items-center justify-content-center mt-5" role="button" id="uploadFileButton" onclick="document.getElementById('fileInput').click()">
+                    <i class="fa-regular fa-folder-open fa-2xl mb-3"></i>
+                    <span>Upload Trades</span>
+                </a>
+            </form>
+        }
     </div>
+</div>
 @section Scripts {
     <script src="~/js/paperTrades.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>

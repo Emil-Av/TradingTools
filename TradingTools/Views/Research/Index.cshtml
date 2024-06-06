@@ -15,62 +15,67 @@
             <div class="container mb-4">
                 <div class="row justify-content-center">
                     <div class="col-auto d-flex align-items-center">
-                        <!-- Menu Time Frame -->
-                        <div class="p-2">
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Time Frame: <span id="spanTimeFrame">@MyEnumConverter.SetTimeFrameFromEnum(Model.CurrentTrade.TimeFrame)</span>
-                                </button>
-                                <div class="dropdown-menu animated--fade-in" id="dropdownBtnTimeFrame" aria-labelledby="dropdownMenuButton">
-                                    @foreach (TimeFrame tf in Enum.GetValues(typeof(TimeFrame)))
-                                    {
-                                        <a class="dropdown-item" href="#">@MyEnumConverter.SetTimeFrameFromEnum(tf)</a>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Menu Strategy -->
-                        <div class="p-2">
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Strategy: <span id="spanStrategy">@MyEnumConverter.SetStrategyFromEnum(Model.CurrentTrade.Strategy)</span>
-                                </button>
-                                <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
-                                    @foreach (Strategy strategy in Enum.GetValues(typeof(Strategy)))
-                                    {
-                                        <a class="dropdown-item" href="#">@MyEnumConverter.SetStrategyFromEnum(strategy)</a>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Menu Sample Size -->
-                        <div class="p-2">
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Sample Size: <span id="spanSampleSize">@(Model.NumberSampleSizes)</span>
-                                </button>
-                                <div class="dropdown-menu animated--fade-in" id="dropdownBtnSampleSize" aria-labelledby="dropdownMenuButton">
-                                    @for (int i = 0; i < Model.NumberSampleSizes; i++)
-                                    {
-                                        <a class="dropdown-item" href="#">@(Model.NumberSampleSizes - i)</a>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Menu Trade -->
-                        <div class="p-2">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <button type="button" class="btn btn-primary">
-                                        <i class="fa-regular fa-square-caret-left fa-lg"></i>
+                        <div class="col-12 col-md-auto d-flex align-items-center flex-wrap justify-content-center">
+                            <!-- Menu Time Frame -->
+                            <div class="p-2">
+                                <div class="dropdown">
+                                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Time Frame: <span id="spanTimeFrame">@MyEnumConverter.SetTimeFrameFromEnum(Model.CurrentTrade.TimeFrame)</span>
                                     </button>
+                                    <div class="dropdown-menu animated--fade-in" id="dropdownBtnTimeFrame" aria-labelledby="dropdownMenuButton">
+                                        @foreach (TimeFrame tf in Enum.GetValues(typeof(TimeFrame)))
+                                        {
+                                            <a class="dropdown-item" href="#">@MyEnumConverter.SetTimeFrameFromEnum(tf)</a>
+                                        }
+                                    </div>
                                 </div>
-                                <input type="text" class="form-control text-center bg-gray-100" />
-                                <div class="input-group-append">
-                                    <button type="button" class="btn btn-primary">
-                                        <i class="fa-regular fa-square-caret-right fa-lg"></i>
+                            </div>
+                            <!-- Menu Strategy -->
+                            <div class="p-2">
+                                <div class="dropdown">
+                                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Strategy: <span id="spanStrategy">@MyEnumConverter.SetStrategyFromEnum(Model.CurrentTrade.Strategy)</span>
                                     </button>
+                                    <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
+                                        @foreach (Strategy strategy in Enum.GetValues(typeof(Strategy)))
+                                        {
+                                            <a class="dropdown-item" href="#">@MyEnumConverter.SetStrategyFromEnum(strategy)</a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Menu Sample Size -->
+                            <div class="p-2">
+                                <div class="dropdown">
+                                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Sample Size: <span id="spanSampleSize">@(Model.NumberSampleSizes)</span>
+                                    </button>
+                                    <div class="dropdown-menu animated--fade-in" id="dropdownBtnSampleSize" aria-labelledby="dropdownMenuButton">
+                                        @for (int i = 0; i < Model.NumberSampleSizes; i++)
+                                        {
+                                            <a class="dropdown-item" href="#">@(Model.NumberSampleSizes - i)</a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Menu Trade -->
+                            <div class="p-2">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <button type="button" class="btn btn-primary">
+                                            <i class="fa-regular fa-square-caret-left fa-lg"></i>
+                                        </button>
+                                    </div>
+                                    @* <input type="text" class="form-control text-center bg-gray-100" style="max-width: 100px;" maxlength="7" /> *@
+                                    <input type="text" class="form-control text-center bg-gray-100 custom-input" id="tradeInput" style="max-width: 75px;" maxlength="3" />
+                                    <div class="input-group-append">
+                                        @* <span class="input-group-text bg-gray-200">/ 100</span> *@
+                                        <input value="/ 100" class="input-group-text bg-gray-200" style="max-width: 75px;" disabled />
+                                        <button type="button" class="btn btn-primary">
+                                            <i class="fa-regular fa-square-caret-right fa-lg"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
