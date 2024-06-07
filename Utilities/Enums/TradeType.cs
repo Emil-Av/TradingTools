@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Utilities.Enums
 {
-    public enum TradeType { Trade, PaperTrade }
+    public enum TradeType { Trade, PaperTrade, Research }
 }

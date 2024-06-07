@@ -65,8 +65,10 @@ namespace TradingTools.Controllers
 
                     using (var archive = new ZipArchive(zipStream))
                     {
+                        // Sort the entries to have the folders in ascending order (Trade 1, Trade 2..)
                         List<ZipArchiveEntry> sortedEntries = archive.Entries.OrderBy(e => e.FullName, new NaturalStringComparer()).ToList();
                         Research researchTrade = null;
+                        
                         TimeFrame researchedTF;
                         int tradeIndex = 0;
                         int currentTrade = 0;
@@ -76,8 +78,27 @@ namespace TradingTools.Controllers
                             if (entry.FullName.Contains(".csv"))
                             {
                                 string[] researchInfo = entry.FullName.Split('-');
-                                string tempTF = researchInfo[1].Replace(".csv", "");
+                                if (!Int32.TryParse(researchInfo[1], out int strategy))
+                                {
+                                    TempData["error"] = "Error parsing the strategy number from the csv file name. Check the file name.";
+                                    return RedirectToAction(nameof(Index));
+                                }
+                                string tempTF = researchInfo[2].Replace(".csv", "");
                                 researchedTF = MyEnumConverter.SetTimeFrameFromString(tempTF);
+                                // Set the sample size for the research
+                                SampleSize sampleSize = new SampleSize();
+                                sampleSize.TradeType = TradeType.Research;
+                                sampleSize.Strategy = (Strategy)strategy;
+                                sampleSize.TimeFrame = researchedTF;
+                                _unitOfWork.SampleSize.Add(sampleSize);
+                                _unitOfWork.Save();
+                                int sampleSizeId = (await _unitOfWork.SampleSize
+                                    .GetAllAsync(x => x.TradeType == TradeType.Research && x.Strategy == (Strategy)strategy && x.TimeFrame == researchedTF))
+                                    .OrderByDescending(x => x.Id)
+                                    .Select(x => x.Id)
+                                    .FirstOrDefault();
+
+
                                 // Parse the .csv data
                                 using (var csvStream = entry.Open())
                                 {
@@ -96,6 +117,7 @@ namespace TradingTools.Controllers
                                             if (i % 2 != 0)
                                             {
                                                 researchTrade = new Research();
+                                                researchTrade.SampleSizeId = sampleSizeId;
                                                 researchTrade.OneToOneHitOn = csvData[i][1].Length > 0 ? int.Parse(csvData[i][1]) : 0;
                                                 researchTrade.IsOneToThreeHit = csvData[i][2] == "Yes" ? true : false;
                                                 researchTrade.IsOneToFiveHit = csvData[i][3] == "Yes" ? true : false;
@@ -151,24 +173,20 @@ namespace TradingTools.Controllers
                                 // Inside the folder with the screenshots
                                 if (entry.FullName.EndsWith(".png"))
                                 {
-
+                                    // Get the trade for the screenshot of the current iteration
                                     Research trade = await _unitOfWork.Research.GetAsync(x => x.Id == tradeIds[tradeIndex]);
                                     if (trade.ScreenshotsUrls == null)
                                     {
                                         trade.ScreenshotsUrls = new List<string>();
                                     }
 
-                                    //if (tradeIndex != currentTrade || tradeIndex == 0)
-                                    //{
-                                    //    trade.ScreenshotsUrls = new List<string>();
-                                    //}
                                     entry.ExtractToFile(Path.Combine(currentFolder, entry.Name));
                                     string screenshotName = entry.FullName.Split('/').Last();
                                     string screenshotPath = currentFolder.Replace(wwwRootPath, "").Replace("\\\\", "/");
                                     trade.ScreenshotsUrls.Add(Path.Combine(screenshotPath, screenshotName));
                                     _unitOfWork.Research.Update(trade);
                                     _unitOfWork.Save();
-                                    
+
                                 }
                             }
                         }

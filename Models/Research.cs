@@ -1,6 +1,7 @@
 ﻿using AngleSharp.Css;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,11 @@ namespace Models
     public class Research 
     {
         public int Id { get; set; }
+
+        public int SampleSizeId { get; set; }
+        [ForeignKey(nameof(SampleSizeId))]
+
+        public SampleSize? SampleSize { get; set; }
 
         public List<string>? ScreenshotsUrls { get; set; }
         /// <summary>
@@ -91,8 +97,6 @@ namespace Models
         public TimeFrame TimeFrame { get; set; }
 
         public Strategy Strategy { get; set; }
-
-        public SideType Side { get; set; }
 
     }
 }

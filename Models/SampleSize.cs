@@ -9,5 +9,7 @@ namespace Models
         public Strategy Strategy { get; set; }
 
         public TimeFrame TimeFrame { get; set; }
+
+        public TradeType TradeType { get; set; }
     }
 }
