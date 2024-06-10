@@ -1,4 +1,5 @@
 ﻿@model ResearchVM
+@using Newtonsoft.Json
 
 @{
     ViewData["Title"] = "Strategy Research";
@@ -63,14 +64,14 @@
                             <div class="p-2">
                                 <div class="input-group">
                                     <div class="input-group-prepend" style="margin-right: 1px;">
-                                        <button type="button" class="btn btn-primary">
+                                        <button type="button" class="btn btn-primary" id="btnPrev">
                                             <i class="fa-regular fa-square-caret-left fa-lg"></i>
                                         </button>
                                     </div>
-                                    <input type="text" value="1" class="form-control text-center bg-gray-100 custom-input" id="tradeInput" style="max-width: 75px;" maxlength="3" />
+                                    <input type="text" value="1" id="tradeNumberInput" class="form-control text-center bg-gray-100 custom-input" id="tradeInput" style="max-width: 60px;" maxlength="3" />
                                     <div class="input-group-append">
-                                        <input value="/ @Model.AllTrades.Count()" class="input-group-text bg-gray-200" style="max-width: 75px;" disabled />
-                                        <button type="button" class="btn btn-primary">
+                                        <input value="/@Model.AllTrades.Count()" class="input-group-text bg-gray-200" style="max-width: 60px;" disabled />
+                                        <button type="button" class="btn btn-primary" id="btnNext">
                                             <i class="fa-regular fa-square-caret-right fa-lg"></i>
                                         </button>
                                     </div>
@@ -142,6 +143,9 @@
         }
     </div>
 </div>
+@*Save all trades data in a div element. See: https://security.stackexchange.com/questions/254647/passing-a-c-object-to-javascript-in-asp-net-mvc *@
+<div id="tradesData" data-trades="@JsonConvert.SerializeObject(Model.AllTrades)"></div>
+
 @section Scripts {
     <script src="~/js/research.js"></script>
 }

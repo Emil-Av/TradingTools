@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Models;
 using Models.ViewModels;
+using Newtonsoft.Json;
 using System.Data;
 using System.Diagnostics;
 using System.IO.Compression;
@@ -64,7 +65,6 @@ namespace TradingTools.Controllers
                     ResearchVM.AvailableStrategies.Add(sampleSize.Strategy);
                 }
             }
-
             return View(ResearchVM);
         }
 
