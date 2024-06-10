@@ -42,7 +42,28 @@ namespace TradingTools.Controllers
 
         public async Task<IActionResult> Index()
         {
-            ResearchVM.CurrentTrade = (await _unitOfWork.Research.GetAllAsync()).LastOrDefault();
+            // Get sample sizes for the researched strategy
+            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research);
+                                                                    
+            // Set the NumberSampleSizes for the button menu
+            ResearchVM.NumberSampleSizes = sampleSizes.Count();
+            int lastSampleSizeId = sampleSizes.LastOrDefault().Id;
+            ResearchVM.AllTrades = await _unitOfWork.Research.GetAllAsync(x => x.SampleSizeId == lastSampleSizeId);
+            ResearchVM.CurrentTrade = ResearchVM.AllTrades.LastOrDefault();
+            ResearchVM.CurrentSampleSize = sampleSizes.LastOrDefault();
+
+            foreach (SampleSize sampleSize in sampleSizes)
+            {
+                if (!ResearchVM.AvailableTimeframes.Contains(sampleSize.TimeFrame))
+                {
+                    ResearchVM.AvailableTimeframes.Add(sampleSize.TimeFrame);
+                }
+
+                if (!ResearchVM.AvailableStrategies.Contains(sampleSize.Strategy))
+                {
+                    ResearchVM.AvailableStrategies.Add(sampleSize.Strategy);
+                }
+            }
 
             return View(ResearchVM);
         }

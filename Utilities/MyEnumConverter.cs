@@ -33,9 +33,9 @@ namespace Utilities
             return timeFrames[tf];
         }
 
-        public static string SetTimeFrameFromEnum(TimeFrame? tf)
+        public static string SetTimeFrameFromEnum(TimeFrame tf)
         {
-            Dictionary<TimeFrame?, string> timeFrames = new Dictionary<TimeFrame?, string>()
+            Dictionary<TimeFrame, string> timeFrames = new Dictionary<TimeFrame, string>()
             {
                 { TimeFrame.M5, "5M" },
                 { TimeFrame.M10 , "10M" },

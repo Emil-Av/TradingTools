@@ -25,12 +25,12 @@
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Time Frame: <span id="spanTimeFrame">@MyEnumConverter.SetTimeFrameFromEnum(Model.CurrentTrade.TimeFrame)</span>
+                                    Time Frame: <span id="spanTimeFrame">@MyEnumConverter.SetTimeFrameFromEnum((TimeFrame)Model.CurrentTrade.TimeFrame)</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="dropdownBtnTimeFrame" aria-labelledby="dropdownMenuButton">
                                     @foreach (TimeFrame tf in Enum.GetValues(typeof(TimeFrame)))
                                     {
-                                        <a class="dropdown-item" href="#">@MyEnumConverter.SetTimeFrameFromEnum(tf)</a>
+                                        <a class="dropdown-item" role="button">@MyEnumConverter.SetTimeFrameFromEnum(tf)</a>
                                     }
                                 </div>
                             </div>
@@ -44,7 +44,7 @@
                                 <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
                                     @foreach (Strategy strategy in Enum.GetValues(typeof(Strategy)))
                                     {
-                                        <a class="dropdown-item" href="#">@MyEnumConverter.SetStrategyFromEnum(strategy)</a>
+                                        <a class="dropdown-item" role="button">@MyEnumConverter.SetStrategyFromEnum(strategy)</a>
                                     }
                                 </div>
                             </div>

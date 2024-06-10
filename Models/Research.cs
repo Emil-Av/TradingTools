@@ -19,6 +19,9 @@ namespace Models
         public SampleSize? SampleSize { get; set; }
 
         public List<string>? ScreenshotsUrls { get; set; }
+
+        public SideType SideType { get; set; }
+
         /// <summary>
         ///  Risk to reward ratio 1:1.
         /// </summary>
@@ -93,10 +96,6 @@ namespace Models
         public bool FullATRMarketGaveSmth { get; set; }
 
         public string? Comment { get; set; }
-
-        public TimeFrame TimeFrame { get; set; }
-
-        public Strategy Strategy { get; set; }
 
     }
 }
