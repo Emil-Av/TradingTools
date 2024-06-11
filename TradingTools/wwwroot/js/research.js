@@ -14,9 +14,10 @@ $(function () {
     // menuClicked, clickedMenuValue: When a new trade has to be loaded, one of the buttons has to be clicked (either TimeFrame, Strategy..). In case no trade exists for the selection, set the last value. Used in LoadTradeAsync()
     var menuClicked;
     var clickedMenuValue;
-    var lastTradeIndex = 0;
     var tradeIndex = 0;
+    var lastTradeIndex = 0;
     var sampleSizeChanged;
+    var canShowToastr = false;
     // The model
     var researchVM;
     var trades = $('#tradesData').data('trades');
@@ -115,71 +116,97 @@ $(function () {
      */
 
     // Event handler when the left or the right arrow is pressed. Changes the trade accordingly.
-    $(document).keydown(function (event) {
+    $(document).on('keydown', function (event) {
         // Left arrow key pressed
         if (event.which === 37) {
-            ShowPrevTrade();
-        // Right arrow key pressed
+            ShowPrevTrade(-1);
+            // Right arrow key pressed
         } else if (event.which === 39) {
-            ShowNextTrade();
+            ShowNextTrade(1);
             // Add your code to handle right arrow key press
         }
     });
 
-    function ShowNextTrade() {
-        tradeIndex++;
-        ShowScreenshots();
+    function ShowNextTrade(index) {
+        ShowScreenshots(index, false);
     }
 
-    function ShowPrevTrade() {
-        tradeIndex--;
-        ShowScreenshots();
+    function ShowPrevTrade(index) {
+        ShowScreenshots(index, false);
     }
 
+    // User enters trade number and presses enter
     $('#tradeNumberInput').on('keypress', function (event) {
         if (event.which === 13) {
-            tradeIndex = event.target.value - 1;
-            ShowScreenshots();
+            userInput = Number(event.target.value);
+            if (Number.isInteger(userInput)) {
+                tradeIndex = userInput - 1;
+                ShowScreenshots(tradeIndex, true);
+            }
+            else {
+                toastr.error("Please enter a whole number.");
+                return
+            }
         }
     });
 
     $('#btnNext').on('click', function () {
-        ShowNextTrade();
+        ShowNextTrade(1);
     });
 
     $('#btnPrev').on('click', function () {
-        ShowPrevTrade();
+        ShowPrevTrade(-1);
     });
 
-    function ShowScreenshots() {
+    function ShowScreenshots(indexToShow, canShowToastr) {
+        // Buttons 'prev' or 'next'
+        if (indexToShow == -1 || indexToShow == 1) {
+            tradeIndex += indexToShow;
+        }
+        // User input of the trade to be shown
+        else {
+            tradeIndex = indexToShow;
+        }
+
         if (tradeIndex >= trades.length) {
-            toastr.info('Trade ' + (tradeIndex + 1) + ' doesn\'t exist.');
+            if (canShowToastr) {
+                toastr.error('Trade ' + (tradeIndex + 1) + ' doesn\'t exist.');
+                canShowToastr = false;
+            }
+            else {
+                toastr.info('The last trade is being displayed');
+            }
             tradeIndex = lastTradeIndex;
-            $('#tradeNumberInput').val(tradeIndex + 1);
             return;
         }
         else if (tradeIndex < 0) {
-            toastr.info('Trade number can\'t be smaller then 1.');
+            if (canShowToastr) {
+                toastr.error('Trade number can\'t be smaller then 1.');
+                canShowToastr = false;
+            }
+            else {
+                toastr.info('The first trade is being displayed');
+            }
             tradeIndex = lastTradeIndex;
-            $('#tradeNumberInput').val(tradeIndex + 1);
             return;
+
         }
         lastTradeIndex = tradeIndex;
+        $('#tradeNumberInput').val(tradeIndex + 1);
         LoadImages();
     }
 
     function LoadImages() {
-        $('#imageContainer').empty();
         var screenshots = trades[tradeIndex]['ScreenshotsUrls'];
 
         var newCarouselHtml = '<ol class="carousel-indicators">';
         for (var i = 0; i < screenshots.length; i++) {
             var url = screenshots[i];
             if (i == 0) {
-                newCarouselHtml += '<li data-bs-target="#carouselTrades" data-slide-to="' + i + '" class="active"></li >';
+                newCarouselHtml += '<li data-bs-target="#carouselTrades" data-bs-slide-to="' + i + '" class="active"></li >';
             }
             else {
-                newCarouselHtml += '<li data-bs-target="#carouselTrades" data-slide-to="' + i + '" ></li >';
+                newCarouselHtml += '<li data-bs-target="#carouselTrades" data-bs-slide-to="' + i + '" ></li >';
             }
         }
         newCarouselHtml += '</ol>';
@@ -194,9 +221,11 @@ $(function () {
                 newCarouselHtml += '<div class="carousel-item"><img src="' + url + '" class="d-block w-100" alt = "..." ></div>';;
             }
         }
-        $('#tradeNumberInput').val(tradeIndex + 1);
         newCarouselHtml += '</div>';
+        $('#imageContainer').empty();
         $('#imageContainer').html(newCarouselHtml);
+        $('#tradeNumberInput').val(tradeIndex + 1);
+
         console.log(newCarouselHtml);
     }
 
