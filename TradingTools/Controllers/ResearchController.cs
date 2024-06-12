@@ -43,7 +43,7 @@ namespace TradingTools.Controllers
 
         public async Task<IActionResult> Index()
         {
-            // Get sample sizes for the researched strategy
+            // Get research sample sizes
             List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research);
                                                                     
             // Set the NumberSampleSizes for the button menu
@@ -53,6 +53,7 @@ namespace TradingTools.Controllers
             ResearchVM.CurrentTrade = ResearchVM.AllTrades.LastOrDefault();
             ResearchVM.CurrentSampleSize = sampleSizes.LastOrDefault();
 
+            // Set the values for the button menus
             foreach (SampleSize sampleSize in sampleSizes)
             {
                 if (!ResearchVM.AvailableTimeframes.Contains(sampleSize.TimeFrame))
