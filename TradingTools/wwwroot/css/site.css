@@ -25,3 +25,17 @@
 .custom-input:active {
     box-shadow: none;
 }
+
+.research-th {
+    padding: 0 !important;
+    width: 50px;
+}
+
+.research-td {
+    padding: 0.3rem !important;
+    width: 30px !important;
+}
+
+.research-input {
+    height: 35px;
+}
