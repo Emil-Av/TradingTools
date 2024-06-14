@@ -26,16 +26,27 @@
     box-shadow: none;
 }
 
+
+
+
 .research-th {
-    padding: 0 !important;
-    width: 50px;
+    padding: 0.05rem; /* Reduce padding to make cells narrower */
+    text-align: left !important; /* Center align text */
+    vertical-align: middle; /* Center align vertically */
+    width: 0.2%; /* Set a fixed width for th */
 }
 
 .research-td {
-    padding: 0.3rem !important;
-    width: 30px !important;
+    padding: 0.05rem; /* Reduce padding to make cells narrower */
+    text-align: left !important; /* Center align text */
+    vertical-align: middle; /* Center align vertically */
+    width: 0.5% !important; /* Set half width compared to th */
 }
 
-.research-input {
-    height: 35px;
+.table th {
+    padding: 0 !important;
+}
+
+.table td {
+    padding: 0.2rem !important;
 }
