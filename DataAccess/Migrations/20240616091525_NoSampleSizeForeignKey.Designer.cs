@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240616091525_NoSampleSizeForeignKey")]
+    partial class NoSampleSizeForeignKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -222,9 +225,6 @@ namespace DataAccess.Migrations
                     b.Property<int>("OneToOneHitOn")
                         .HasColumnType("int");
 
-                    b.Property<int>("SampleSizeId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ScreenshotsUrls")
                         .HasColumnType("nvarchar(max)");
 
@@ -232,8 +232,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("SampleSizeId");
 
                     b.ToTable("Research");
                 });
@@ -342,17 +340,6 @@ namespace DataAccess.Migrations
                 });
 
             modelBuilder.Entity("Models.PaperTrade", b =>
-                {
-                    b.HasOne("Models.SampleSize", "SampleSize")
-                        .WithMany()
-                        .HasForeignKey("SampleSizeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SampleSize");
-                });
-
-            modelBuilder.Entity("Models.Research", b =>
                 {
                     b.HasOne("Models.SampleSize", "SampleSize")
                         .WithMany()

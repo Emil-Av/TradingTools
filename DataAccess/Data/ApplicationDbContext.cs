@@ -21,12 +21,11 @@ namespace DataAccess.Data
 
         public DbSet<UserSettings> UserSettings { get; set; }
 
-        public DbSet<Research> Research { get; set; }
+        public DbSet<ResearchFirstBarPullback> Research { get; set; }
 
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    modelBuilder.Entity<PaperTrade>().HasData(
-        //        new PaperTrade { Id=1, Symbol="BTCUSD", TimeFrame = TimeFrame.M10, Strategy = Strategy.FirstBarBelowAbove, ScreenshotsUrls = new List<string>() { "~/img/myimg/1.png", "~/img/myimg/2.png", "~/img/myimg/3.png" } });
-        //}
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            //    new PaperTrade { Id=1, Symbol="BTCUSD", TimeFrame = TimeFrame.M10, Strategy = Strategy.FirstBarBelowAbove, ScreenshotsUrls = new List<string>() { "~/img/myimg/1.png", "~/img/myimg/2.png", "~/img/myimg/3.png" } });
+        }
     }
 }

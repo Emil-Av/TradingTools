@@ -5,7 +5,7 @@
 namespace DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class AddSampleSizeIdToResearch : Migration
+    public partial class AddSampleSizeToResearch : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -14,8 +14,8 @@ namespace DataAccess.Migrations
                 name: "SampleSizeId",
                 table: "Research",
                 type: "int",
-                nullable: false,
-                defaultValue: 0);
+                nullable: true
+                );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Research_SampleSizeId",

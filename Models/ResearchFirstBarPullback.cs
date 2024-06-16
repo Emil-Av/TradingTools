@@ -9,7 +9,7 @@ using Utilities.Enums;
 
 namespace Models
 {
-    public class Research 
+    public class ResearchFirstBarPullback 
     {
         public int Id { get; set; }
 

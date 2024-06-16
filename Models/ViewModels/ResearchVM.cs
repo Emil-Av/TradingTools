@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Models.ViewModels.DisplayClasses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,9 +15,9 @@ namespace Models.ViewModels
             AvailableStrategies = new List<Strategy>();
             AvailableTimeframes = new List<TimeFrame>();
         }
-        public Research CurrentTrade { get; set; }
+        public ResearchFirstBarPullbackDisplay CurrentTrade { get; set; }
 
-        public List<Research> AllTrades { get; set; }   
+        public List<ResearchFirstBarPullbackDisplay> AllTrades { get; set; }   
 
         public SampleSize CurrentSampleSize { get; set; }
 

@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240607075051_AddSampleSizeIdToResearch")]
-    partial class AddSampleSizeIdToResearch
+    [Migration("20240616091726_AddSampleSizeToResearch")]
+    partial class AddSampleSizeToResearch
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -231,13 +231,7 @@ namespace DataAccess.Migrations
                     b.Property<string>("ScreenshotsUrls")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Side")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Strategy")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TimeFrame")
+                    b.Property<int>("SideType")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

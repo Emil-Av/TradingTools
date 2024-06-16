@@ -39,8 +39,10 @@
 .research-td {
     padding: 0.05rem; /* Reduce padding to make cells narrower */
     text-align: left !important; /* Center align text */
-    vertical-align: middle; /* Center align vertically */
+    vertical-align: middle !important; /* Center align vertically */
     width: 0.5% !important; /* Set half width compared to th */
+    min-width: 30px !important;
+    margin-right: 2px !important;
 }
 
 .table th {

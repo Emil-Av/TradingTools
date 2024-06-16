@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository
 {
-    internal class ResearchRepository : Repository<Research>, IResearchRepository
+    internal class ResearchRepository : Repository<ResearchFirstBarPullback>, IResearchRepository
     {
         private ApplicationDbContext _db;
 
@@ -19,9 +19,9 @@ namespace DataAccess.Repository
             _db = db;
         }
 
-        public void Update(Research researchTrade)
+        public void Update(ResearchFirstBarPullback researchTrade)
         {
-            Research? objFromDb = _db.Research.FirstOrDefault(x => x.Id == researchTrade.Id);
+            ResearchFirstBarPullback? objFromDb = _db.Research.FirstOrDefault(x => x.Id == researchTrade.Id);
             if (objFromDb != null)
             {
                 objFromDb.ScreenshotsUrls = researchTrade.ScreenshotsUrls;

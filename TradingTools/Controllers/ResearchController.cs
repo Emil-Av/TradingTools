@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Models;
 using Models.ViewModels;
+using Models.ViewModels.DisplayClasses;
 using Newtonsoft.Json;
 using System.Data;
 using System.Diagnostics;
@@ -21,6 +22,7 @@ namespace TradingTools.Controllers
         {
             _unitOfWork = unitOfWork;
             ResearchVM = new ResearchVM();
+            ResearchVM.AllTrades = new List<ResearchFirstBarPullbackDisplay>();
             _webHostEnvironment = webHostEnvironment;
         }
 
@@ -48,8 +50,15 @@ namespace TradingTools.Controllers
                                                                     
             // Set the NumberSampleSizes for the button menu
             ResearchVM.NumberSampleSizes = sampleSizes.Count();
+            if (ResearchVM.NumberSampleSizes == 0)
+            {
+                return View(ResearchVM);
+            }
             int lastSampleSizeId = sampleSizes.LastOrDefault().Id;
-            ResearchVM.AllTrades = await _unitOfWork.Research.GetAllAsync(x => x.SampleSizeId == lastSampleSizeId);
+            // Get all researched trades from the DB
+            List<ResearchFirstBarPullback> dbTradeData = await _unitOfWork.Research.GetAllAsync(x => x.SampleSizeId == lastSampleSizeId);
+            // Create the display class instances (the converted values from the DB) and add the trades to the VM
+            dbTradeData.ForEach(dbTrade => ResearchVM.AllTrades.Add(new ResearchFirstBarPullbackDisplay(dbTrade)));
             ResearchVM.CurrentTrade = ResearchVM.AllTrades.LastOrDefault();
             ResearchVM.CurrentSampleSize = sampleSizes.LastOrDefault();
 
@@ -68,6 +77,11 @@ namespace TradingTools.Controllers
             }
             return View(ResearchVM);
         }
+        /// <summary>
+        ///  The .zip file has to have the following format: Research/Sample Size 1/Trades folder and .csv file. The .csv file has to have format Research-EnumStrategy(e.g. 0)-EnumTimeFrame(e.g. 10M): e.g. Research-0-10M.csv
+        /// </summary>
+        /// <param name="zipFile"></param>
+        /// <returns></returns>
 
         [HttpPost]
         public async Task<IActionResult> UploadResearch(IFormFile zipFile)
@@ -89,14 +103,25 @@ namespace TradingTools.Controllers
                     {
                         // Sort the entries to have the folders in ascending order (Trade 1, Trade 2..)
                         List<ZipArchiveEntry> sortedEntries = archive.Entries.OrderBy(e => e.FullName, new NaturalStringComparer()).ToList();
-                        Research researchTrade = null;
+                        ResearchFirstBarPullback researchTrade = null;
                         
                         TimeFrame researchedTF;
                         int tradeIndex = 0;
                         int currentTrade = 0;
+                        string currentSampleSize = string.Empty;
                         string currentFolder = string.Empty;
                         foreach (var entry in sortedEntries)
                         {
+                            if (entry.FullName.Contains("Sample Size") && string.IsNullOrEmpty(currentSampleSize))
+                            {
+                                string[] researchInfo = entry.FullName.Split('/');
+                                if (researchInfo[1].Contains("Sample Size"))
+                                {
+                                    currentSampleSize = researchInfo[1];
+                                    continue;
+                                }
+
+                            }
                             if (entry.FullName.Contains(".csv"))
                             {
                                 string[] researchInfo = entry.FullName.Split('-');
@@ -138,7 +163,7 @@ namespace TradingTools.Controllers
                                             // Half ATR
                                             if (i % 2 != 0)
                                             {
-                                                researchTrade = new Research();
+                                                researchTrade = new ResearchFirstBarPullback();
                                                 researchTrade.SampleSizeId = sampleSizeId;
                                                 researchTrade.OneToOneHitOn = csvData[i][1].Length > 0 ? int.Parse(csvData[i][1]) : 0;
                                                 researchTrade.IsOneToThreeHit = csvData[i][2] == "Yes" ? true : false;
@@ -182,21 +207,22 @@ namespace TradingTools.Controllers
                             }
                             else
                             {
-                                // Split the name to get the folder's name
-                                string[] tradeInfo = entry.FullName.Split('/');
-                                // What is left is "Trade x", x is the number of the trade. Remove "Trade" to get the number.
-                                string tempTradeInfo = tradeInfo[1].Replace("Trade", "").Trim();
-                                if (Int32.TryParse(tempTradeInfo, out int tempTradeIndex))
-                                {
-                                    tradeIndex = tempTradeIndex - 1;
-                                }
-                                currentFolder = AppHelper.CreateScreenshotFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath, 1);
-                                List<int> tradeIds = (await _unitOfWork.Research.GetAllAsync()).Select(x => x.Id).ToList();
                                 // Inside the folder with the screenshots
                                 if (entry.FullName.EndsWith(".png"))
                                 {
+                                    // Split the name to get the folder's name
+                                    string[] tradeInfo = entry.FullName.Split('/');
+                                    // What is left is "Trade x", x is the number of the trade. Remove "Trade" to get the number.
+                                    string tempTradeInfo = tradeInfo[2].Replace("Trade", "").Trim();
+                                    if (Int32.TryParse(tempTradeInfo, out int tempTradeIndex))
+                                    {
+                                        tradeIndex = tempTradeIndex - 1;
+                                    }
+                                    currentFolder = AppHelper.CreateScreenshotFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath, 2);
+                                    List<int> tradeIds = (await _unitOfWork.Research.GetAllAsync()).Select(x => x.Id).ToList();
+
                                     // Get the trade for the screenshot of the current iteration
-                                    Research trade = await _unitOfWork.Research.GetAsync(x => x.Id == tradeIds[tradeIndex]);
+                                    ResearchFirstBarPullback trade = await _unitOfWork.Research.GetAsync(x => x.Id == tradeIds[tradeIndex]);
                                     if (trade.ScreenshotsUrls == null)
                                     {
                                         trade.ScreenshotsUrls = new List<string>();
