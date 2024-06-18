@@ -129,138 +129,100 @@
                                         <!-- Row 1 -->
                                         <tr>
                                             <th scope="row" class="text-center align-middle research-th">1:1 hit on</th>
-                                            <td class="research-td"><input class="text-center w-50 form-control research-input" value="@Model.CurrentTrade.OneToOneHitOnDisplay" /></td>
-                                            <th scope="row" class="text-center align-middle research-th">1:3 hit on</th>
-                                            <td class="research-td"><input class="text-center w-50 form-control research-input" value="@Model.CurrentTrade.IsOneToThreeHitDisplay" /></td>
+                                            <td class="research-td">
+                                                <input id="OneToOneHitOnInput" class="text-center w-50 form-control research-input" value="@Model.CurrentTrade.OneToOneHitOnDisplay" />
+                                            </td>
+                                            <th scope="row" class="text-center align-middle research-th">1:3 hit</th>
+                                            <td class="research-td">
+                                                <select id="IsOneToThreeHitInput" asp-for="CurrentTrade.IsOneToThreeHitDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
+                                            </td>
                                             <th scope="row" class="text-center align-middle research-th">1:5 hit on</th>
-                                            <td class="research-td"><input class="text-center form-control w-50 research-input" value="@Model.CurrentTrade.IsOneToFiveHitDisplay" /></td>
+                                            <td class="research-td">
+                                                <select id="IsOneToFiveHitInput" asp-for="CurrentTrade.IsOneToFiveHitDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
+                                            </td>
                                             <th scope="row" class="text-center align-middle research-th">Breakeven</th>
-                                            <td class="research-td"><input class="text-center form-control w-50 research-input" value="@Model.CurrentTrade.IsBreakevenDisplay" /></td>
+                                            <td class="research-td">
+                                                <select id="IsBreakevenInput" asp-for="CurrentTrade.IsBreakevenDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
+                                            </td>
                                             <th scope="row" class="text-center align-middle research-th">Loss</th>
                                             <td class="research-td">
-                                                <select class="text-center w-50 form-control research-input">
-                                                    <option @(Model.IsLossDisplay? "selected" : "")>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
+                                                <select id="IsLossInput" asp-for="CurrentTrade.IsLossDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
                                             </td>
                                         </tr>
                                         <!-- Row 2 -->
                                         <tr>
                                             <th scope="row" class="text-center align-middle research-th">Max RR</th>
-                                            <td class="research-td"><input class="text-center form-control w-50 research-input" value="1" /></td>
+                                            <td class="research-td">
+                                                <input id="MaxRRInput" class="text-center form-control w-50 research-input" value="@Model.CurrentTrade.MaxRRDisplay" />
+                                            </td>
                                             <th scope="row" class="text-center align-middle research-th">Market gave smth</th>
                                             <td class="research-td">
-                                                <select class="text-center w-50 form-control research-input">
-                                                    <option>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
+                                                <select id="MarketGaveSmthInput" asp-for="CurrentTrade.MarketGaveSmthDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
                                             </td>
                                             <th scope="row" class="text-center align-middle research-th">Entry at 3-5 bars</th>
                                             <td class="research-td">
-                                                <select class="text-center w-50 form-control research-input">
-                                                    <option>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
+                                                <select id="IsEntryAfter3To5BarsInput" asp-for="CurrentTrade.IsEntryAfter3To5BarsDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
                                             </td>
                                             <th scope="row" class="text-center align-middle research-th">Entry after 5 bars</th>
                                             <td class="research-td">
-                                                <select class="text-center w-50 form-control research-input">
-                                                    <option>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
+                                                <select id="IsEntryAfter5BarsInput" asp-for="CurrentTrade.IsEntryAfter5BarsDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
                                             </td>
                                             <th scope="row" class="text-center align-middle research-th">Entry at prev swing on trigger</th>
                                             <td class="research-td">
-                                                <select class="text-center w-50 form-control research-input">
-                                                    <option>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
+                                                <select id="IsEntryAtPreviousSwingOnTriggerInput" asp-for="CurrentTrade.IsEntryAtPreviousSwingOnTriggerDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
                                             </td>
                                         </tr>
                                         <!-- Row 3 -->
                                         <tr>
                                             <th scope="row" class="text-center align-middle research-th">Entry before prev swing on trigger</th>
                                             <td class="research-td">
-                                                <select class="text-center w-50 form-control research-input">
-                                                    <option>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
+                                                <select id="IsEntryBeforePreviousSwingOnTriggerInput" asp-for="CurrentTrade.IsEntryBeforePreviousSwingOnTriggerDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
                                             </td>
                                             <th scope="row" class="text-center align-middle research-th">Entry before prev swing on 4H</th>
                                             <td class="research-td">
-                                                <select class="text-center w-50 form-control research-input">
-                                                    <option>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
+                                                <select id="IsEntryBeforePreviousSwingOn4HInput" asp-for="CurrentTrade.IsEntryBeforePreviousSwingOn4HDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
                                             </td>
                                             <th scope="row" class="text-center align-middle research-th">Entry before prev swing on D</th>
                                             <td class="research-td">
-                                                <select class="text-center w-50 form-control research-input">
-                                                    <option>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
+                                                <select id="IsEntryBeforePreviousSwingOnDInput" asp-for="CurrentTrade.IsEntryBeforePreviousSwingOnDDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
                                             </td>
                                             <th scope="row" class="text-center align-middle research-th">Momentum trade</th>
                                             <td class="research-td">
-                                                <select class="text-center w-50 form-control research-input">
-                                                    <option>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
+                                                <select id="IsMomentumTradeInput" asp-for="CurrentTrade.IsMomentumTradeDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
                                             </td>
                                             <th scope="row" class="text-center align-middle research-th">Trend trade</th>
                                             <td class="research-td">
-                                                <select class="text-center w-50 form-control research-input">
-                                                    <option>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
+                                                <select id="IIsTrendTradeInput" asp-for="CurrentTrade.IsTrendTradeDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
                                             </td>
                                         </tr>
                                         <!-- Row 4 -->
                                         <tr>
                                             <th scope="row" class="text-center align-middle research-th">Trigger trending</th>
                                             <td class="research-td">
-                                                <select class="text-center w-50 form-control research-input">
-                                                    <option>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
+                                                <select id="IsTriggerTrendingInput" asp-for="CurrentTrade.IsTriggerTrendingDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
                                             </td>
                                             <th scope="row" class="text-center align-middle research-th">4H trending</th>
                                             <td class="research-td">
-                                                <select class="text-center w-50 form-control research-input">
-                                                    <option>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
+                                                <select id="Is4HTrendingInput" asp-for="CurrentTrade.Is4HTrendingDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
                                             </td>
                                             <th scope="row" class="text-center align-middle research-th">D trending</th>
                                             <td class="research-td">
-                                                <select class="text-center w-50 form-control research-input">
-                                                    <option>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
+                                                <select id="IsDTrendingInput" asp-for="CurrentTrade.IsDTrendingDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
                                             </td>
                                             <th scope="row" class="text-center align-middle research-th">Entry after i bar</th>
                                             <td class="research-td">
-                                                <select class="text-center w-50 form-control research-input">
-                                                    <option>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
+                                                <select id="IsEntryAfteriBarDisplayInput" asp-for="CurrentTrade.IsEntryAfteriBarDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
                                             </td>
                                             <th scope="row" class="text-center align-middle research-th">Signal bar strong reversal</th>
                                             <td class="research-td">
-                                                <select class="text-center w-50 form-control research-input">
-                                                    <option>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
+                                                <select id="IsSignalBarStrongReversalDisplayInput" asp-for="CurrentTrade.IsSignalBarStrongReversalDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
                                             </td>
                                         </tr>
                                         <!-- Row 5 -->
                                         <tr>
                                             <th scope="row" class="text-center align-middle research-th">Signal bar in my direction</th>
                                             <td class="research-td">
-                                                <select class="text-center w-50 form-control research-input">
-                                                    <option>Yes</option>
-                                                    <option selected>No</option>
-                                                </select>
+                                                <select id="IsSignalBarInTradeDirectionInput" asp-for="CurrentTrade.IsSignalBarInTradeDirectionDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
                                             </td>
                                         </tr>
                                     </tbody>

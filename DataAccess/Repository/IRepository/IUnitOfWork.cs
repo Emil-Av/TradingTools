@@ -18,7 +18,7 @@ namespace DataAccess.Repository.IRepository
 
         IUserSettingsRepository UserSettings { get; }
 
-        IResearchRepository Research { get; }
+        IResearchFirstBarPullbackRepository ResearchFirstBarPullback { get; }
 
         void Save();
     }

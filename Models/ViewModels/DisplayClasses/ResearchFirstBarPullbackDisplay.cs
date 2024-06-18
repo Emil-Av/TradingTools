@@ -10,7 +10,7 @@ namespace Models.ViewModels.DisplayClasses
     public class ResearchFirstBarPullbackDisplay
     {
         /// <summary>
-        ///  Converts the DB values into text for the view.
+        ///  Prepares the DB values for the view.
         /// </summary>
         /// <param name="dbResearchObj"></param>
         public ResearchFirstBarPullbackDisplay(ResearchFirstBarPullback dbResearchObj)

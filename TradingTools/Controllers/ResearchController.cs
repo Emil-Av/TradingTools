@@ -1,6 +1,7 @@
 ﻿using DataAccess.Repository.IRepository;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Models;
 using Models.ViewModels;
@@ -55,14 +56,20 @@ namespace TradingTools.Controllers
                 return View(ResearchVM);
             }
             int lastSampleSizeId = sampleSizes.LastOrDefault().Id;
-            // Get all researched trades from the DB
-            List<ResearchFirstBarPullback> dbTradeData = await _unitOfWork.Research.GetAllAsync(x => x.SampleSizeId == lastSampleSizeId);
-            // Create the display class instances (the converted values from the DB) and add the trades to the VM
-            dbTradeData.ForEach(dbTrade => ResearchVM.AllTrades.Add(new ResearchFirstBarPullbackDisplay(dbTrade)));
-            ResearchVM.CurrentTrade = ResearchVM.AllTrades.LastOrDefault();
+            // Get all researched trades from the DB and project the instances into ResearchFirstBarPullbackDisplay
+            ResearchVM.AllTrades = (await _unitOfWork.ResearchFirstBarPullback
+                                    .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId))
+                                    .Select(x => new ResearchFirstBarPullbackDisplay(x))
+                                    .ToList();
+            // Should not happen
+            if (!ResearchVM.AllTrades.Any())
+            {
+                return View(ResearchVM);
+            }
+            ResearchVM.CurrentTrade = ResearchVM.AllTrades.FirstOrDefault();
             ResearchVM.CurrentSampleSize = sampleSizes.LastOrDefault();
 
-            // Set the values for the button menus
+            // Set the values for the button menus. Display only values for which there are data records.
             foreach (SampleSize sampleSize in sampleSizes)
             {
                 if (!ResearchVM.AvailableTimeframes.Contains(sampleSize.TimeFrame))
@@ -198,7 +205,7 @@ namespace TradingTools.Controllers
                                                 researchTrade.IsFullATRLoss = csvData[i][5] == "Yes" ? true : false;
                                                 researchTrade.FullATRMaxRR = csvData[i][6].Length > 0 ? int.Parse(csvData[i][6].Split('-')[1]) : 0;
                                                 researchTrade.MarketGaveSmth = csvData[i][7].Length > 0 ? true : false;
-                                                _unitOfWork.Research.Add(researchTrade);
+                                                _unitOfWork.ResearchFirstBarPullback.Add(researchTrade);
                                                 _unitOfWork.Save();
                                             }
                                         }
@@ -219,10 +226,10 @@ namespace TradingTools.Controllers
                                         tradeIndex = tempTradeIndex - 1;
                                     }
                                     currentFolder = AppHelper.CreateScreenshotFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath, 2);
-                                    List<int> tradeIds = (await _unitOfWork.Research.GetAllAsync()).Select(x => x.Id).ToList();
+                                    List<int> tradeIds = (await _unitOfWork.ResearchFirstBarPullback.GetAllAsync()).Select(x => x.Id).ToList();
 
                                     // Get the trade for the screenshot of the current iteration
-                                    ResearchFirstBarPullback trade = await _unitOfWork.Research.GetAsync(x => x.Id == tradeIds[tradeIndex]);
+                                    ResearchFirstBarPullback trade = await _unitOfWork.ResearchFirstBarPullback.GetAsync(x => x.Id == tradeIds[tradeIndex]);
                                     if (trade.ScreenshotsUrls == null)
                                     {
                                         trade.ScreenshotsUrls = new List<string>();
@@ -232,7 +239,7 @@ namespace TradingTools.Controllers
                                     string screenshotName = entry.FullName.Split('/').Last();
                                     string screenshotPath = currentFolder.Replace(wwwRootPath, "").Replace("\\\\", "/");
                                     trade.ScreenshotsUrls.Add(Path.Combine(screenshotPath, screenshotName));
-                                    _unitOfWork.Research.Update(trade);
+                                    _unitOfWork.ResearchFirstBarPullback.Update(trade);
                                     _unitOfWork.Save();
 
                                 }

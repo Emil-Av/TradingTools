@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository
 {
-    internal class ResearchRepository : Repository<ResearchFirstBarPullback>, IResearchRepository
+    internal class ResearchFirstBarPullbackRepository : Repository<ResearchFirstBarPullback>, IResearchFirstBarPullbackRepository
     {
         private ApplicationDbContext _db;
 
-        public ResearchRepository(ApplicationDbContext db) : base(db)
+        public ResearchFirstBarPullbackRepository(ApplicationDbContext db) : base(db)
         {
             _db = db;
         }

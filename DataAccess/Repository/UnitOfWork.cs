@@ -22,7 +22,7 @@ namespace DataAccess.Repository
 
         public IUserSettingsRepository UserSettings { get; private set; }
 
-        public IResearchRepository Research { get; private set; }
+        public IResearchFirstBarPullbackRepository ResearchFirstBarPullback { get; private set; }
 
         public UnitOfWork(ApplicationDbContext db)
         {
@@ -32,7 +32,7 @@ namespace DataAccess.Repository
             Journal = new JournalRepository(_db);
             SampleSize = new SampleSizeRepository(_db);
             UserSettings = new UserSettingsRepository(_db);
-            Research = new ResearchRepository(_db);
+            ResearchFirstBarPullback = new ResearchFirstBarPullbackRepository(_db);
         }
 
         public void Save()
