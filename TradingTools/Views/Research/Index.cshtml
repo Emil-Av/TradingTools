@@ -129,7 +129,7 @@
                                             <button class="nav-link" id="entry-tab" data-toggle="tab" data-target="#entry" type="button" role="tab" aria-controls="entry" aria-selected="false">Entry</button>
                                         </li>
                                         <li class="nav-item">
-                                            <button class="nav-link" id="entryContext-tab" data-toggle="tab" data-target="#entryContext" type="button" role="tab" aria-controls="entryContext" aria-selected="false">Entry Context</button>
+                                            <button class="nav-link" id="priceActionContext-tab" data-toggle="tab" data-target="#priceActionContext" type="button" role="tab" aria-controls="priceActionContext" aria-selected="false">PA Context</button>
                                         </li>
                                         <li class="nav-item">
                                         </li>
@@ -141,6 +141,7 @@
                         <!-- Card body begins -->
                         <div class="card-body" id="cardBody">
                             <div class="tab-content">
+                                <!-- Tab content PnL -->
                                 <div class="tab-pane fade show active tundora text-left" id="pnl" role="tabpanel" aria-labelledby="pnl-tab">
                                     <div class="row">
                                         <div class="col">
@@ -180,72 +181,85 @@
                                         <div class="col">
                                             <div class="form-group col-12 col-md-6 col-lg">
                                                 <label class="d-block text-nowrap min-width-60" for="Comment">Comment</label>
-                                                <input class="text-justify form-control" id="Comment" value="Abe ptica"/>
+                                                <input class="text-justify form-control" id="Comment" value="Abe ptica" />
                                             </div>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Tab content Entry -->
                                 <div class="tab-pane fade show tundora text-left" id="entry" role="tabpanel" aria-labelledby="entry-tab">
-                                    <th scope="row" class="text-center align-middle research-th">Entry at 3-5 bars</th>
-                                    <td class="research-td">
-                                        <select id="IsEntryAfter3To5BarsInput" asp-for="CurrentTrade.IsEntryAfter3To5BarsDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
-                                    </td>
-                                    <th scope="row" class="text-center align-middle research-th">Entry after 5 bars</th>
-                                    <td class="research-td">
-                                        <select id="IsEntryAfter5BarsInput" asp-for="CurrentTrade.IsEntryAfter5BarsDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
-                                    </td>
-                                    <th scope="row" class="text-center align-middle research-th">Entry at prev swing on trigger</th>
-                                    <td class="research-td">
-                                        <select id="IsEntryAtPreviousSwingOnTriggerInput" asp-for="CurrentTrade.IsEntryAtPreviousSwingOnTriggerDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
-                                    </td>
-                                    <th scope="row" class="text-center align-middle research-th">Entry before prev swing on trigger</th>
-                                    <td class="research-td">
-                                        <select id="IsEntryBeforePreviousSwingOnTriggerInput" asp-for="CurrentTrade.IsEntryBeforePreviousSwingOnTriggerDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
-                                    </td>
-                                    <th scope="row" class="text-center align-middle research-th">Entry before prev swing on 4H</th>
-                                    <td class="research-td">
-                                        <select id="IsEntryBeforePreviousSwingOn4HInput" asp-for="CurrentTrade.IsEntryBeforePreviousSwingOn4HDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
-                                    </td>
-                                    <th scope="row" class="text-center align-middle research-th">Entry before prev swing on D</th>
-                                    <td class="research-td">
-                                        <select id="IsEntryBeforePreviousSwingOnDInput" asp-for="CurrentTrade.IsEntryBeforePreviousSwingOnDDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
-                                    </td>
-                                    <th scope="row" class="text-center align-middle research-th">Entry after i bar</th>
-                                    <td class="research-td">
-                                        <select id="IsEntryAfteriBarDisplayInput" asp-for="CurrentTrade.IsEntryAfteriBarDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
-                                    </td>
-                                    <th scope="row" class="text-center align-middle research-th">Signal bar in my direction</th>
-                                    <td class="research-td">
-                                        <select id="IsSignalBarInTradeDirectionInput" asp-for="CurrentTrade.IsSignalBarInTradeDirectionDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
-                                    </td>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="d-flex flex-wrap">
+                                                <div class="form-group col-12 col-md-6 col-lg">
+                                                    <label class="d-block text-nowrap min-width-60" for="IsEntryAfteriBarDisplayInput">Entry after i bar</label>
+                                                    <select class="text-center form-control" id="IsEntryAfteriBarDisplayInput" asp-for="CurrentTrade.IsEntryAfteriBarDisplay" asp-items="Model.YesNoOptions"></select>
+                                                </div>
+                                                <div class="form-group col-12 col-md-6 col-lg">
+                                                    <label class="d-block text-nowrap min-width-60" for="IsSignalBarInTradeDirectionInput">Signal bar in my direction</label>
+                                                    <select class="text-center form-control" id="IsEntryAfteriBarDisplayInput" id="IsSignalBarInTradeDirectionInput" asp-for="CurrentTrade.IsSignalBarInTradeDirectionDisplay" asp-items="Model.YesNoOptions"></select>
+                                                </div>
+                                                <div class="form-group col-12 col-md-6 col-lg">
+                                                    <label class="d-block text-nowrap min-width-60" for="IsEntryAfter3To5BarsInput">Entry at 3-5 bars</label>
+                                                    <select class="text-center form-control" id="IsEntryAfter3To5BarsInput" asp-for="CurrentTrade.IsEntryAfter3To5BarsDisplay" asp-items="Model.YesNoOptions"></select>
+                                                </div>
+                                                <div class="form-group col-12 col-md-6 col-lg">
+                                                    <label class="d-block text-nowrap min-width-60" for="IsEntryAfter5BarsInput">Entry after 5 bars</label>
+                                                    <select class="text-center form-control" id="IsEntryAfter5BarsInput" asp-for="CurrentTrade.IsEntryAfter5BarsDisplay" asp-items="Model.YesNoOptions"></select>
+                                                </div>
+                                                <div class="form-group col-12 col-md-6 col-lg">
+                                                    <label class="d-block text-nowrap min-width-60" for="IsEntryBeforePreviousSwingOnTriggerDisplay">Entry before prev swing on trigger</label>
+                                                    <select class="text-center form-control" id="IsEntryBeforePreviousSwingOnTriggerInput" asp-for="CurrentTrade.IsEntryBeforePreviousSwingOnTriggerDisplay" asp-items="Model.YesNoOptions"></select>
+                                                </div>
+                                                <div class="form-group col-12 col-md-6 col-lg">
+                                                    <label class="d-block text-nowrap min-width-60" for="IsEntryAtPreviousSwingOnTriggerInput">Entry at prev swing on trigger</label>
+                                                    <select class="text-center form-control" id="IsEntryAtPreviousSwingOnTriggerInput" asp-for="CurrentTrade.IsEntryAtPreviousSwingOnTriggerDisplay" asp-items="Model.YesNoOptions"></select>
+                                                </div>
+                                                <div class="form-group col-12 col-md-6 col-lg">
+                                                    <label class="d-block text-nowrap min-width-60" for="IsEntryBeforePreviousSwingOn4HInput">Entry before prev swing on 4H</label>
+                                                    <select class="text-center form-control" id="IsEntryBeforePreviousSwingOn4HInput" asp-for="CurrentTrade.IsEntryBeforePreviousSwingOn4HDisplay" asp-items="Model.YesNoOptions"></select>
+                                                </div>
+                                                <div class="form-group col-12 col-md-6 col-lg">
+                                                    <label class="d-block text-nowrap min-width-60" for="IsEntryBeforePreviousSwingOnDInput">Entry before prev swing on D</label>
+                                                    <select class="text-center form-control" id="IsEntryBeforePreviousSwingOnDInput" asp-for="CurrentTrade.IsEntryBeforePreviousSwingOnDDisplay" asp-items="Model.YesNoOptions"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="tab-pane fade show tundora text-left" id="entryContext" role="tabpanel" aria-labelledby="entryContext-tab">
-                                    <th scope="row" class="text-center align-middle research-th">Momentum trade</th>
-                                    <td class="research-td">
-                                        <select id="IsMomentumTradeInput" asp-for="CurrentTrade.IsMomentumTradeDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
-                                    </td>
-                                    <th scope="row" class="text-center align-middle research-th">Trend trade</th>
-                                    <td class="research-td">
-                                        <select id="IIsTrendTradeInput" asp-for="CurrentTrade.IsTrendTradeDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
-                                    </td>
-                                    <th scope="row" class="text-center align-middle research-th">Trigger trending</th>
-                                    <td class="research-td">
-                                        <select id="IsTriggerTrendingInput" asp-for="CurrentTrade.IsTriggerTrendingDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
-                                    </td>
-                                    <th scope="row" class="text-center align-middle research-th">4H trending</th>
-                                    <td class="research-td">
-                                        <select id="Is4HTrendingInput" asp-for="CurrentTrade.Is4HTrendingDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
-                                    </td>
-                                    <th scope="row" class="text-center align-middle research-th">D trending</th>
-                                    <td class="research-td">
-                                        <select id="IsDTrendingInput" asp-for="CurrentTrade.IsDTrendingDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
-                                    </td>
-
-                                    <th scope="row" class="text-center align-middle research-th">Signal bar strong reversal</th>
-                                    <td class="research-td">
-                                        <select id="IsSignalBarStrongReversalDisplayInput" asp-for="CurrentTrade.IsSignalBarStrongReversalDisplay" asp-items="Model.YesNoOptions" class="text-center w-50 form-control research-input"></select>
-                                    </td>
+                                <!-- Tab content Price Aaction Context -->
+                                <div class="tab-pane fade show tundora text-left" id="priceActionContext" role="tabpanel" aria-labelledby="priceActionContext-tab">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="d-flex flex-wrap">
+                                                <div class="form-group col-12 col-md-6 col-lg">
+                                                    <label class="d-block text-nowrap min-width-60" for="IsMomentumTradeInput">Momentum trade</label>
+                                                    <select class="text-center form-control" id="IsMomentumTradeInput" asp-for="CurrentTrade.IsMomentumTradeDisplay" asp-items="Model.YesNoOptions"></select>
+                                                </div>
+                                                <div class="form-group col-12 col-md-6 col-lg">
+                                                    <label class="d-block text-nowrap min-width-60" for="IIsTrendTradeInput">Trend trade</label>
+                                                    <select class="text-center form-control" id="IIsTrendTradeInput" asp-for="CurrentTrade.IsTrendTradeDisplay" asp-items="Model.YesNoOptions"></select>
+                                                </div>
+                                                <div class="form-group col-12 col-md-6 col-lg">
+                                                    <label class="d-block text-nowrap min-width-60" for="IsTriggerTrendingInput">Trigger trending</label>
+                                                    <select class="text-center form-control" id="IsTriggerTrendingInput" asp-for="CurrentTrade.IsTriggerTrendingDisplay" asp-items="Model.YesNoOptions"></select>
+                                                </div>
+                                                <div class="form-group col-12 col-md-6 col-lg">
+                                                    <label class="d-block text-nowrap min-width-60" for="Is4HTrendingInput">4H trending</label>
+                                                    <select class="text-center form-control" id="Is4HTrendingInput" asp-for="CurrentTrade.Is4HTrendingDisplay" asp-items="Model.YesNoOptions"></select>
+                                                </div>
+                                                <div class="form-group col-12 col-md-6 col-lg">
+                                                    <label class="d-block text-nowrap min-width-60" for="IsDTrendingDisplay">D trending</label>
+                                                    <select class="text-center form-control" id="IsDTrendingInput" asp-for="CurrentTrade.IsDTrendingDisplay" asp-items="Model.YesNoOptions"></select>
+                                                </div>
+                                                <div class="form-group col-12 col-md-6 col-lg">
+                                                    <label class="d-block text-nowrap min-width-60" for="IsSignalBarStrongReversalDisplayInput">Signal bar strong reversal</label>
+                                                    <select class="text-center form-control" id="IsSignalBarStrongReversalDisplayInput" asp-for="CurrentTrade.IsSignalBarStrongReversalDisplay" asp-items="Model.YesNoOptions"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <!-- Card body ends -->

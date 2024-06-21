@@ -159,7 +159,6 @@ $(function () {
     });
 
     function ShowScreenshots(indexToShow, canShowToastr) {
-        alert(indexToShow);
         // Buttons 'prev' or 'next'
         if (indexToShow == -1 || indexToShow == 1) {
             tradeIndex += indexToShow;
