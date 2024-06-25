@@ -128,11 +128,11 @@ $(function () {
     });
 
     function ShowNextTrade(index) {
-        ShowScreenshots(index, false);
+        displayTradeData(index, false);
     }
 
     function ShowPrevTrade(index) {
-        ShowScreenshots(index, false);
+        displayTradeData(index, false);
     }
 
     // User enters trade number and presses enter
@@ -141,7 +141,7 @@ $(function () {
             userInput = Number(event.target.value);
             if (Number.isInteger(userInput)) {
                 tradeIndex = userInput - 1;
-                ShowScreenshots(tradeIndex, true);
+                displayTradeData(tradeIndex, true);
             }
             else {
                 toastr.error("Please enter a whole number.");
@@ -158,7 +158,7 @@ $(function () {
         ShowPrevTrade(-1);
     });
 
-    function ShowScreenshots(indexToShow, canShowToastr) {
+    function displayTradeData(indexToShow, canShowToastr) {
         // Buttons 'prev' or 'next'
         if (indexToShow == -1 || indexToShow == 1) {
             tradeIndex += indexToShow;
@@ -193,10 +193,48 @@ $(function () {
         }
         lastTradeIndex = tradeIndex;
         $('#tradeNumberInput').val(tradeIndex + 1);
-        LoadImages();
+        loadImages();
+        loadTradeData(tradeIndex); 
+        updateTradeData(tradeIndex);
     }
 
-    function LoadImages() {
+    function updateTradeData(index) {
+        var updatedTrade = {};
+        $('#cardBody [data-bind]').each(function () {
+            var bindProperty = $(this).data('bind');
+            updatedTrade[bindProperty] = $(this).val();
+        });
+
+        let dataToSend = {
+            CurrentTrade: updatedTrade
+        };
+
+        $.ajax({
+            method: 'POST',
+            url: '/research/updatetrade',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'JSON',
+            data: JSON.stringify(dataToSend),
+            success: function (response) {
+                console.log(response['success']);
+            },
+            error: function (response) {
+                console.error(response['error']);
+            }
+        });
+    }
+
+    function loadTradeData(tradeIndex) {
+        var trade = trades[tradeIndex];
+        $('#cardBody [data-bind]').each(function () {
+            var bindProperty = $(this).data('bind');
+            if (trade.hasOwnProperty(bindProperty)) {
+                $(this).val(trade[bindProperty]);
+            }
+        });
+    }
+
+    function loadImages() {
         var screenshots = trades[tradeIndex]['ScreenshotsUrls'];
 
         var newCarouselHtml = '<ol class="carousel-indicators">';

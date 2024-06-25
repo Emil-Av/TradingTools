@@ -38,8 +38,8 @@ namespace TradingTools.Controllers
         #endregion
 
         #region Methods
-        [HttpPost]
 
+        [HttpPost]
         public async Task<IActionResult> UpdateReview([FromBody] PaperTradesVM data)
         {
             if (data.Review == null)

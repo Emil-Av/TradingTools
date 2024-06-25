@@ -44,11 +44,23 @@ namespace TradingTools.Controllers
 
         #region Methods
 
+        [HttpPost]
+        public async Task<IActionResult> UpdateTrade([FromBody] ResearchVM data)
+        {
+            if (data == null)
+            {
+                return Json(new { error = "researchVM is null." });
+            }
+
+            return Json(new { success = "Trade was successfully updated" });
+        }
+
+
         public async Task<IActionResult> Index()
         {
             // Get research sample sizes
             List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research);
-                                                                    
+
             // Set the NumberSampleSizes for the button menu
             ResearchVM.NumberSampleSizes = sampleSizes.Count();
             if (ResearchVM.NumberSampleSizes == 0)
@@ -111,7 +123,7 @@ namespace TradingTools.Controllers
                         // Sort the entries to have the folders in ascending order (Trade 1, Trade 2..)
                         List<ZipArchiveEntry> sortedEntries = archive.Entries.OrderBy(e => e.FullName, new NaturalStringComparer()).ToList();
                         ResearchFirstBarPullback researchTrade = null;
-                        
+
                         TimeFrame researchedTF;
                         int tradeIndex = 0;
                         int currentTrade = 0;
