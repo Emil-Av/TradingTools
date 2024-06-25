@@ -204,6 +204,7 @@ $(function () {
             var bindProperty = $(this).data('bind');
             updatedTrade[bindProperty] = $(this).val();
         });
+        updatedTrade['Id'] = $('#currentTradeId').val();
 
         let dataToSend = {
             CurrentTrade: updatedTrade
@@ -232,6 +233,7 @@ $(function () {
                 $(this).val(trade[bindProperty]);
             }
         });
+        $('#currentTradeId').val(trade['Id']);
     }
 
     function loadImages() {

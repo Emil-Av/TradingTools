@@ -15,6 +15,7 @@ namespace Models.ViewModels.DisplayClasses
         /// <param name="dbResearchObj"></param>
         public ResearchFirstBarPullbackDisplay(ResearchFirstBarPullback dbResearchObj)
         {
+            Id = dbResearchObj.Id;
             ScreenshotsUrls = dbResearchObj.ScreenshotsUrls;
             SideTypeDisplay = dbResearchObj.SideType;
             OneToOneHitOnDisplay = dbResearchObj.OneToOneHitOn < 5 ? dbResearchObj.OneToOneHitOn.ToString() : ">5";
@@ -47,6 +48,14 @@ namespace Models.ViewModels.DisplayClasses
             FullATRMarketGaveSmthDisplay = dbResearchObj.FullATRMarketGaveSmth;
             CommentDisplay = dbResearchObj.Comment;
         }
+
+        public ResearchFirstBarPullbackDisplay()
+        {
+            
+        }
+
+        public int Id { get; set; }
+
         public List<string>? ScreenshotsUrls { get; set; }
 
         public SideType SideTypeDisplay { get; set; }

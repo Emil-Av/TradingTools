@@ -288,6 +288,7 @@
 </div>
 @*Save all trades data in a div element. See: https://security.stackexchange.com/questions/254647/passing-a-c-object-to-javascript-in-asp-net-mvc *@
 <div id="tradesData" data-trades="@JsonConvert.SerializeObject(Model.AllTrades)"></div>
+<input id="currentTradeId" value="@Model.CurrentTrade.Id"/>
 
 @section Scripts {
     <script src="~/js/research.js"></script>
