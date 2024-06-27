@@ -87,17 +87,17 @@
                     <div id="carouselTrades" class="carousel slide" data-interval="false">
                         <div id="imageContainer">
                             <ol class="carousel-indicators">
-                                @for (int i = 0; i < Model.CurrentTrade.ScreenshotsUrls.Count; i++)
+                                @for (int i = 0; i < Model.CurrentTrade.ScreenshotsUrlsDisplay.Count; i++)
                                 {
                                     <li data-bs-target="#carouselTrades" data-slide-to="@(i)" @(i == 0 ? "class=active" : "")></li>
                                 }
                             </ol>
                             <div class="carousel-inner">
 
-                                @for (int i = 0; i < Model.CurrentTrade.ScreenshotsUrls.Count; i++)
+                                @for (int i = 0; i < Model.CurrentTrade.ScreenshotsUrlsDisplay.Count; i++)
                                 {
                                     <div class="@(i == 0? "carousel-item active" : "carousel-item")">
-                                        <img src="@Model.CurrentTrade.ScreenshotsUrls[i]" class="d-block w-100" alt="...">
+                                        <img src="@Model.CurrentTrade.ScreenshotsUrlsDisplay[i]" class="d-block w-100" alt="...">
                                     </div>
                                 }
                             </div>
@@ -239,7 +239,7 @@
                                                 </div>
                                                 <div class="form-group col-12 col-md-6 col-lg">
                                                     <label class="d-block text-nowrap min-width-60" for="IIsTrendTradeInput">Trend trade</label>
-                                                    <select class="text-center form-control" id="IIsTrendTradeInput" data-bind="IsTrendTradeDisplay" asp-for="CurrentTrade.IsTrendTradeDisplay" asp-items="Model.YesNoOptions"></select>
+                                                    <select class="text-center form-control" id="IsTrendTradeInput" data-bind="IsTrendTradeDisplay" asp-for="CurrentTrade.IsTrendTradeDisplay" asp-items="Model.YesNoOptions"></select>
                                                 </div>
                                                 <div class="form-group col-12 col-md-6 col-lg">
                                                     <label class="d-block text-nowrap min-width-60" for="IsTriggerTrendingInput">Trigger trending</label>
@@ -265,6 +265,9 @@
                             <!-- Card body ends -->
                             <!-- Footer body begins -->
                             <div class="card-footer d-flex justify-content-start mt-2">
+                                <button class="btn btn-primary editorOnBtns" id="btnUpdate">
+                                    <span class="text"><i class="fa-regular fa-floppy-disk mr-2"></i>Update</span>
+                                </button>
                             </div>
                             <!-- Footer body ends -->
                         </div>
@@ -288,7 +291,6 @@
 </div>
 @*Save all trades data in a div element. See: https://security.stackexchange.com/questions/254647/passing-a-c-object-to-javascript-in-asp-net-mvc *@
 <div id="tradesData" data-trades="@JsonConvert.SerializeObject(Model.AllTrades)"></div>
-<input id="currentTradeId" value="@Model.CurrentTrade.Id"/>
 
 @section Scripts {
     <script src="~/js/research.js"></script>

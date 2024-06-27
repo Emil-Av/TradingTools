@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Utilities
 {
     /// <summary>
-    ///  Provides static methods used in throghout the app.
+    ///  Provides static methods used throghout the app.
     /// </summary>
     public static class AppHelper
     {

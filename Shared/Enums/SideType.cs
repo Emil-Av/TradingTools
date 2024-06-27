@@ -1,4 +1,4 @@
-﻿namespace Utilities.Enums
+﻿namespace SharedEnums.Enums
 {
     public enum SideType { Long, Short }
 }

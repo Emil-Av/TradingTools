@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using Utilities.Enums;
+using SharedEnums.Enums;
 
 namespace Models
 {

@@ -14,6 +14,7 @@ $(function () {
     // menuClicked, clickedMenuValue: When a new trade has to be loaded, one of the buttons has to be clicked (either TimeFrame, Strategy..). In case no trade exists for the selection, set the last value. Used in LoadTradeAsync()
     var menuClicked;
     var clickedMenuValue;
+    // Global index for the currently displayed trade. Can be used in the 'trades' variable
     var tradeIndex = 0;
     var lastTradeIndex = 0;
     var sampleSizeChanged;
@@ -109,13 +110,28 @@ $(function () {
     * ***************************
     */
 
+
     /**
      * ***************************
-     * Region menu methods
+     * Region even handlers begins
      * ***************************
      */
+    // Card button 'Update' click event handler 
+    $('#btnUpdate').on('click', function () {
+        updateTradeData(tradeIndex);
+    });
 
-    // Event handler when the left or the right arrow is pressed. Changes the trade accordingly.
+    // Menu button "Next" click event handler
+    $('#btnNext').on('click', function () {
+        ShowNextTrade(1);
+    });
+
+    // Menu button "Previous" click event handler
+    $('#btnPrev').on('click', function () {
+        ShowPrevTrade(-1);
+    });
+
+    // Event handler when the left or the right arrow is pressed. Displays the trade accordingly.
     $(document).on('keydown', function (event) {
         // Left arrow key pressed
         if (event.which === 37) {
@@ -126,14 +142,6 @@ $(function () {
             // Add your code to handle right arrow key press
         }
     });
-
-    function ShowNextTrade(index) {
-        displayTradeData(index, false);
-    }
-
-    function ShowPrevTrade(index) {
-        displayTradeData(index, false);
-    }
 
     // User enters trade number and presses enter
     $('#tradeNumberInput').on('keypress', function (event) {
@@ -150,14 +158,29 @@ $(function () {
         }
     });
 
-    $('#btnNext').on('click', function () {
-        ShowNextTrade(1);
-    });
 
-    $('#btnPrev').on('click', function () {
-        ShowPrevTrade(-1);
-    });
+    /**
+     * ***************************
+     * Region even handlers ends
+     * ***************************
+     */
 
+    /**
+     * ***************************
+     * Region methods begins
+     * ***************************
+     */
+
+    // Toggles to the next trade
+    function ShowNextTrade(index) {
+        displayTradeData(index, false);
+    }
+    // Toggles to the previous trade
+    function ShowPrevTrade(index) {
+        displayTradeData(index, false);
+    }
+
+    // Loads the screenshots and the values  input/select elements in the card
     function displayTradeData(indexToShow, canShowToastr) {
         // Buttons 'prev' or 'next'
         if (indexToShow == -1 || indexToShow == 1) {
@@ -195,36 +218,39 @@ $(function () {
         $('#tradeNumberInput').val(tradeIndex + 1);
         loadImages();
         loadTradeData(tradeIndex); 
-        updateTradeData(tradeIndex);
     }
-
+    // Updates the database with the values from the card for the displayed trade
     function updateTradeData(index) {
         var updatedTrade = {};
+        // Get all data from the input and select fields in the card
         $('#cardBody [data-bind]').each(function () {
             var bindProperty = $(this).data('bind');
             updatedTrade[bindProperty] = $(this).val();
         });
-        updatedTrade['Id'] = $('#currentTradeId').val();
-
-        let dataToSend = {
-            CurrentTrade: updatedTrade
-        };
-
+        // Add the Id and the Screenshots
+        updatedTrade['IdDisplay'] = trades[index]['IdDisplay'];
+        updatedTrade['ScreenshotsUrlsDisplay'] = trades[index]['ScreenshotsUrlsDisplay'];
+        // make the API call
         $.ajax({
             method: 'POST',
             url: '/research/updatetrade',
             contentType: 'application/json; charset=utf-8',
             dataType: 'JSON',
-            data: JSON.stringify(dataToSend),
+            data: JSON.stringify(updatedTrade),
             success: function (response) {
-                console.log(response['success']);
+                if (response['success'] !== undefined) {
+                    toastr.success(response['success']);
+                }
+                else if (response['error'] !== undefined) {
+                    toastr.error(response['error']);
+                }
             },
             error: function (response) {
-                console.error(response['error']);
+                console.error(response);
             }
         });
     }
-
+    // Loads the trade data into the input/select elements
     function loadTradeData(tradeIndex) {
         var trade = trades[tradeIndex];
         $('#cardBody [data-bind]').each(function () {
@@ -233,11 +259,11 @@ $(function () {
                 $(this).val(trade[bindProperty]);
             }
         });
-        $('#currentTradeId').val(trade['Id']);
+        $('#currentTradeId').val(trade['IdDisplay']);
     }
-
+    // Loads the images into the carousel
     function loadImages() {
-        var screenshots = trades[tradeIndex]['ScreenshotsUrls'];
+        var screenshots = trades[tradeIndex]['ScreenshotsUrlsDisplay'];
 
         var newCarouselHtml = '<ol class="carousel-indicators">';
         for (var i = 0; i < screenshots.length; i++) {
@@ -271,7 +297,7 @@ $(function () {
 
     /**
      * ***************************
-     * Region menu methods
+     * Region methods
      * ***************************
      */
 });

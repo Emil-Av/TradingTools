@@ -12,7 +12,7 @@ using System.Diagnostics;
 using System.IO.Compression;
 using System.Reflection.Metadata.Ecma335;
 using Utilities;
-using Utilities.Enums;
+using SharedEnums.Enums;
 
 namespace TradingTools.Controllers
 {
@@ -45,18 +45,16 @@ namespace TradingTools.Controllers
         #region Methods
 
         [HttpPost]
-        public async Task<IActionResult> UpdateTrade([FromBody] ResearchVM data)
+        public async Task<IActionResult> UpdateTrade([FromBody] ResearchFirstBarPullbackDisplay currentTrade)
         {
-            if (data.CurrentTrade == null)
+            if (currentTrade == null)
             {
                 return Json(new { error = "CurrentTrade is null." });
             }
-            ResearchFirstBarPullback trade = await _unitOfWork.ResearchFirstBarPullback.GetAsync(x => x.Id == data.CurrentTrade.Id);
-            if (trade == null)
-            {
-                return Json(new { error = $"Trade with ID {data.CurrentTrade.Id} doesn't exist." });
-            }
-            ConvertToDbResearchValues(trade, data.CurrentTrade);
+
+            ResearchFirstBarPullback trade = ResearchMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(currentTrade);
+            // The Id of a trade is in the currentTrade paramater. The id is passed to the trade object in ResearchMapper.ViewModelToEntity().
+            // The Update() method, queries the database for a trade based on the Id.
             _unitOfWork.ResearchFirstBarPullback.Update(trade);
             _unitOfWork.Save();
 
@@ -79,8 +77,9 @@ namespace TradingTools.Controllers
             // Get all researched trades from the DB and project the instances into ResearchFirstBarPullbackDisplay
             ResearchVM.AllTrades = (await _unitOfWork.ResearchFirstBarPullback
                                     .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId))
-                                    .Select(x => new ResearchFirstBarPullbackDisplay(x))
+                                    .Select(x => ResearchMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(x))
                                     .ToList();
+
             // Should not happen
             if (!ResearchVM.AllTrades.Any())
             {

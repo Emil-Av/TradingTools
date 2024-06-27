@@ -6,7 +6,7 @@ using System.IO.Compression;
 using System.Xml.Linq;
 using Utilities;
 using Models.ViewModels;
-using Utilities.Enums;
+using SharedEnums.Enums;
 
 
 namespace TradingTools.Controllers
