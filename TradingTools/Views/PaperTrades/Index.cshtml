@@ -25,12 +25,12 @@
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Time Frame: <span id="spanTimeFrame">@MyEnumConverter.SetTimeFrameFromEnum((TimeFrame)Model.CurrentTrade.TimeFrame)</span>
+                                    Time Frame: <span id="spanTimeFrame">@MyEnumConverter.TimeFrameFromEnum((TimeFrame)Model.CurrentTrade.TimeFrame)</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="dropdownBtnTimeFrame" aria-labelledby="dropdownMenuButton">
                                     @foreach (TimeFrame tf in Enum.GetValues(typeof(TimeFrame)))
                                     {
-                                        <a class="dropdown-item" role="button">@MyEnumConverter.SetTimeFrameFromEnum(tf)</a>
+                                        <a class="dropdown-item" role="button">@MyEnumConverter.TimeFrameFromEnum(tf)</a>
                                     }
                                 </div>
                             </div>
@@ -39,12 +39,12 @@
                         <div class="col-auto p-2">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Strategy: <span id="spanStrategy">@MyEnumConverter.SetStrategyFromEnum(Model.CurrentTrade.Strategy)</span>
+                                    Strategy: <span id="spanStrategy">@MyEnumConverter.StrategyFromEnum(Model.CurrentTrade.Strategy)</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
                                     @foreach (Strategy strategy in Enum.GetValues(typeof(Strategy)))
                                     {
-                                        <a class="dropdown-item" role="button">@MyEnumConverter.SetStrategyFromEnum(strategy)</a>
+                                        <a class="dropdown-item" role="button">@MyEnumConverter.StrategyFromEnum(strategy)</a>
                                     }
                                 </div>
                             </div>

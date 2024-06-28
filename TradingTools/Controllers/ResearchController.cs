@@ -51,10 +51,15 @@ namespace TradingTools.Controllers
             {
                 return Json(new { error = "CurrentTrade is null." });
             }
+            if (!ModelState.IsValid) 
+            {
+                return Json(new { error = "Wrong values. Please note the messages" });
+            }
 
             ResearchFirstBarPullback trade = ResearchMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(currentTrade);
             // The Id of a trade is in the currentTrade paramater. The id is passed to the trade object in ResearchMapper.ViewModelToEntity().
             // The Update() method, queries the database for a trade based on the Id.
+            SanitizationHelper.SanitizeObject(trade);
             _unitOfWork.ResearchFirstBarPullback.Update(trade);
             _unitOfWork.Save();
 
@@ -79,6 +84,7 @@ namespace TradingTools.Controllers
                                     .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId))
                                     .Select(x => ResearchMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(x))
                                     .ToList();
+            ResearchVM.AllTrades.ForEach(x => SanitizationHelper.SanitizeObject(x));
 
             // Should not happen
             if (!ResearchVM.AllTrades.Any())
@@ -157,7 +163,7 @@ namespace TradingTools.Controllers
                                     return RedirectToAction(nameof(Index));
                                 }
                                 string tempTF = researchInfo[2].Replace(".csv", "");
-                                researchedTF = MyEnumConverter.SetTimeFrameFromString(tempTF);
+                                researchedTF = MyEnumConverter.TimeFrameFromString(tempTF);
                                 // Set the sample size for the research
                                 SampleSize sampleSize = new SampleSize();
                                 sampleSize.TradeType = TradeType.Research;

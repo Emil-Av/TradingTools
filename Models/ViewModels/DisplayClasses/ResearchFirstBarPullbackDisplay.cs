@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using SharedEnums.Enums;
 
 namespace Models.ViewModels.DisplayClasses
@@ -22,6 +24,7 @@ namespace Models.ViewModels.DisplayClasses
         /// <summary>
         ///  Risk to reward ratio 1:1.
         /// </summary>
+        [Range(0, 6)]
         public string OneToOneHitOnDisplay { get; set; }
 
         /// <summary>
@@ -78,18 +81,20 @@ namespace Models.ViewModels.DisplayClasses
 
         public string IsSignalBarInTradeDirectionDisplay { get; set; }
 
+        [ValidateNever]
         public int FullATROneToOneHitOnDisplay { get; set; }
 
+        [ValidateNever]
         public string IsFullATROneToThreeHitDisplay { get; set; }
-
+        [ValidateNever]
         public string IsFullATROneToFiveHitDisplay { get; set; }
-
+        [ValidateNever]
         public string IsFullATRBreakevenDisplay { get; set; }
-
+        [ValidateNever]
         public string IsFullATRLossDisplay { get; set; }
-
+        [ValidateNever]
         public int FullATRMaxRRDisplay { get; set; }
-
+        [ValidateNever]
         public bool FullATRMarketGaveSmthDisplay { get; set; }
 
         public string? CommentDisplay { get; set; }

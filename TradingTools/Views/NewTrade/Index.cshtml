@@ -1,6 +1,79 @@
 ﻿@{
-    ViewData["Title"] = "New Trade";
+    ViewData["Title"] = "Paper Trades";
 }
 
-New Trade View
-   
+<div class="row justify-content-center align-items-top">
+    <div class="col-10 text-center">
+        <div class="container mb-4">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-auto d-flex align-items-center flex-wrap justify-content-center">
+                    <!-- Menu Time Frame -->
+                    <div class="col-auto p-2">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Time Frame: <span id="spanTimeFrame"></span>
+                            </button>
+                            <div class="dropdown-menu animated--fade-in" id="dropdownBtnTimeFrame" aria-labelledby="dropdownMenuButton">
+                                @foreach (TimeFrame tf in Enum.GetValues(typeof(TimeFrame)))
+                                {
+                                    <a class="dropdown-item" role="button">@MyEnumConverter.TimeFrameFromEnum(tf)</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Menu Strategy -->
+                    <div class="col-auto p-2">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Strategy: <span id="spanStrategy"></span>
+                            </button>
+                            <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
+                                @foreach (Strategy strategy in Enum.GetValues(typeof(Strategy)))
+                                {
+                                    <a class="dropdown-item" role="button">@MyEnumConverter.StrategyFromEnum(strategy)</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Menu Trade Type -->
+                    <div class="col-auto p-2">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Trade Type: <span id="tradeType"></span>
+                            </button>
+                            <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
+                                @foreach (TradeType tradeType in Enum.GetValues(typeof(TradeType)))
+                                {
+                                    <a class="dropdown-item" role="button">@tradeType.ToString()</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Menu Trade Side -->
+                    <div class="col-auto p-2">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Side: <span id="tradeSide"></span>
+                            </button>
+                            <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
+                                @foreach (SideType sideType in Enum.GetValues(typeof(SideType)))
+                                {
+                                    <a class="dropdown-item" role="button">@sideType.ToString()</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @* Upload trades (when the DB is empty) *@
+        <form method="post" enctype="multipart/form-data" id="formUploadFiles" asp-action="UploadScreenshots">
+            <input type="file" name="screenshots" id="filesInput" class="d-none"/>
+            <a class="button d-flex flex-column align-items-center justify-content-center mt-5" role="button" id="uploadFilesButton" onclick="document.getElementById('fileInput').click()">
+                <i class="fa-regular fa-folder-open fa-2xl mb-3"></i>
+                <span>Upload Screenshots</span>
+            </a>
+        </form>
+    </div>
+</div>

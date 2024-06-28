@@ -22,12 +22,12 @@
                                 <div class="dropdown">
                                     <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Time Frame: <span id="spanTimeFrame">@MyEnumConverter.SetTimeFrameFromEnum(Model.CurrentSampleSize.TimeFrame)</span>
+                                        Time Frame: <span id="spanTimeFrame">@MyEnumConverter.TimeFrameFromEnum(Model.CurrentSampleSize.TimeFrame)</span>
                                     </button>
                                     <div class="dropdown-menu animated--fade-in" id="dropdownBtnTimeFrame" aria-labelledby="dropdownMenuButton">
                                         @foreach (TimeFrame tf in Model.AvailableTimeframes)
                                         {
-                                            <a class="dropdown-item" role="button">@MyEnumConverter.SetTimeFrameFromEnum(tf)</a>
+                                            <a class="dropdown-item" role="button">@MyEnumConverter.TimeFrameFromEnum(tf)</a>
                                         }
                                     </div>
                                 </div>
@@ -36,12 +36,12 @@
                             <div class="p-2">
                                 <div class="dropdown">
                                     <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Strategy: <span id="spanStrategy">@MyEnumConverter.SetStrategyFromEnum(Model.CurrentSampleSize.Strategy)</span>
+                                        Strategy: <span id="spanStrategy">@MyEnumConverter.StrategyFromEnum(Model.CurrentSampleSize.Strategy)</span>
                                     </button>
                                     <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
                                         @foreach (Strategy strategy in Model.AvailableStrategies)
                                         {
-                                            <a class="dropdown-item" role="button">@MyEnumConverter.SetStrategyFromEnum(strategy)</a>
+                                            <a class="dropdown-item" role="button">@MyEnumConverter.StrategyFromEnum(strategy)</a>
                                         }
                                     </div>
                                 </div>

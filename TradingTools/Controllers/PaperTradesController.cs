@@ -99,7 +99,7 @@ namespace TradingTools.Controllers
             // Check and parse the paramaters
             try
             {
-                timeFrame1 = MyEnumConverter.SetTimeFrameFromString(timeFrame);
+                timeFrame1 = MyEnumConverter.TimeFrameFromString(timeFrame);
             }
             catch (Exception ex)
             {
@@ -108,7 +108,7 @@ namespace TradingTools.Controllers
 
             try
             {
-                strategy1 = MyEnumConverter.SetStrategyFromString(strategy);
+                strategy1 = MyEnumConverter.StrategyFromString(strategy);
             }
             catch (Exception ex)
             {
@@ -261,8 +261,8 @@ namespace TradingTools.Controllers
                             else
                             {
                                 string[] tradeInfo = entry.FullName.Split('/');
-                                trade.Strategy = MyEnumConverter.SetStrategyFromString(tradeInfo[1]);
-                                trade.TimeFrame = MyEnumConverter.SetTimeFrameFromString(tradeInfo[2]);
+                                trade.Strategy = MyEnumConverter.StrategyFromString(tradeInfo[1]);
+                                trade.TimeFrame = MyEnumConverter.TimeFrameFromString(tradeInfo[2]);
                                 trade.SampleSizeId = currentSampleSizeId;
 
 
