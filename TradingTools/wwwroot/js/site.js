@@ -1,5 +1,5 @@
 ﻿
-// Hide the menu if it's clicked outside of it
+// Left bar (menu 'Trades'): Hide the menu if it's clicked outside of it
 $(document).on('click', function (event) {
     var menu = $('#dropdownBtnTrades');
     var target = $(event.target);

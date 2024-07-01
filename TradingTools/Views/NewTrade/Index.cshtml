@@ -4,6 +4,7 @@
 
 <div class="row justify-content-center align-items-top">
     <div class="col-10 text-center">
+        <h2>New Trade</h2>
         <div class="container mb-4">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-auto d-flex align-items-center flex-wrap justify-content-center">
@@ -40,9 +41,9 @@
                     <div class="col-auto p-2">
                         <div class="dropdown">
                             <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Trade Type: <span id="tradeType"></span>
+                                Trade Type: <span id="spanTradeType"></span>
                             </button>
-                            <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
+                            <div class="dropdown-menu animated--fade-in" id="dropdownBtnTradeType" aria-labelledby="dropdownMenuButton">
                                 @foreach (TradeType tradeType in Enum.GetValues(typeof(TradeType)))
                                 {
                                     <a class="dropdown-item" role="button">@tradeType.ToString()</a>
@@ -54,7 +55,7 @@
                     <div class="col-auto p-2">
                         <div class="dropdown">
                             <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Side: <span id="tradeSide"></span>
+                                Side: <span id="spanTradeSide"></span>
                             </button>
                             <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
                                 @foreach (SideType sideType in Enum.GetValues(typeof(SideType)))
@@ -65,15 +66,33 @@
                         </div>
                     </div>
                 </div>
+                <div class="d-flex justify-content-center align-items-center mt-4">
+                    <div class="card border-left-success shadow">
+                        <div class="card-body d-flex justify-content-around align-items-center">
+                            <div class="text-center p-4 btn" style="border: 2px dashed #ccc;" style="cursor: pointer;" onclick="document.getElementById('filesInput').click()">
+                                <!-- Upload trades (when the DB is empty) -->
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <form method="post" enctype="multipart/form-data" id="formUploadFiles" asp-action="UploadScreenshots">
+                                        <a role="button" class="button">
+                                            <input type="file" name="screenshots" id="filesInput" class="d-none" />
+                                            <i class="fa-solid fa-file-arrow-up fa-2x text-primary"></i>
+                                            <span class="mt-2" style="display: block;">Upload Screenshots</span>
+                                        </a>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="text-center p-4" id="uploadedScreenshotsArea">
+                                <p>Additional content goes here.</p>
+                                <!-- You can add more content as needed -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        @* Upload trades (when the DB is empty) *@
-        <form method="post" enctype="multipart/form-data" id="formUploadFiles" asp-action="UploadScreenshots">
-            <input type="file" name="screenshots" id="filesInput" class="d-none"/>
-            <a class="button d-flex flex-column align-items-center justify-content-center mt-5" role="button" id="uploadFilesButton" onclick="document.getElementById('fileInput').click()">
-                <i class="fa-regular fa-folder-open fa-2xl mb-3"></i>
-                <span>Upload Screenshots</span>
-            </a>
-        </form>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/newTrade.js"></script>
+}

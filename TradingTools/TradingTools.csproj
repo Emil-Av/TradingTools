@@ -7,7 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\js\newTrade.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\js\newTrade.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\lib\bootstrap\dist\js\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\js\newTrade.js" />
   </ItemGroup>
 
   <ItemGroup>
