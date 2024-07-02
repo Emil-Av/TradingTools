@@ -17,15 +17,12 @@
     // Attach a click event for each <a> element of each menu.
     for (var key in menuButtons) {
         (function (key) {
-            SetSelectedItemClass(key);
             // Change the value of the span in the button
             $(key).on('click', '.dropdown-item', function () {
-                // Save the old value. If there is no trade in the DB for the selected trade, the menu's old value should be displayed.
-                menuClicked = $(menuButtons[key]);
-                clickedMenuValue = $(menuButtons[key]).text();
                 // Set the new value
                 var value = $(this).text();
                 $(menuButtons[key]).text(value);
+                SetSelectedItemClass(key);
             });
         })(key);
     }
@@ -72,16 +69,16 @@
         $.ajax({
             url: '/newtrade/uploadscreenshots', // Replace with your controller action URL
             type: 'POST',
-            data: formData,
+            data: tradeData,
             processData: false, // Don't process the files
             contentType: false, // Set content type to false as FormData will handle it
             success: function (response) {
-                console.log('Files uploaded successfully');
                 // Handle success response
+                console.log('Files uploaded successfully');
             },
             error: function (error) {
-                console.error('Error uploading files:', error);
                 // Handle error
+                console.error('Error uploading files:', error);
             }
         });
     })

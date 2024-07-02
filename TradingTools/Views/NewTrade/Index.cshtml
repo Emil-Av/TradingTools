@@ -1,13 +1,15 @@
-﻿@{
+﻿@model NewTradeVM
+
+@{
     ViewData["Title"] = "Paper Trades";
 }
 
 <div class="row justify-content-center align-items-top">
-    <div class="col-10 text-center">
+    <div class="col-8 text-center">
         <h2>New Trade</h2>
         <div class="container mb-4">
             <div class="row justify-content-center">
-                <div class="col-12 col-md-auto d-flex align-items-center flex-wrap justify-content-center">
+                <div class="w-75 col-md-auto d-flex align-items-center flex-wrap justify-content-center">
                     <!-- Menu Time Frame -->
                     <div class="col-auto p-2">
                         <div class="dropdown">
@@ -57,7 +59,7 @@
                             <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Side: <span id="spanTradeSide"></span>
                             </button>
-                            <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
+                            <div class="dropdown-menu animated--fade-in" id="dropdownBtnTradeSide" aria-labelledby="dropdownMenuButton">
                                 @foreach (SideType sideType in Enum.GetValues(typeof(SideType)))
                                 {
                                     <a class="dropdown-item" role="button">@sideType.ToString()</a>
@@ -66,26 +68,64 @@
                         </div>
                     </div>
                 </div>
-                <div class="d-flex justify-content-center align-items-center mt-4">
+                <!-- Menu buttons ends -->
+                <!-- Card prices and screenshots -->
+                <div class="col-10 justify-content-center align-items-center mt-4">
                     <div class="card border-left-success shadow">
                         <div class="card-body d-flex justify-content-around align-items-center">
-                            <div class="text-center p-4 btn" style="border: 2px dashed #ccc;" style="cursor: pointer;" onclick="document.getElementById('filesInput').click()">
-                                <!-- Upload trades (when the DB is empty) -->
-                                <div class="d-flex justify-content-center align-items-center">
-                                    <form method="post" enctype="multipart/form-data" id="formUploadFiles" asp-action="UploadScreenshots">
-                                        <a role="button" class="button">
-                                            <input type="file" name="screenshots" id="filesInput" class="d-none" />
-                                            <i class="fa-solid fa-file-arrow-up fa-2x text-primary"></i>
-                                            <span class="mt-2" style="display: block;">Upload Screenshots</span>
-                                        </a>
-                                    </form>
+                            <div class="row w-100">
+                                <div class="col-6 d-flex flex-row justify-content-center align-items-center">
+                                    <div class="w-100 p-4">
+                                        <div class="form-group">
+                                            <label for="input1">Entry Price</label>
+                                            <input type="text" class="form-control" id="input1" placeholder="Enter text">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="input2">Stop Price</label>
+                                            <input type="text" class="form-control" id="input2" placeholder="Enter text">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="input2">Max Price</label>
+                                            <input type="text" class="form-control" id="input2" placeholder="Enter text">
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="text-center p-4" id="uploadedScreenshotsArea">
-                                <p>Additional content goes here.</p>
-                                <!-- You can add more content as needed -->
+                                <div class="col-6 d-flex flex-row justify-content-center align-items-center">
+                                    <div class="text-center p-4 btn" style="border: 2px dashed #ccc;" style="cursor: pointer;" onclick="document.getElementById('filesInput').click()">
+                                        <div class="d-flex justify-content-center align-items-center">
+                                            <form method="post" enctype="multipart/form-data" id="formUploadFiles" asp-action="UploadScreenshots">
+                                                <a role="button" class="button">
+                                                    <input type="file" name="screenshots" id="filesInput" class="d-none" />
+                                                    <i class="fa-solid fa-file-arrow-up fa-2x text-primary"></i>
+                                                    <span class="mt-2" style="display: block;">Upload Screenshots</span>
+                                                </a>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="text-center p-4" id="uploadedScreenshotsArea">
+                                        <p>Additional content goes here.</p>
+                                        <!-- You can add more content as needed -->
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
+                    </div>
+                </div>
+                <!-- Card research data -->
+                <div class="col-10 justify-content-center align-items-center mt-4">
+                    <div class="card border-left-info shadow">
+                        <partial name="/Views/Shared/_ResearchFirstBarPullbackData.cshtml" />
+                    </div>
+                </div>
+
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-10 mt-4">
+                    <div class="card-footer mt-2 d-flex justify-content-end">
+                        <button class="btn btn-info" id="btnUpdate">
+                            <span class="text"><i class="fa-regular fa-floppy-disk mr-2"></i>Save</span>
+                        </button>
                     </div>
                 </div>
             </div>

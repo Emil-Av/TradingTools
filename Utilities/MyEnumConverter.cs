@@ -4,12 +4,24 @@ namespace Utilities
 {
     public class MyEnumConverter
     {
-        public static TradeType SetTradeType(string tradeType)
+        public static SideType SideTypeFromString(string sideType)
+        {
+            Dictionary<string, SideType> sideTypes = new Dictionary<string, SideType>() 
+            {
+                { "Long", SideType.Long },
+                { "Short", SideType.Short }
+            };
+
+            return sideTypes[sideType];
+        }
+
+        public static TradeType TradeTypeFromString(string tradeType)
         {
             Dictionary<string, TradeType> tradeTypes = new Dictionary<string, TradeType>()
             {
                 { "Trade", TradeType.Trade },
-                { "PaperTrade" , TradeType.PaperTrade }
+                { "PaperTrade" , TradeType.PaperTrade },
+                { "Research", TradeType.Research },
             };
 
             return tradeTypes[tradeType];

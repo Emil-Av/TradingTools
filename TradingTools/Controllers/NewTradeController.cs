@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Models.ViewModels;
+using Newtonsoft.Json;
 using NuGet.Protocol;
+using Utilities;
 
 namespace TradingTools.Controllers
 {
@@ -8,6 +11,7 @@ namespace TradingTools.Controllers
         public NewTradeController(IWebHostEnvironment webHostEnvironment)
         {
             _webHostEnvironment = webHostEnvironment;
+            NewTradeVM = new NewTradeVM();
         }
 
         #region Fields
@@ -16,25 +20,35 @@ namespace TradingTools.Controllers
 
         #endregion
 
+        #region Properties
+
+        NewTradeVM NewTradeVM { get; set; }
+
+        #endregion
+
 
         #region Methods
         [HttpPost]
-        public IActionResult UploadScreenshots([FromForm] IFormFile[] files, [FromForm] string tradeData)
+        public IActionResult UploadScreenshots([FromForm] IFormFile[] files, [FromBody] string tradeData)
         {
-            try
+            Dictionary<string, string> tradeDataObject = JsonConvert.DeserializeObject<Dictionary<string, string>>(tradeData);
+            if (tradeData == null)
             {
-                if (Request.Form.Files.Count > 0)
-                {
-                    
-                }
+                return Json(new { error = "Trade data was empty." });
             }
-            catch { }
-            return View();
+
+            NewTradeVM.TimeFrame = MyEnumConverter.TimeFrameFromString(tradeDataObject["timeFrame"]);
+            NewTradeVM.Strategy = MyEnumConverter.StrategyFromString(tradeDataObject["strategy"]);
+            NewTradeVM.TradeType = MyEnumConverter.TradeTypeFromString(tradeDataObject["tradeType"]);
+            NewTradeVM.Side = MyEnumConverter.SideTypeFromString(tradeDataObject["tradeSide"]);
+
+            
+            return View(NewTradeVM);
         }
 
         public IActionResult Index()
         {
-            return View();
+            return View(NewTradeVM);
         }
     }
 
