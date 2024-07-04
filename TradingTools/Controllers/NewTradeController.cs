@@ -29,13 +29,13 @@ namespace TradingTools.Controllers
 
         #region Methods
         [HttpPost]
-        public IActionResult UploadScreenshots([FromForm] IFormFile[] files, [FromBody] string tradeData)
+        public IActionResult UploadScreenshots([FromForm] IFormFile[] files, [FromForm] string tradeData)
         {
-            Dictionary<string, string> tradeDataObject = JsonConvert.DeserializeObject<Dictionary<string, string>>(tradeData);
             if (tradeData == null)
             {
                 return Json(new { error = "Trade data was empty." });
             }
+            Dictionary<string, string> tradeDataObject = JsonConvert.DeserializeObject<Dictionary<string, string>>(tradeData);
 
             NewTradeVM.TimeFrame = MyEnumConverter.TimeFrameFromString(tradeDataObject["timeFrame"]);
             NewTradeVM.Strategy = MyEnumConverter.StrategyFromString(tradeDataObject["strategy"]);

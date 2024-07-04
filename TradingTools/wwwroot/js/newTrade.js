@@ -1,4 +1,17 @@
 ﻿$(function () {
+    /**
+   * ******************************
+   * Region global variables starts
+   * ******************************
+   */
+
+    var uploadedFiles = [];
+
+    /**
+      * ****************************
+      * Region global variables ends
+      * ****************************
+      */
 
     /**
     * ***************************
@@ -48,14 +61,40 @@
     * ***************************
     */
 
+    /**
+     * ***************************
+     * Region functions begins
+     * ***************************
+     */
+
     // After uploading screenshots, the 'change' event is triggered, this submits the form and sends the files to the controller
     $('input[type="file"]').change(function (e) {
-        var formData = new FormData();
         var files = $(this)[0].files; // Get the files array from the input element
 
         // Iterate through each selected file to append it to FormData
         for (var i = 0; i < files.length; i++) {
-            formData.append('files', files[i]);
+            uploadedFiles.push(files[i]);
+        }
+
+        displayNames();
+    });
+
+    function displayNames() {
+        var fileList = $('#fileList');
+        fileList.empty();
+
+        for (var i = 0; i < uploadedFiles.length; i++) {
+            fileName = (i + 1) + '. ' + uploadedFiles[i].name;
+            fileList.append('<p style="overflow-wrap: break-word; word-wrap: break-word;">' + fileName + '<span class="text-success ml-2">&#10003;</span</p>');
+        }
+    }
+
+    function saveTrade() {
+
+        var formData = new FormData();
+
+        for (var i = 0; i < uploadedFiles.length; i++) {
+            formData.append('files', uploadedFiles[i]);
         }
 
         var tradeData = {};
@@ -67,10 +106,10 @@
         formData.append('tradeData', JSON.stringify(tradeData));
 
         $.ajax({
-            url: '/newtrade/uploadscreenshots', // Replace with your controller action URL
+            url: '/newtrade/uploadscreenshots',
             type: 'POST',
-            data: tradeData,
-            processData: false, // Don't process the files
+            data: formData,
+            processData: false, // Don't process the files, otherwise jQuery will transform the data into a query string
             contentType: false, // Set content type to false as FormData will handle it
             success: function (response) {
                 // Handle success response
@@ -81,6 +120,12 @@
                 console.error('Error uploading files:', error);
             }
         });
-    })
+    };
+
+    /**
+     * ***************************
+     * Region functions ends
+     * ***************************
+     */
 
 })
