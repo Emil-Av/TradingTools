@@ -7,6 +7,7 @@ using System.Xml.Linq;
 using Utilities;
 using Models.ViewModels;
 using SharedEnums.Enums;
+using Shared;
 
 
 namespace TradingTools.Controllers

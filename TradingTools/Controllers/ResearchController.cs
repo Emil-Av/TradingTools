@@ -13,6 +13,7 @@ using System.IO.Compression;
 using System.Reflection.Metadata.Ecma335;
 using Utilities;
 using SharedEnums.Enums;
+using Shared;
 
 namespace TradingTools.Controllers
 {
@@ -56,7 +57,7 @@ namespace TradingTools.Controllers
                 return Json(new { error = "Wrong values. Please note the messages" });
             }
 
-            ResearchFirstBarPullback trade = ResearchMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(currentTrade);
+            ResearchFirstBarPullback trade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(currentTrade);
             // The Id of a trade is in the currentTrade paramater. The id is passed to the trade object in ResearchMapper.ViewModelToEntity().
             // The Update() method, queries the database for a trade based on the Id.
             SanitizationHelper.SanitizeObject(trade);
@@ -82,7 +83,7 @@ namespace TradingTools.Controllers
             // Get all researched trades from the DB and project the instances into ResearchFirstBarPullbackDisplay
             ResearchVM.AllTrades = (await _unitOfWork.ResearchFirstBarPullback
                                     .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId))
-                                    .Select(x => ResearchMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(x))
+                                    .Select(x => EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(x))
                                     .ToList();
             ResearchVM.AllTrades.ForEach(x => SanitizationHelper.SanitizeObject(x));
 

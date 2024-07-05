@@ -3,7 +3,7 @@ using Models.ViewModels.DisplayClasses;
 
 namespace Utilities
 {
-    public class ResearchMapper
+    public class EntityMapper
     {
         /// <summary>
         ///  Converts the values from an entity to a display class.
