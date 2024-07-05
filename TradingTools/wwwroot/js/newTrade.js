@@ -120,7 +120,7 @@
         formData.append('tradeData', JSON.stringify(tradeData));
 
         $.ajax({
-            url: '/newtrade/uploadscreenshots',
+            url: '/newtrade/savenewtrade',
             type: 'POST',
             data: formData,
             processData: false, // Don't process the files, otherwise jQuery will transform the data into a query string

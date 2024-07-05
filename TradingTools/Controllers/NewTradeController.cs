@@ -37,7 +37,7 @@ namespace TradingTools.Controllers
 
         #region Methods
         [HttpPost]
-        public IActionResult UploadScreenshots([FromForm] IFormFile[] files, [FromForm] string tradeParams, [FromForm] string tradeData)
+        public IActionResult SaveNewTrade([FromForm] IFormFile[] files, [FromForm] string tradeParams, [FromForm] string tradeData)
         {
             if (tradeParams == null || tradeData == null)
             {
