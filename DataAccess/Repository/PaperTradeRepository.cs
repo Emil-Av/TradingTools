@@ -27,8 +27,7 @@ namespace DataAccess.Repository
                 objFromDb.TriggerPrice = paperTrade.TriggerPrice;
                 objFromDb.EntryPrice = paperTrade.EntryPrice;
                 objFromDb.StopPrice = paperTrade.StopPrice;
-                objFromDb.FirstTarget = paperTrade.FirstTarget;
-                objFromDb.SecondTarget = paperTrade.SecondTarget;
+                objFromDb.Targets = paperTrade.Targets;
                 objFromDb.ExitPrice = paperTrade.ExitPrice; 
                 objFromDb.Profit = paperTrade.Profit; 
                 objFromDb.Loss = paperTrade.Loss;

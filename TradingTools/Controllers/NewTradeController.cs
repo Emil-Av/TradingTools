@@ -43,7 +43,7 @@ namespace TradingTools.Controllers
             {
                 return Json(new { error = "Trade values are empty." });
             }
-
+            // Set the values of NewTradeVM properties
             string errorMsg = NewTradeVM.SetValues(tradeParams, tradeData);
             if (!string.IsNullOrEmpty(errorMsg))
             {
@@ -52,7 +52,7 @@ namespace TradingTools.Controllers
             }
 
             SaveTrade();
-            
+
             return View(NewTradeVM);
         }
 
@@ -61,20 +61,49 @@ namespace TradingTools.Controllers
             return View(NewTradeVM);
         }
 
-        private void SaveTrade() 
+        private async void SaveTrade()
         {
             object newTrade;
-            SampleSize lastSampleSize;
+            int lastSampleSizeId;
             if (NewTradeVM.TradeType == TradeType.Research)
             {
                 newTrade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(NewTradeVM.NewTrade);
-                // Change the structure of the Research table. Add enums for the different strategies that I have researched. That means a new model
-                // for the Research table. ResearchFirstBarPullback will be a property of the new model. Also the new enum will be a new property of ResearchFirstBarPullback.
-                // Then update the DB to set the enum of ResearchFirstBarPullback. Also the parsing script of the .csv has to be adjusted.
-                // When that is done, in this method, get the last sample size for the ResearchFirstBarPullback enum. Check if it has less than 100 trades, if yes, save the new trade under this sample size number, otherwise create new sample size.
+                // Check if there is a sample size for the parameters and if it's full.
+                var sampleSizeData = await GetLastSampleSizeData();
+                lastSampleSizeId = sampleSizeData.id;
+                bool isFull = sampleSizeData.isFull;
+                // If the sample size is full or there is no sample size for those paramaters (lastSampleSize == 0), create a new sample size
+                if (isFull || lastSampleSizeId == 0) 
+                {
+                    _unitOfWork.SampleSize.Add(new SampleSize());
+                    _unitOfWork.SaveAsync();
+                    lastSampleSizeId = (await _unitOfWork.SampleSize.GetAllAsync()).Select(x => x.Id).OrderByDescending(x => x).FirstOrDefault();  
+                }
             }
         }
 
+        private async Task<(int id, bool isFull)> GetLastSampleSizeData()
+        {
+            int id = 0;
+            bool isFull = false;
+            // New trade is Research
+            if (NewTradeVM.TradeType == TradeType.Research)
+            {
+                if (NewTradeVM.Strategy == Strategy.FirstBarBelowAbove)
+                {
+                    id = (await _unitOfWork.ResearchFirstBarPullback.GetAllAsync()).Select(x => x.SampleSizeId).LastOrDefault();
+                    int numberTradesInSampleSize = (await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == id)).Count;
+                    if (numberTradesInSampleSize == 100)
+                    {
+                        isFull = true;
+                    }
+
+                    return (id, isFull);
+                }
+            }
+
+            return (id, isFull);
+        }
     }
 
     #endregion

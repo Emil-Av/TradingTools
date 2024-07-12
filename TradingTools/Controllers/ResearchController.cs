@@ -62,7 +62,7 @@ namespace TradingTools.Controllers
             // The Update() method, queries the database for a trade based on the Id.
             SanitizationHelper.SanitizeObject(trade);
             _unitOfWork.ResearchFirstBarPullback.Update(trade);
-            _unitOfWork.Save();
+            _unitOfWork.SaveAsync();
 
             return Json(new { success = "Trade was successfully updated" });
         }
@@ -171,7 +171,7 @@ namespace TradingTools.Controllers
                                 sampleSize.Strategy = (Strategy)strategy;
                                 sampleSize.TimeFrame = researchedTF;
                                 _unitOfWork.SampleSize.Add(sampleSize);
-                                _unitOfWork.Save();
+                                _unitOfWork.SaveAsync();
                                 int sampleSizeId = (await _unitOfWork.SampleSize
                                     .GetAllAsync(x => x.TradeType == TradeType.Research && x.Strategy == (Strategy)strategy && x.TimeFrame == researchedTF))
                                     .OrderByDescending(x => x.Id)
@@ -232,7 +232,7 @@ namespace TradingTools.Controllers
                                                 researchTrade.FullATRMaxRR = csvData[i][6].Length > 0 ? int.Parse(csvData[i][6].Split('-')[1]) : 0;
                                                 researchTrade.MarketGaveSmth = csvData[i][7].Length > 0 ? true : false;
                                                 _unitOfWork.ResearchFirstBarPullback.Add(researchTrade);
-                                                _unitOfWork.Save();
+                                                _unitOfWork.SaveAsync();
                                             }
                                         }
                                     }
@@ -255,7 +255,7 @@ namespace TradingTools.Controllers
                                     List<int> tradeIds = (await _unitOfWork.ResearchFirstBarPullback.GetAllAsync()).Select(x => x.Id).ToList();
 
                                     // Get the trade for the screenshot of the current iteration
-                                    ResearchFirstBarPullback trade = await _unitOfWork.ResearchFirstBarPullback.GetAsync(x => x.Id == tradeIds[tradeIndex]);
+                                    ResearchFirstBarPullback trade = await _unitOfWork.ResearchFirstBarPullback.GetAsync(x => x.Id == tradeIds[tradeIndex], tracked: true);
                                     if (trade.ScreenshotsUrls == null)
                                     {
                                         trade.ScreenshotsUrls = new List<string>();
@@ -266,8 +266,7 @@ namespace TradingTools.Controllers
                                     string screenshotPath = currentFolder.Replace(wwwRootPath, "").Replace("\\\\", "/");
                                     trade.ScreenshotsUrls.Add(Path.Combine(screenshotPath, screenshotName));
                                     _unitOfWork.ResearchFirstBarPullback.Update(trade);
-                                    _unitOfWork.Save();
-
+                                    _unitOfWork.SaveAsync();
                                 }
                             }
                         }
@@ -278,6 +277,7 @@ namespace TradingTools.Controllers
             {
                 Debug.WriteLine($"Error parsing the csv file. Error message: {ex.Message}");
                 TempData["error"] = $"Error parsing the csv file. Error message: {ex.Message}";
+                return Json(new {error = ex.Message});
             }
 
             async Task<List<List<string>>> ReadCsvFileAsync(Stream csvStream)

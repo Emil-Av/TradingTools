@@ -9,18 +9,9 @@ using SharedEnums.Enums;
 
 namespace Models
 {
-    public class ResearchFirstBarPullback 
+    public class ResearchFirstBarPullback : Trade
     {
         public int Id { get; set; }
-
-        public int SampleSizeId { get; set; }
-        [ForeignKey(nameof(SampleSizeId))]
-
-        public SampleSize? SampleSize { get; set; }
-
-        public List<string>? ScreenshotsUrls { get; set; }
-
-        public SideType SideType { get; set; }
 
         /// <summary>
         ///  Risk to reward ratio 1:1.

@@ -35,7 +35,7 @@ namespace TradingTools.Controllers
                     PTStrategy = Strategy.FirstBarBelowAbove
                 });
 
-                _unitOfWork.Save();
+                _unitOfWork.SaveAsync();
             }
         }
     }
