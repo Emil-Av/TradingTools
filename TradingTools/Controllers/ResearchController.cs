@@ -250,7 +250,7 @@ namespace TradingTools.Controllers
                                     {
                                         tradeIndex = tempTradeIndex - 1;
                                     }
-                                    currentFolder = AppHelper.CreateScreenshotFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath, 2);
+                                    currentFolder = AppHelper.CreateScreenshotFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath, 3);
                                     List<int> tradeIds = (await _unitOfWork.ResearchFirstBarPullback.GetAllAsync()).Select(x => x.Id).ToList();
 
                                     // Get the trade for the screenshot of the current iteration
