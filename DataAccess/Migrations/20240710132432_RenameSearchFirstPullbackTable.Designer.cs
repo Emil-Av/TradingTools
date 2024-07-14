@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240616091726_AddSampleSizeToResearch")]
-    partial class AddSampleSizeToResearch
+    [Migration("20240710132432_RenameSearchFirstPullbackTable")]
+    partial class RenameSearchFirstPullbackTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -78,9 +78,6 @@ namespace DataAccess.Migrations
                     b.Property<double?>("Fee")
                         .HasColumnType("float");
 
-                    b.Property<double?>("FirstTarget")
-                        .HasColumnType("float");
-
                     b.Property<double?>("Loss")
                         .HasColumnType("float");
 
@@ -95,9 +92,6 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("ScreenshotsUrls")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<double?>("SecondTarget")
-                        .HasColumnType("float");
 
                     b.Property<int?>("SideType")
                         .HasColumnType("int");
@@ -114,11 +108,17 @@ namespace DataAccess.Migrations
                     b.Property<string>("Symbol")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Targets")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("TimeFrame")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("TradeDuration")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("TradeRating")
+                        .HasColumnType("int");
 
                     b.Property<double?>("TriggerPrice")
                         .HasColumnType("float");
@@ -130,7 +130,7 @@ namespace DataAccess.Migrations
                     b.ToTable("PaperTrades");
                 });
 
-            modelBuilder.Entity("Models.Research", b =>
+            modelBuilder.Entity("Models.ResearchFirstBarPullback", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -140,6 +140,21 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("EntryPrice")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime?>("EntryTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double?>("ExitPrice")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime?>("ExitTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double?>("Fee")
+                        .HasColumnType("float");
 
                     b.Property<bool>("FullATRMarketGaveSmth")
                         .HasColumnType("bit");
@@ -216,6 +231,9 @@ namespace DataAccess.Migrations
                     b.Property<bool>("IsTriggerTrending")
                         .HasColumnType("bit");
 
+                    b.Property<double?>("Loss")
+                        .HasColumnType("float");
+
                     b.Property<bool>("MarketGaveSmth")
                         .HasColumnType("bit");
 
@@ -224,6 +242,12 @@ namespace DataAccess.Migrations
 
                     b.Property<int>("OneToOneHitOn")
                         .HasColumnType("int");
+
+                    b.Property<int?>("OrderType")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("Profit")
+                        .HasColumnType("float");
 
                     b.Property<int>("SampleSizeId")
                         .HasColumnType("int");
@@ -234,11 +258,38 @@ namespace DataAccess.Migrations
                     b.Property<int>("SideType")
                         .HasColumnType("int");
 
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("StopPrice")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("Strategy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Symbol")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Targets")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TimeFrame")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("TradeDuration")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("TradeRating")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("TriggerPrice")
+                        .HasColumnType("float");
+
                     b.HasKey("Id");
 
                     b.HasIndex("SampleSizeId");
 
-                    b.ToTable("Research");
+                    b.ToTable("ResearchFirstBarPullbacks");
                 });
 
             modelBuilder.Entity("Models.Review", b =>
@@ -355,7 +406,7 @@ namespace DataAccess.Migrations
                     b.Navigation("SampleSize");
                 });
 
-            modelBuilder.Entity("Models.Research", b =>
+            modelBuilder.Entity("Models.ResearchFirstBarPullback", b =>
                 {
                     b.HasOne("Models.SampleSize", "SampleSize")
                         .WithMany()

@@ -1,6 +1,6 @@
 ﻿using SharedEnums.Enums;
 
-namespace Utilities
+namespace Shared
 {
     public class MyEnumConverter
     {

@@ -9,6 +9,6 @@ namespace DataAccess.Repository.IRepository
 {
     public interface IResearchFirstBarPullbackRepository : IRepository<ResearchFirstBarPullback>
     {
-        void Update(ResearchFirstBarPullback researchTrade);
+        void Update(ResearchFirstBarPullback objFromDb);
     }
 }

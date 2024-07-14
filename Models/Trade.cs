@@ -1,4 +1,6 @@
-﻿using SharedEnums.Enums;
+﻿using Shared.Enums;
+using SharedEnums.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Models
 {
@@ -12,9 +14,7 @@ namespace Models
 
         public double? StopPrice { get; set; }
 
-        public double? FirstTarget { get; set; }
-
-        public double? SecondTarget { get; set; }
+        public List<double>? Targets { get; set; }
 
         public double? ExitPrice { get; set; }
 
@@ -23,8 +23,6 @@ namespace Models
         public double? Loss { get; set; }
 
         public double? Fee { get; set; }
-
-        public SampleSize? SampleSize { get; set; }
 
         public TimeFrame? TimeFrame { get; set; }
 
@@ -36,7 +34,14 @@ namespace Models
 
         public OrderType? OrderType { get; set; }
 
+        public TradeRating? TradeRating { get; set; }
+
         public List<string>? ScreenshotsUrls { get; set; }
+
+        public int SampleSizeId { get; set; }
+        [ForeignKey(nameof(SampleSizeId))]
+
+        public SampleSize? SampleSize { get; set; }
 
         public DateTime? EntryTime { get; set; }
 

@@ -21,7 +21,7 @@ namespace DataAccess.Data
 
         public DbSet<UserSettings> UserSettings { get; set; }
 
-        public DbSet<ResearchFirstBarPullback> Research { get; set; }
+        public DbSet<ResearchFirstBarPullback> ResearchFirstBarPullbacks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

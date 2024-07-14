@@ -1,4 +1,5 @@
-﻿@model NewTradeVM
+﻿@using global::Shared
+@model NewTradeVM
 
 @{
     ViewData["Title"] = "Paper Trades";
@@ -90,23 +91,20 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-6 d-flex flex-row justify-content-center align-items-center">
-                                    <div class="text-center p-4 btn" style="border: 2px dashed #ccc;" style="cursor: pointer;" onclick="document.getElementById('filesInput').click()">
-                                        <div class="d-flex justify-content-center align-items-center">
-                                            <form method="post" enctype="multipart/form-data" id="formUploadFiles" asp-action="UploadScreenshots">
-                                                <a role="button" class="button">
-                                                    <input type="file" name="screenshots" id="filesInput" class="d-none" />
-                                                    <i class="fa-solid fa-file-arrow-up fa-2x text-primary"></i>
-                                                    <span class="mt-2" style="display: block;">Upload Screenshots</span>
-                                                </a>
-                                            </form>
-                                        </div>
+                                <div class="col-6 d-flex flex-row justify-content-between align-items-center">
+                                    <div class="text-center p-4" style="border: 2px dashed #ccc; cursor: pointer;" onclick="document.getElementById('filesInput').click()">
+                                        <form method="post" enctype="multipart/form-data" id="formUploadFiles" asp-action="UploadScreenshots">
+                                            <input type="file" name="screenshots" id="filesInput" class="d-none" />
+                                            <i class="fa-solid fa-file-arrow-up fa-2x text-primary"></i>
+                                            <span class="mt-2 d-block">Upload Screenshots</span>
+                                        </form>
                                     </div>
-                                    <div class="text-center p-4" id="uploadedScreenshotsArea">
-                                        <p>Additional content goes here.</p>
-                                        <!-- You can add more content as needed -->
+                                    <div class="text-center p-4 w-75" id="fileList" style="overflow: hidden;">
+                                        <p class="text-truncate">No uploaded files.</p>
                                     </div>
                                 </div>
+
+
 
                             </div>
                         </div>
@@ -123,7 +121,7 @@
             <div class="row justify-content-center">
                 <div class="col-10 mt-4">
                     <div class="card-footer mt-2 d-flex justify-content-end">
-                        <button class="btn btn-info" id="btnUpdate">
+                        <button class="btn btn-info" id="btnSave">
                             <span class="text"><i class="fa-regular fa-floppy-disk mr-2"></i>Save</span>
                         </button>
                     </div>
