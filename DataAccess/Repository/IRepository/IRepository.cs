@@ -13,7 +13,7 @@ namespace DataAccess.Repository.IRepository
 
         Task<T> GetAsync(Expression<Func<T, bool>>filter, string? includeProperties = null, bool tracked = false);
 
-        void Add(T entity);
+        Task AddAsync(T entity);
 
         void Remove(T entity);
 

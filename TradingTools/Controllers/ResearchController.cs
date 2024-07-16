@@ -170,7 +170,7 @@ namespace TradingTools.Controllers
                                 sampleSize.TradeType = TradeType.Research;
                                 sampleSize.Strategy = (Strategy)strategy;
                                 sampleSize.TimeFrame = researchedTF;
-                                _unitOfWork.SampleSize.Add(sampleSize);
+                                _unitOfWork.SampleSize.AddAsync(sampleSize);
                                 _unitOfWork.SaveAsync();
                                 int sampleSizeId = (await _unitOfWork.SampleSize
                                     .GetAllAsync(x => x.TradeType == TradeType.Research && x.Strategy == (Strategy)strategy && x.TimeFrame == researchedTF))
@@ -231,7 +231,7 @@ namespace TradingTools.Controllers
                                                 researchTrade.IsFullATRLoss = csvData[i][5] == "Yes" ? true : false;
                                                 researchTrade.FullATRMaxRR = csvData[i][6].Length > 0 ? int.Parse(csvData[i][6].Split('-')[1]) : 0;
                                                 researchTrade.MarketGaveSmth = csvData[i][7].Length > 0 ? true : false;
-                                                _unitOfWork.ResearchFirstBarPullback.Add(researchTrade);
+                                                _unitOfWork.ResearchFirstBarPullback.AddAsync(researchTrade);
                                                 _unitOfWork.SaveAsync();
                                             }
                                         }

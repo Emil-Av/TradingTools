@@ -35,7 +35,7 @@ namespace DataAccess.Repository
             ResearchFirstBarPullback = new ResearchFirstBarPullbackRepository(_db);
         }
 
-        public async void SaveAsync()
+        public async Task SaveAsync()
         {
             await _db.SaveChangesAsync();
         }

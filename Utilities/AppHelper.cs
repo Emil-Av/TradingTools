@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,10 +8,16 @@ using System.Threading.Tasks;
 namespace Utilities
 {
     /// <summary>
-    ///  Provides static methods used throghout the app.
+    ///  Provides static methods used in the app.
     /// </summary>
     public static class AppHelper
     {
+        public static List<string> SaveFiles(IFormFile[] files)
+        {
+            // Create a method in AppHelper which saves the screenshots in the correct folder (research || paper trade || trade / strategy/TF) 
+            // which then returns the Path to those files in a list
+        }
+
         /// <summary>
         ///  Creates the folders in wwwroot\Screenshots for the screenshots when uploading a .zip file for PaperTrades or Research
         /// </summary>

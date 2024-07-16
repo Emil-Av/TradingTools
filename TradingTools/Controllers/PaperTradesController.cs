@@ -244,12 +244,12 @@ namespace TradingTools.Controllers
                                     // Loop is running > 1 time (first time trade is null)
                                     if (trade != null)
                                     {
-                                        _unitOfWork.PaperTrade.Add(trade);
+                                        _unitOfWork.PaperTrade.AddAsync(trade);
                                         _unitOfWork.SaveAsync();
                                         lastTradeId = (await _unitOfWork.PaperTrade.GetAllAsync()).
                                                                             Select(x => x.Id).OrderByDescending(id => id).FirstOrDefault();
                                         journal.PaperTradeId = lastTradeId;
-                                        _unitOfWork.Journal.Add(journal);
+                                        _unitOfWork.Journal.AddAsync(journal);
                                         _unitOfWork.SaveAsync();
                                     }
                                     journal = new Journal();
@@ -277,14 +277,14 @@ namespace TradingTools.Controllers
                                     sampleSize = new SampleSize();
                                     sampleSize.Strategy = (Strategy)trade.Strategy;
                                     sampleSize.TimeFrame = (TimeFrame)trade.TimeFrame;
-                                    _unitOfWork.SampleSize.Add(sampleSize);
+                                    _unitOfWork.SampleSize.AddAsync(sampleSize);
                                     _unitOfWork.SaveAsync();
                                     currentSampleSizeId = (await _unitOfWork.SampleSize.GetAllAsync()).
                                                                                 Select(x => x.Id).OrderByDescending(id => id).FirstOrDefault();
                                     // Each sample size has it's own review
                                     Review review = new Review();
                                     review.SampleSizeId = currentSampleSizeId;
-                                    _unitOfWork.Review.Add(review);
+                                    _unitOfWork.Review.AddAsync(review);
                                     _unitOfWork.SaveAsync();
                                 }
 
