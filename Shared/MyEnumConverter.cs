@@ -27,6 +27,18 @@ namespace Shared
             return tradeTypes[tradeType];
         }
 
+        public static string TradeTypeFromEnum(TradeType tradeType)
+        {
+            Dictionary<TradeType, string> tradeTypes = new Dictionary<TradeType, string>()
+            {
+                { TradeType.Trade , "Trade"},
+                { TradeType.PaperTrade, "PaperTrade" },
+                { TradeType.Research, "Research" },
+            };
+
+            return tradeTypes[tradeType];
+        }
+
         public static TimeFrame TimeFrameFromString(string tf)
         {
             Dictionary<string, TimeFrame> timeFrames = new Dictionary<string, TimeFrame>()

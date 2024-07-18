@@ -39,10 +39,6 @@ namespace TradingTools.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveNewTrade([FromForm] IFormFile[] files, [FromForm] string tradeParams, [FromForm] string tradeData)
         {
-            if (tradeParams == null || tradeData == null)
-            {
-                return Json(new { error = "Trade values are empty." });
-            }
             // Set the values of NewTradeVM properties
             string errorMsg = NewTradeVM.SetValues(tradeParams, tradeData);
             if (!string.IsNullOrEmpty(errorMsg))
@@ -56,11 +52,6 @@ namespace TradingTools.Controllers
             return View(NewTradeVM);
         }
 
-        public IActionResult Index()
-        {
-            return View(NewTradeVM);
-        }
-
         private async Task SaveTrade(IFormFile[] files)
         {
             if (NewTradeVM.TradeType == TradeType.Research)
@@ -68,7 +59,7 @@ namespace TradingTools.Controllers
                 // Convert the values
                 ResearchFirstBarPullback newTrade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(NewTradeVM.NewTrade);
                 newTrade.SampleSizeId = await GetSampleSizeId();
-                newTrade.ScreenshotsUrls = AppHelper.SaveFiles(files);
+                newTrade.ScreenshotsUrls = await AppHelper.SaveFiles(_webHostEnvironment.WebRootPath, NewTradeVM, newTrade, files);
                 await _unitOfWork.ResearchFirstBarPullback.AddAsync(newTrade);
                 await _unitOfWork.SaveAsync();
             }
@@ -108,6 +99,11 @@ namespace TradingTools.Controllers
             }
 
             return id;
+        }
+
+        public IActionResult Index()
+        {
+            return View(NewTradeVM);
         }
     }
 
