@@ -30,12 +30,18 @@ namespace TradingTools.Controllers
 
         #region Properties
 
-        NewTradeVM NewTradeVM { get; set; }
+        public NewTradeVM NewTradeVM { get; set; }
 
         #endregion
 
 
         #region Methods
+
+        public IActionResult Index()
+        {
+            return View(NewTradeVM);
+        }
+
         [HttpPost]
         public async Task<IActionResult> SaveNewTrade([FromForm] IFormFile[] files, [FromForm] string tradeParams, [FromForm] string tradeData)
         {
@@ -48,8 +54,7 @@ namespace TradingTools.Controllers
             }
 
             await SaveTrade(files);
-
-            return View(NewTradeVM);
+            return Json(new { error = errorMsg });
         }
 
         private async Task SaveTrade(IFormFile[] files)
@@ -99,11 +104,6 @@ namespace TradingTools.Controllers
             }
 
             return id;
-        }
-
-        public IActionResult Index()
-        {
-            return View(NewTradeVM);
         }
     }
 

@@ -128,6 +128,8 @@
             success: function (response) {
                 // Handle success response
                 console.log('Files uploaded successfully');
+                $('#newTradeForm').find('input[type="text"], input[type="number"]').val('');
+                $('#newTradeForm').find('select').prop('selectedIndex', 0);
             },
             error: function (error) {
                 // Handle error

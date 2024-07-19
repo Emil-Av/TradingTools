@@ -108,6 +108,10 @@ namespace TradingTools.Controllers
                     ResearchVM.AvailableStrategies.Add(sampleSize.Strategy);
                 }
             }
+            if (ResearchVM.CurrentTrade.ScreenshotsUrlsDisplay == null)
+            {
+                ResearchVM.CurrentTrade.ScreenshotsUrlsDisplay = new List<string>();
+            }
             return View(ResearchVM);
         }
         /// <summary>
@@ -170,8 +174,8 @@ namespace TradingTools.Controllers
                                 sampleSize.TradeType = TradeType.Research;
                                 sampleSize.Strategy = (Strategy)strategy;
                                 sampleSize.TimeFrame = researchedTF;
-                                _unitOfWork.SampleSize.AddAsync(sampleSize);
-                                _unitOfWork.SaveAsync();
+                                await _unitOfWork.SampleSize.AddAsync(sampleSize);
+                                await _unitOfWork.SaveAsync();
                                 int sampleSizeId = (await _unitOfWork.SampleSize
                                     .GetAllAsync(x => x.TradeType == TradeType.Research && x.Strategy == (Strategy)strategy && x.TimeFrame == researchedTF))
                                     .OrderByDescending(x => x.Id)
@@ -231,8 +235,8 @@ namespace TradingTools.Controllers
                                                 researchTrade.IsFullATRLoss = csvData[i][5] == "Yes" ? true : false;
                                                 researchTrade.FullATRMaxRR = csvData[i][6].Length > 0 ? int.Parse(csvData[i][6].Split('-')[1]) : 0;
                                                 researchTrade.MarketGaveSmth = csvData[i][7].Length > 0 ? true : false;
-                                                _unitOfWork.ResearchFirstBarPullback.AddAsync(researchTrade);
-                                                _unitOfWork.SaveAsync();
+                                                await _unitOfWork.ResearchFirstBarPullback.AddAsync(researchTrade);
+                                                await _unitOfWork.SaveAsync();
                                             }
                                         }
                                     }
@@ -266,7 +270,7 @@ namespace TradingTools.Controllers
                                     string screenshotPath = currentFolder.Replace(wwwRootPath, "").Replace("\\\\", "/");
                                     trade.ScreenshotsUrls.Add(Path.Combine(screenshotPath, screenshotName));
                                     _unitOfWork.ResearchFirstBarPullback.Update(trade);
-                                    _unitOfWork.SaveAsync();
+                                    await _unitOfWork.SaveAsync();
                                 }
                             }
                         }

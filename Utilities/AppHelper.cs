@@ -38,7 +38,7 @@ namespace Utilities
                 }
                 if (tradeType == MyEnumConverter.TradeTypeFromEnum(SharedEnums.Enums.TradeType.Research))
                 {
-                    // /Screenshots/Research/FirstBarPullback
+                    // /Screenshots/Research/FirstBarPullback(e.g.)
                     dirToSaveFiles = Path.Combine(dirToSaveFiles, newTrade.GetType().Name);
                     if (!Directory.Exists(dirToSaveFiles))
                     {
@@ -46,7 +46,7 @@ namespace Utilities
                     }
                 }
                 
-                // /Screenshots/Research/Sample Size 1(e.g.)
+                // /Screenshots/Research/(typeResearch/)Sample Size 1(e.g.)
                 string[] dirToSaveFilesFiles = Directory.GetFiles(dirToSaveFiles);
                 if (dirToSaveFilesFiles.Length > 0)
                 {
@@ -78,10 +78,11 @@ namespace Utilities
                 {
                     foreach (IFormFile file in files)
                     {
-                        using (Stream stream = new FileStream(dirToSaveFiles, FileMode.Create))
+                        string filePath = dirToSaveFiles + file.FileName;
+                        using (Stream stream = new FileStream(filePath, FileMode.Create))
                         {
                             await file.CopyToAsync(stream);
-                            screenshotsPaths.Add(Path.Combine(dirToSaveFiles, file.Name));
+                            screenshotsPaths.Add(filePath);
                         }
                     }
                 }
