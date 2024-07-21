@@ -126,8 +126,12 @@
             processData: false, // Don't process the files, otherwise jQuery will transform the data into a query string
             contentType: false, // Set content type to false as FormData will handle it
             success: function (response) {
-                // Handle success response
-                console.log('Files uploaded successfully');
+                if (response['success'] !== undefined) {
+                    toastr.success(response['success']);
+                }
+                else if (response['error'] !== undefined) {
+                    toastr.error(response['error']);
+                }
             },
             error: function (error) {
                 // Handle error

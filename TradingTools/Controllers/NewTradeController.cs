@@ -73,11 +73,11 @@ namespace TradingTools.Controllers
                 lastSampleSizeId = sampleSizeData.id;
                 bool isFull = sampleSizeData.isFull;
                 // If the sample size is full or there is no sample size for those paramaters (lastSampleSize == 0), create a new sample size
-                if (isFull || lastSampleSizeId == 0) 
+                if (isFull || lastSampleSizeId == 0)
                 {
                     _unitOfWork.SampleSize.Add(new SampleSize());
                     await _unitOfWork.SaveAsync();
-                    lastSampleSizeId = (await _unitOfWork.SampleSize.GetAllAsync()).Select(x => x.Id).OrderByDescending(x => x).FirstOrDefault();  
+                    lastSampleSizeId = (await _unitOfWork.SampleSize.GetAllAsync()).Select(x => x.Id).OrderByDescending(x => x).FirstOrDefault();
                 }
             }
         }
@@ -91,7 +91,11 @@ namespace TradingTools.Controllers
             {
                 if (NewTradeVM.Strategy == Strategy.FirstBarBelowAbove)
                 {
-                    id = (await _unitOfWork.ResearchFirstBarPullback.GetAllAsync()).Select(x => x.SampleSizeId).LastOrDefault();
+                    List<ResearchFirstBarPullback> researchTrades = await _unitOfWork.ResearchFirstBarPullback.GetAllAsync();
+                    if (researchTrades != null && researchTrades.Any())
+                    {
+                        id = researchTrades.Select(x => x.SampleSizeId).LastOrDefault();
+                    }
                     int numberTradesInSampleSize = (await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == id)).Count;
                     if (numberTradesInSampleSize == 100)
                     {
