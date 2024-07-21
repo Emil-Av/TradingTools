@@ -9,6 +9,6 @@ namespace DataAccess.Repository.IRepository
 {
     public interface ISampleSizeRepository : IRepository<SampleSize>
     {
-        void Update(SampleSize sampleSize);
+        Task UpdateAsync(SampleSize sampleSize);
     }
 }

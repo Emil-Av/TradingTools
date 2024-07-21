@@ -1,5 +1,6 @@
 ﻿using DataAccess.Data;
 using DataAccess.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 using Models;
 using System;
 using System.Collections.Generic;
@@ -18,9 +19,9 @@ namespace DataAccess.Repository
             _db = db;
         }
 
-        public void Update(UserSettings userSettings)
+        public async Task UpdateAsync(UserSettings userSettings)
         {
-            UserSettings? objFromDb = _db.UserSettings.FirstOrDefault(x => x.Id == userSettings.Id);
+            UserSettings? objFromDb = await _db.UserSettings.FirstOrDefaultAsync(x => x.Id == userSettings.Id);
             if (objFromDb != null)
             {
                 objFromDb.PTStrategy = userSettings.PTStrategy;

@@ -1,5 +1,6 @@
 ﻿using DataAccess.Data;
 using DataAccess.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 using Models;
 using System;
 using System.Collections.Generic;
@@ -18,9 +19,9 @@ namespace DataAccess.Repository
             _db = db;
         }
 
-        public void Update(Review review)
+        public async Task UpdateAsync(Review review)
         {
-            Review? objFromDb = _db.Reviews.FirstOrDefault(x => x.Id == review.Id);
+            Review? objFromDb = await _db.Reviews.FirstOrDefaultAsync(x => x.Id == review.Id);
             if (objFromDb != null)
             {
                 objFromDb.First = review.First;

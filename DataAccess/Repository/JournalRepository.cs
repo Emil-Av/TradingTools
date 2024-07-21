@@ -1,5 +1,6 @@
 ﻿using DataAccess.Data;
 using DataAccess.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 using Models;
 using System;
 using System.Collections.Generic;
@@ -18,9 +19,9 @@ namespace DataAccess.Repository
             _db = db;
         }
 
-        public void Update(Journal journal)
+        public async Task UpdateAsync(Journal journal)
         {
-            Journal? objFromDb = _db.Journals.FirstOrDefault(x => x.Id == journal.Id);
+            Journal? objFromDb = await _db.Journals.FirstOrDefaultAsync(x => x.Id == journal.Id);
             if (objFromDb != null)
             {
                 objFromDb.Pre = journal.Pre;

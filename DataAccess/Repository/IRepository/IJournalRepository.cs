@@ -9,6 +9,6 @@ namespace DataAccess.Repository.IRepository
 {
     public interface IJournalRepository : IRepository<Journal>
     {
-        void Update(Journal journal);
+        Task UpdateAsync(Journal journal);
     }
 }

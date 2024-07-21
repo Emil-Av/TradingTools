@@ -1,5 +1,6 @@
 ﻿using DataAccess.Data;
 using DataAccess.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using Microsoft.VisualBasic;
 using Models;
@@ -24,11 +25,16 @@ namespace DataAccess.Repository
             _db = db;
         }
 
-        public void Update(ResearchFirstBarPullback researchTrade)
+        public void UpdateRange(IEnumerable<ResearchFirstBarPullback> entities)
+        {
+            _db.ResearchFirstBarPullbacks.UpdateRange(entities);
+        }
+
+        public async Task UpdateAsync(ResearchFirstBarPullback researchTrade)
         {
             // Get the object from the database
             // TODO: if objFromDb is null, I don't get any error message after Update()
-            ResearchFirstBarPullback? objFromDb = _db.ResearchFirstBarPullbacks.FirstOrDefault(x => x.Id == researchTrade.Id);
+            ResearchFirstBarPullback? objFromDb = await _db.ResearchFirstBarPullbacks.FirstOrDefaultAsync(x => x.Id == researchTrade.Id);
             if (objFromDb != null)
             {
                 // Get the type of the object

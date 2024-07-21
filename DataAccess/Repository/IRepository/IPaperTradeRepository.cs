@@ -9,6 +9,6 @@ namespace DataAccess.Repository.IRepository
 {
     public interface IPaperTradeRepository : IRepository<PaperTrade>
     {
-        void Update(PaperTrade paperTrade);
+        Task UpdateAsync(PaperTrade paperTrade);
     }
 }

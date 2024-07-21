@@ -9,6 +9,6 @@ namespace DataAccess.Repository.IRepository
 {
     public interface IUserSettingsRepository : IRepository<UserSettings>
     {
-        void Update(UserSettings userSettings);
+        Task UpdateAsync(UserSettings userSettings);
     }
 }

@@ -57,8 +57,8 @@ namespace TradingTools.Controllers
                 review.Third = data.Review.Third;
                 review.Forth = data.Review.Forth;
                 review.Summary = data.Review.Summary;
-                _unitOfWork.Review.Update(review);
-                _unitOfWork.SaveAsync();
+                await _unitOfWork.Review.UpdateAsync(review);
+                await _unitOfWork.SaveAsync();
 
                 return Json(new { success = "Review updated." });
             }
@@ -86,7 +86,7 @@ namespace TradingTools.Controllers
                 journal.During = data.Journal.During;
                 journal.Exit = data.Journal.Exit;
                 journal.Post = data.Journal.Post;
-                _unitOfWork.Journal.Update(journal);
+                _unitOfWork.Journal.UpdateAsync(journal);
                 _unitOfWork.SaveAsync();
             }
             return Json(new { success = "Journal updated." });
@@ -245,10 +245,8 @@ namespace TradingTools.Controllers
                                     if (trade != null)
                                     {
                                         _unitOfWork.PaperTrade.Add(trade);
-                                        _unitOfWork.SaveAsync();
-                                        lastTradeId = (await _unitOfWork.PaperTrade.GetAllAsync()).
-                                                                            Select(x => x.Id).OrderByDescending(id => id).FirstOrDefault();
-                                        journal.PaperTradeId = lastTradeId;
+                                        await _unitOfWork.SaveAsync();
+                                        journal.PaperTradeId = trade.Id;
                                         _unitOfWork.Journal.Add(journal);
                                         _unitOfWork.SaveAsync();
                                     }
@@ -285,7 +283,7 @@ namespace TradingTools.Controllers
                                     Review review = new Review();
                                     review.SampleSizeId = currentSampleSizeId;
                                     _unitOfWork.Review.Add(review);
-                                    _unitOfWork.SaveAsync();
+                                    await _unitOfWork.SaveAsync();
                                 }
 
                                 if (!canCreateNewTrade)

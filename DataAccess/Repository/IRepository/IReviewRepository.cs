@@ -9,6 +9,6 @@ namespace DataAccess.Repository.IRepository
 {
     public interface IReviewRepository : IRepository<Review>
     {
-        void Update(Review review);
+        Task UpdateAsync(Review review);
     }
 }

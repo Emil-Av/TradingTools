@@ -9,6 +9,8 @@ namespace DataAccess.Repository.IRepository
 {
     public interface IResearchFirstBarPullbackRepository : IRepository<ResearchFirstBarPullback>
     {
-        void Update(ResearchFirstBarPullback objFromDb);
+        Task UpdateAsync(ResearchFirstBarPullback objFromDb);
+
+        void UpdateRange(IEnumerable<ResearchFirstBarPullback> entities);
     }
 }

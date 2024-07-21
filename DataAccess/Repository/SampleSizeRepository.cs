@@ -18,7 +18,7 @@ namespace DataAccess.Repository
             _db = db;
         }
 
-        public void Update(SampleSize sampleSize)
+        public async Task UpdateAsync(SampleSize sampleSize)
         {
 
         }

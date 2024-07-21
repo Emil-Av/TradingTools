@@ -52,7 +52,7 @@ namespace TradingTools.Controllers
             {
                 return Json(new { error = "CurrentTrade is null." });
             }
-            if (!ModelState.IsValid) 
+            if (!ModelState.IsValid)
             {
                 return Json(new { error = "Wrong values. Please note the messages" });
             }
@@ -61,8 +61,8 @@ namespace TradingTools.Controllers
             // The Id of a trade is in the currentTrade paramater. The id is passed to the trade object in ResearchMapper.ViewModelToEntity().
             // The Update() method, queries the database for a trade based on the Id.
             SanitizationHelper.SanitizeObject(trade);
-            _unitOfWork.ResearchFirstBarPullback.Update(trade);
-            _unitOfWork.SaveAsync();
+            await _unitOfWork.ResearchFirstBarPullback.UpdateAsync(trade);
+            await _unitOfWork.SaveAsync();
 
             return Json(new { success = "Trade was successfully updated" });
         }
@@ -136,7 +136,7 @@ namespace TradingTools.Controllers
                     {
                         // Sort the entries to have the folders in ascending order (Trade 1, Trade 2..)
                         List<ZipArchiveEntry> sortedEntries = archive.Entries.OrderBy(e => e.FullName, new NaturalStringComparer()).ToList();
-                        ResearchFirstBarPullback researchTrade = null;
+                        List<ResearchFirstBarPullback> researchTrades = new List<ResearchFirstBarPullback>();
 
                         TimeFrame researchedTF;
                         int tradeIndex = 0;
@@ -171,13 +171,7 @@ namespace TradingTools.Controllers
                                 sampleSize.Strategy = (Strategy)strategy;
                                 sampleSize.TimeFrame = researchedTF;
                                 _unitOfWork.SampleSize.Add(sampleSize);
-                                _unitOfWork.SaveAsync();
-                                int sampleSizeId = (await _unitOfWork.SampleSize
-                                    .GetAllAsync(x => x.TradeType == TradeType.Research && x.Strategy == (Strategy)strategy && x.TimeFrame == researchedTF))
-                                    .OrderByDescending(x => x.Id)
-                                    .Select(x => x.Id)
-                                    .FirstOrDefault();
-
+                                await _unitOfWork.SaveAsync();
 
                                 // Parse the .csv data
                                 using (var csvStream = entry.Open())
@@ -185,19 +179,19 @@ namespace TradingTools.Controllers
                                     var csvData = await ReadCsvFileAsync(csvStream);
                                     if (csvData != null)
                                     {
-
+                                        ResearchFirstBarPullback researchTrade = new ResearchFirstBarPullback();
                                         for (int i = 0; i < csvData.Count; i++)
-                                        {
+                                        {   
                                             // First row is column names
                                             if (i == 0)
                                             {
                                                 continue;
                                             }
+                                            
                                             // Half ATR
                                             if (i % 2 != 0)
                                             {
-                                                researchTrade = new ResearchFirstBarPullback();
-                                                researchTrade.SampleSizeId = sampleSizeId;
+                                                researchTrade.SampleSizeId = sampleSize.Id;
                                                 researchTrade.OneToOneHitOn = csvData[i][1].Length > 0 ? int.Parse(csvData[i][1]) : 0;
                                                 researchTrade.IsOneToThreeHit = csvData[i][2] == "Yes" ? true : false;
                                                 researchTrade.IsOneToFiveHit = csvData[i][3] == "Yes" ? true : false;
@@ -231,10 +225,13 @@ namespace TradingTools.Controllers
                                                 researchTrade.IsFullATRLoss = csvData[i][5] == "Yes" ? true : false;
                                                 researchTrade.FullATRMaxRR = csvData[i][6].Length > 0 ? int.Parse(csvData[i][6].Split('-')[1]) : 0;
                                                 researchTrade.MarketGaveSmth = csvData[i][7].Length > 0 ? true : false;
-                                                _unitOfWork.ResearchFirstBarPullback.Add(researchTrade);
-                                                _unitOfWork.SaveAsync();
+                                                //await _unitOfWork.ResearchFirstBarPullback.AddAsync(researchTrade);
+                                                //await _unitOfWork.SaveAsync();
+                                                researchTrades.Add(researchTrade);
+                                                researchTrade = new ResearchFirstBarPullback();
                                             }
                                         }
+                                        //await _unitOfWork.ResearchFirstBarPullback.AddRangeAsync(researchTrades);
                                     }
                                 }
                             }
@@ -246,30 +243,27 @@ namespace TradingTools.Controllers
                                     // Split the name to get the folder's name
                                     string[] tradeInfo = entry.FullName.Split('/');
                                     // What is left is "Trade x", x is the number of the trade. Remove "Trade" to get the number.
-                                    string tempTradeInfo = tradeInfo[2].Replace("Trade", "").Trim();
+                                    string tempTradeInfo = tradeInfo[3].Replace("Trade", "").Trim();
                                     if (Int32.TryParse(tempTradeInfo, out int tempTradeIndex))
                                     {
                                         tradeIndex = tempTradeIndex - 1;
                                     }
                                     currentFolder = AppHelper.CreateScreenshotFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath, 3);
-                                    List<int> tradeIds = (await _unitOfWork.ResearchFirstBarPullback.GetAllAsync()).Select(x => x.Id).ToList();
 
-                                    // Get the trade for the screenshot of the current iteration
-                                    ResearchFirstBarPullback trade = await _unitOfWork.ResearchFirstBarPullback.GetAsync(x => x.Id == tradeIds[tradeIndex], tracked: true);
-                                    if (trade.ScreenshotsUrls == null)
+                                    if (researchTrades[tradeIndex].ScreenshotsUrls == null)
                                     {
-                                        trade.ScreenshotsUrls = new List<string>();
+                                        researchTrades[tradeIndex].ScreenshotsUrls = new List<string>();
                                     }
 
                                     entry.ExtractToFile(Path.Combine(currentFolder, entry.Name));
                                     string screenshotName = entry.FullName.Split('/').Last();
                                     string screenshotPath = currentFolder.Replace(wwwRootPath, "").Replace("\\\\", "/");
-                                    trade.ScreenshotsUrls.Add(Path.Combine(screenshotPath, screenshotName));
-                                    _unitOfWork.ResearchFirstBarPullback.Update(trade);
-                                    _unitOfWork.SaveAsync();
+                                    researchTrades[tradeIndex].ScreenshotsUrls.Add(Path.Combine(screenshotPath, screenshotName));
                                 }
                             }
                         }
+                        _unitOfWork.ResearchFirstBarPullback.AddRange(researchTrades);
+                        await _unitOfWork.SaveAsync();
                     }
                 }
             }
@@ -277,7 +271,6 @@ namespace TradingTools.Controllers
             {
                 Debug.WriteLine($"Error parsing the csv file. Error message: {ex.Message}");
                 TempData["error"] = $"Error parsing the csv file. Error message: {ex.Message}";
-                return Json(new {error = ex.Message});
             }
 
             async Task<List<List<string>>> ReadCsvFileAsync(Stream csvStream)

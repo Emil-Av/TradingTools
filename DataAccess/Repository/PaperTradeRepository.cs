@@ -1,5 +1,6 @@
 ﻿using DataAccess.Data;
 using DataAccess.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 using Models;
 using System;
 using System.Collections.Generic;
@@ -18,9 +19,9 @@ namespace DataAccess.Repository
             _db = db;
         }
 
-        public void Update(PaperTrade paperTrade)
+        public async Task UpdateAsync(PaperTrade paperTrade)
         {
-            PaperTrade? objFromDb = _db.PaperTrades.FirstOrDefault(x => x.Id == paperTrade.Id);
+            PaperTrade? objFromDb = await _db.PaperTrades.FirstOrDefaultAsync(x => x.Id == paperTrade.Id);
             if (objFromDb != null)
             {
                 objFromDb.Symbol = paperTrade.Symbol;

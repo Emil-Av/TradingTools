@@ -252,7 +252,7 @@ namespace DataAccess.Migrations
                     b.Property<string>("ScreenshotsUrls")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SideType")
+                    b.Property<int?>("SideType")
                         .HasColumnType("int");
 
                     b.Property<int?>("Status")

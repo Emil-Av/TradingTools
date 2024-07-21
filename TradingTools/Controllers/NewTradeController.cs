@@ -76,7 +76,7 @@ namespace TradingTools.Controllers
                 if (isFull || lastSampleSizeId == 0) 
                 {
                     _unitOfWork.SampleSize.Add(new SampleSize());
-                    _unitOfWork.SaveAsync();
+                    await _unitOfWork.SaveAsync();
                     lastSampleSizeId = (await _unitOfWork.SampleSize.GetAllAsync()).Select(x => x.Id).OrderByDescending(x => x).FirstOrDefault();  
                 }
             }
