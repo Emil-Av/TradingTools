@@ -1,6 +1,5 @@
 ﻿using DataAccess.Data;
 using DataAccess.Repository.IRepository;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using Microsoft.VisualBasic;
 using Models;
