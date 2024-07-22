@@ -29,7 +29,7 @@ namespace TradingTools.Controllers
             int usetSettingsCount = (await _unitOfWork.UserSettings.GetAllAsync()).Count;
             if (usetSettingsCount == 0)
             {
-                _unitOfWork.UserSettings.AddAsync(new UserSettings()
+                _unitOfWork.UserSettings.Add(new UserSettings()
                 {
                     PTTimeFrame = TimeFrame.M10,
                     PTStrategy = Strategy.FirstBarBelowAbove

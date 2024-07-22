@@ -22,9 +22,9 @@ namespace DataAccess.Repository
             dbSet = _db.Set<T>();
         }
 
-        public async Task AddAsync(T entity)
+        public void Add(T entity)
         {
-            await dbSet.AddAsync(entity);
+            dbSet.Add(entity);
         }
 
         public void AddRange(IEnumerable<T> entities)

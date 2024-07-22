@@ -37,7 +37,7 @@ namespace TradingTools.Controllers
 
         #region Methods
         [HttpPost]
-        public IActionResult SaveNewTrade([FromForm] IFormFile[] files, [FromForm] string tradeParams, [FromForm] string tradeData)
+        public async Task<IActionResult> SaveNewTrade([FromForm] IFormFile[] files, [FromForm] string tradeParams, [FromForm] string tradeData)
         {
             if (tradeParams == null || tradeData == null)
             {
@@ -51,9 +51,9 @@ namespace TradingTools.Controllers
 
             }
 
-            SaveTrade();
+            await SaveTrade(files);
 
-            return View(NewTradeVM);
+            return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Index()
@@ -61,23 +61,31 @@ namespace TradingTools.Controllers
             return View(NewTradeVM);
         }
 
-        private async void SaveTrade()
+        private async Task SaveTrade(IFormFile[] files)
         {
-            object newTrade;
             int lastSampleSizeId;
             if (NewTradeVM.TradeType == TradeType.Research)
             {
-                newTrade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(NewTradeVM.NewTrade);
-                // Check if there is a sample size for the parameters and if it's full.
-                var sampleSizeData = await GetLastSampleSizeData();
-                lastSampleSizeId = sampleSizeData.id;
-                bool isFull = sampleSizeData.isFull;
-                // If the sample size is full or there is no sample size for those paramaters (lastSampleSize == 0), create a new sample size
-                if (isFull || lastSampleSizeId == 0)
+                if (NewTradeVM.ResearchData is ResearchFirstBarPullbackDisplay newTrade)
                 {
-                    _unitOfWork.SampleSize.Add(new SampleSize());
+                    ResearchFirstBarPullback trade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(newTrade);
+                    // Check if there is a sample size for the parameters and if it's full.
+                    var sampleSizeData = await GetLastSampleSizeData();
+                    lastSampleSizeId = sampleSizeData.id;
+                    bool isFull = sampleSizeData.isFull;
+                    // If the sample size is full or there is no sample size for those paramaters (lastSampleSize == 0), create a new sample size
+                    if (isFull || lastSampleSizeId == 0)
+                    {
+                        _unitOfWork.SampleSize.Add(new SampleSize());
+                        await _unitOfWork.SaveAsync();
+                        lastSampleSizeId = (await _unitOfWork.SampleSize.GetAllAsync()).Select(x => x.Id).OrderByDescending(x => x).FirstOrDefault();
+                    }
+                    trade.SampleSizeId = lastSampleSizeId;
+                    // TODO: Adjust the FilePaths to be able to be displayed
+                    // Create either properties or a new class for the entry prices.
+                    await AppHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, trade, files);
+                    _unitOfWork.ResearchFirstBarPullback.Add(trade);
                     await _unitOfWork.SaveAsync();
-                    lastSampleSizeId = (await _unitOfWork.SampleSize.GetAllAsync()).Select(x => x.Id).OrderByDescending(x => x).FirstOrDefault();
                 }
             }
         }
@@ -91,11 +99,7 @@ namespace TradingTools.Controllers
             {
                 if (NewTradeVM.Strategy == Strategy.FirstBarBelowAbove)
                 {
-                    List<ResearchFirstBarPullback> researchTrades = await _unitOfWork.ResearchFirstBarPullback.GetAllAsync();
-                    if (researchTrades != null && researchTrades.Any())
-                    {
-                        id = researchTrades.Select(x => x.SampleSizeId).LastOrDefault();
-                    }
+                    id = (await _unitOfWork.ResearchFirstBarPullback.GetAllAsync()).Select(x => x.SampleSizeId).LastOrDefault();
                     int numberTradesInSampleSize = (await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == id)).Count;
                     if (numberTradesInSampleSize == 100)
                     {

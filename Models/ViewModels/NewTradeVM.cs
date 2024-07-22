@@ -16,13 +16,13 @@ namespace Models.ViewModels
     {
         public NewTradeVM()
         {
-            NewTrade = new ResearchFirstBarPullbackDisplay();
-
             YesNoOptions = new List<SelectListItem>
             {
                 new SelectListItem { Value = "1", Text = "Yes" },
                 new SelectListItem { Value = "0", Text = "No" }
             };
+            ResearchData = new();
+            ResearchFirstBarPullbackDisplay = new();
         }
 
         #region Properties
@@ -34,7 +34,9 @@ namespace Models.ViewModels
 
         public SideType Side { get; set; }
 
-        public ResearchFirstBarPullbackDisplay NewTrade { get; set; }
+        public object ResearchData { get; set; }
+
+        public ResearchFirstBarPullbackDisplay ResearchFirstBarPullbackDisplay { get; set; }
 
         public List<SelectListItem> YesNoOptions { get; set; }
 
@@ -53,7 +55,10 @@ namespace Models.ViewModels
                 TradeType = MyEnumConverter.TradeTypeFromString(tradeDataObject["tradeType"]);
                 Side = MyEnumConverter.SideTypeFromString(tradeDataObject["tradeSide"]);
 
-                NewTrade = JsonConvert.DeserializeObject<ResearchFirstBarPullbackDisplay>(tradeData);
+                if (TradeType == TradeType.Research && Strategy == Strategy.FirstBarBelowAbove)
+                {
+                    ResearchData = JsonConvert.DeserializeObject<ResearchFirstBarPullbackDisplay>(tradeData);
+                }
             }
             catch (Exception ex)
             {

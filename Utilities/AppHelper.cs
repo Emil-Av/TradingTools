@@ -16,7 +16,7 @@ namespace Utilities
     /// </summary>
     public static class AppHelper
     {
-        public static async Task<List<string>> SaveFiles<T>(string webRootPath, T vm, object newTrade, IFormFile[] files)
+        public static async Task SaveFilesAsync<T>(string webRootPath, T vm, object newTrade, IFormFile[] files)
         {
             // /Screenshots
             string screenshotsDir = Path.Combine(webRootPath, "Screenshots");
@@ -91,8 +91,6 @@ namespace Utilities
                     Debug.WriteLine($"Error in saving uploaded files: {ex.Message}");
                 }
             }
-
-            return screenshotsPaths;
         }
 
         /// <summary>
