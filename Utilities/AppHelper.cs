@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Models.ViewModels;
 using Shared;
 using System.Diagnostics;
+using Models;
 
 namespace Utilities
 {
@@ -16,7 +17,7 @@ namespace Utilities
     /// </summary>
     public static class AppHelper
     {
-        public static async Task SaveFilesAsync<T>(string webRootPath, T vm, object newTrade, IFormFile[] files)
+        public static async Task<List<string>> SaveFilesAsync<T>(string webRootPath, T vm, object newTrade, IFormFile[] files)
         {
             // /Screenshots
             string screenshotsDir = Path.Combine(webRootPath, "Screenshots");
@@ -28,69 +29,80 @@ namespace Utilities
 
             if (vm is NewTradeVM viewModel)
             {
-                string dirToSaveFiles = string.Empty;
+                string pathToSaveFiles = string.Empty;
                 string tradeType = MyEnumConverter.TradeTypeFromEnum(viewModel.TradeType);
-                dirToSaveFiles = Path.Combine(screenshotsDir, tradeType);
-                if (!Directory.Exists(dirToSaveFiles))
+                pathToSaveFiles = Path.Combine(screenshotsDir, tradeType);
+                if (!Directory.Exists(pathToSaveFiles))
                 {
                     // /Screenshots/Research(e.g.)
-                    Directory.CreateDirectory(dirToSaveFiles);
+                    Directory.CreateDirectory(pathToSaveFiles);
                 }
                 if (tradeType == MyEnumConverter.TradeTypeFromEnum(SharedEnums.Enums.TradeType.Research))
                 {
                     // /Screenshots/Research/FirstBarPullback(e.g.)
-                    dirToSaveFiles = Path.Combine(dirToSaveFiles, newTrade.GetType().Name);
-                    if (!Directory.Exists(dirToSaveFiles))
+                    pathToSaveFiles = Path.Combine(pathToSaveFiles, newTrade.GetType().Name);
+                    if (!Directory.Exists(pathToSaveFiles))
                     {
-                        Directory.CreateDirectory(dirToSaveFiles);
+                        Directory.CreateDirectory(pathToSaveFiles);
                     }
                 }
-                
+
                 // /Screenshots/Research/(typeResearch/)Sample Size 1(e.g.)
-                string[] dirToSaveFilesFiles = Directory.GetFiles(dirToSaveFiles);
-                if (dirToSaveFilesFiles.Length > 0)
+                string[] sampleSizeFolders = Directory.GetDirectories(pathToSaveFiles);
+                if (sampleSizeFolders.Length > 0)
                 {
-                    int lastSampleSizeDir = dirToSaveFilesFiles.Length - 1;
+                    string lastSampleSizeFolder = sampleSizeFolders.Last();
                     // Trade directories in the sample size e.g. Screenshots/Research/FirstBarPullback/Sample Size 1/Trade 2
-                    string[] sampleSizeDirectories = Directory.GetFiles(dirToSaveFilesFiles[lastSampleSizeDir]);
+                    string[] tradesFolderInLastSampleSize = Directory.GetDirectories(lastSampleSizeFolder);
+                    string[] tradesFolders = Directory.GetDirectories(tradesFolderInLastSampleSize[0]);
                     // Check the number of trades of the last sample size
-                    if (sampleSizeDirectories.Length < 100)
+                    if (tradesFolders.Length < 100)
                     {
                         // create a folder for the trade
-                        dirToSaveFiles = Path.Combine(Path.Combine(dirToSaveFiles, $"Trade {sampleSizeDirectories.Length + 1}"));
-                        Directory.CreateDirectory(dirToSaveFiles);
+                        pathToSaveFiles = Path.Combine(Path.Combine(pathToSaveFiles, $"Trade {tradesFolderInLastSampleSize.Length + 1}"));
+                        Directory.CreateDirectory(pathToSaveFiles);
                     }
+                    // Last sample size is full, create new one
                     else
                     {
-                        dirToSaveFiles = Path.Combine(dirToSaveFiles, $"Sample Size {dirToSaveFilesFiles.Length + 1}");
-                        // last sample size is full, create new one
-                        Directory.CreateDirectory(dirToSaveFiles);
+                        pathToSaveFiles = Path.Combine(pathToSaveFiles, $"Sample Size {sampleSizeFolders.Length + 1}");
+                        Directory.CreateDirectory(pathToSaveFiles);
+                        // Create the folder for the first trade of the new sample size
+                        pathToSaveFiles = Path.Combine(pathToSaveFiles, "Trade 1");
+                        Directory.CreateDirectory(pathToSaveFiles);
                     }
                 }
                 else
                 {
                     // Create the 1st sample size and the first trade directories
-                    dirToSaveFiles = Path.Combine(dirToSaveFiles, "Sample Size 1", "Trade 1");
-                    Directory.CreateDirectory(dirToSaveFiles);
+                    pathToSaveFiles = Path.Combine(pathToSaveFiles, "Sample Size 1", "Trade 1");
+                    Directory.CreateDirectory(pathToSaveFiles);
                 }
 
                 try
                 {
                     foreach (IFormFile file in files)
                     {
-                        string filePath = dirToSaveFiles + file.FileName;
+                        string filePath = Path.Combine(pathToSaveFiles, file.FileName);
                         using (Stream stream = new FileStream(filePath, FileMode.Create))
                         {
                             await file.CopyToAsync(stream);
-                            screenshotsPaths.Add(filePath);
+                            var dbFilePath = Path.GetRelativePath(webRootPath, filePath).Replace("\\", "/");
+                            Trade trade = newTrade as Trade;
+                            if (trade.ScreenshotsUrls == null)
+                            {
+                                trade.ScreenshotsUrls = new List<string>();
+                            }
+                            trade.ScreenshotsUrls.Add(dbFilePath);
                         }
                     }
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
                     Debug.WriteLine($"Error in saving uploaded files: {ex.Message}");
                 }
             }
+            return screenshotsPaths;
         }
 
         /// <summary>
@@ -112,7 +124,16 @@ namespace Utilities
                 // Create wwwroot\Screenshots
                 Directory.CreateDirectory(screenshotsFolder);
             }
-            currentFolder = Path.Combine(screenshotsFolder, tradeInfo[0]);
+            string tradeType = string.Empty;
+            if (tradeInfo[0].Contains("Research"))
+            {
+                tradeType = "Research\\" + tradeInfo[0];
+            }
+            else
+            {
+                tradeType = tradeInfo[0];
+            }
+            currentFolder = Path.Combine(screenshotsFolder, tradeType);
             if (!Directory.Exists(currentFolder))
             {
                 // Create View folder (e.g. wwwroot\Screenshots\PaperTrades

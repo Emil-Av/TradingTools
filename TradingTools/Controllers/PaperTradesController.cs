@@ -298,7 +298,7 @@ namespace TradingTools.Controllers
                                     {
                                         entry.ExtractToFile(Path.Combine(currentFolder, entry.Name));
                                         string screenshotName = entry.FullName.Split('/').Last();
-                                        string screenshotPath = currentFolder.Replace(wwwRootPath, "").Replace("\\\\", "/");
+                                        string screenshotPath = currentFolder.Replace(wwwRootPath, "").Replace("\\", "/");
                                         trade.ScreenshotsUrls.Add(Path.Combine(screenshotPath, screenshotName));
                                     }
                                     else if (!entry.FullName.Contains("Reviews"))

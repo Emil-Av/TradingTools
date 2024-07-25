@@ -225,13 +225,10 @@ namespace TradingTools.Controllers
                                                 researchTrade.IsFullATRLoss = csvData[i][5] == "Yes" ? true : false;
                                                 researchTrade.FullATRMaxRR = csvData[i][6].Length > 0 ? int.Parse(csvData[i][6].Split('-')[1]) : 0;
                                                 researchTrade.MarketGaveSmth = csvData[i][7].Length > 0 ? true : false;
-                                                //await _unitOfWork.ResearchFirstBarPullback.AddAsync(researchTrade);
-                                                //await _unitOfWork.SaveAsync();
                                                 researchTrades.Add(researchTrade);
                                                 researchTrade = new ResearchFirstBarPullback();
                                             }
                                         }
-                                        //await _unitOfWork.ResearchFirstBarPullback.AddRangeAsync(researchTrades);
                                     }
                                 }
                             }
@@ -257,7 +254,7 @@ namespace TradingTools.Controllers
 
                                     entry.ExtractToFile(Path.Combine(currentFolder, entry.Name));
                                     string screenshotName = entry.FullName.Split('/').Last();
-                                    string screenshotPath = currentFolder.Replace(wwwRootPath, "").Replace("\\\\", "/");
+                                    string screenshotPath = currentFolder.Replace(wwwRootPath, "").Replace("\\", "/");
                                     researchTrades[tradeIndex].ScreenshotsUrls.Add(Path.Combine(screenshotPath, screenshotName));
                                 }
                             }
