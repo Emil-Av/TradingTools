@@ -45,7 +45,7 @@ namespace TradingTools.Controllers
         {
             if (data.Review == null)
             {
-                return Json(new { error = "Review wasn't updated. Review was null" });
+                return Json(new { error = "Review wasn't updated. Review was null." });
             }
 
             SanitizationHelper.SanitizeObject(data.Review);
@@ -86,8 +86,8 @@ namespace TradingTools.Controllers
                 journal.During = data.Journal.During;
                 journal.Exit = data.Journal.Exit;
                 journal.Post = data.Journal.Post;
-                _unitOfWork.Journal.UpdateAsync(journal);
-                _unitOfWork.SaveAsync();
+                await _unitOfWork.Journal.UpdateAsync(journal);
+                await _unitOfWork.SaveAsync();
             }
             return Json(new { success = "Journal updated." });
         }
@@ -95,43 +95,55 @@ namespace TradingTools.Controllers
         public async Task<IActionResult> LoadTrade(string timeFrame, string strategy, string sampleSize, string trade, string showLastTrade, string sampleSizeChanged)
         {
             userSettings = (await _unitOfWork.UserSettings.GetAllAsync()).First();
-            TimeFrame timeFrame1;
-            Strategy strategy1;
+            TimeFrame timeFrame1 = TimeFrame.M5;
+            Strategy strategy1 = Strategy.Cradle;
+            List<string> errors = new List<string>();   
             // Check and parse the paramaters
-            try
+
+            Result<TimeFrame> resultTimeFrame = MyEnumConverter.TimeFrameFromString(timeFrame);
+            if (!resultTimeFrame.Success)
             {
-                timeFrame1 = MyEnumConverter.TimeFrameFromString(timeFrame);
+                errors.Add(resultTimeFrame.ErrorMessage);
             }
-            catch (Exception ex)
+            else
             {
-                return Json(new { error = $"Error loading the trade. Wrong paramaters: {ex.Message}" });
+                timeFrame1 = resultTimeFrame.Value;
             }
 
-            try
+            Result<Strategy> resultStrategy = MyEnumConverter.StrategyFromString(strategy);
+
+            if (!resultStrategy.Success)
             {
-                strategy1 = MyEnumConverter.StrategyFromString(strategy);
+                errors.Add(resultStrategy.ErrorMessage);
             }
-            catch (Exception ex)
+            else
             {
-                return Json(new { error = $"Error loading the trade. Wrong paramaters: {ex.Message}" });
+                strategy1 = resultStrategy.Value;
             }
+
 
             if (!int.TryParse(sampleSize, out int sampleSize1))
             {
-                return Json(new { error = $"Error loading the trade. Wrong paramater: Could not parse the sample size id" });
+                errors.Add("Error loading the trade. Wrong paramater: Could not parse the sample size id");
             }
 
             if (!int.TryParse(trade, out int trade1))
             {
-                return Json(new { error = $"Error loading the trade. Wrong paramater: Could not parse the trade id" });
+                errors.Add("Error loading the trade. Wrong paramater: Could not parse the trade id");
             }
             if (!bool.TryParse(showLastTrade, out bool showLastTrade1))
             {
-                return Json(new { error = $"Error loading the trade. Wrong paramater: Could not parse showLastTrade" });
+                errors.Add("Error loading the trade. Wrong paramater: Could not parse showLastTrade");
             }
             if (!bool.TryParse(sampleSizeChanged, out bool sampleSizeChanged1))
             {
-                return Json(new { error = $"Error loading the trade. Wrong paramater: Could not parse sampleSizeChanged" });
+                errors.Add("Error loading the trade. Wrong paramater: Could not parse sampleSizeChanged");
+            }
+
+            if (errors.Any())
+            {
+                string errorMsg = string.Join("\\n", errors);
+                return Json(new {error = errorMsg});    
             }
 
             List<SampleSize> listSampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.Strategy == strategy1 && x.TimeFrame == timeFrame1);
@@ -152,7 +164,7 @@ namespace TradingTools.Controllers
                 sampleSizeId = listSampleSizes.LastOrDefault().Id;
                 PaperTradesVM.CurrentSampleSize = listSampleSizes.Count;
             }
-            
+
             List<PaperTrade> listTrades = await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == sampleSizeId);
             // If for example a different time frame or new strategy or new sample size is selected, then display the latest trade of the sample size
             if (showLastTrade1)
@@ -260,8 +272,8 @@ namespace TradingTools.Controllers
                             else
                             {
                                 string[] tradeInfo = entry.FullName.Split('/');
-                                trade.Strategy = MyEnumConverter.StrategyFromString(tradeInfo[1]);
-                                trade.TimeFrame = MyEnumConverter.TimeFrameFromString(tradeInfo[2]);
+                                trade.Strategy = MyEnumConverter.StrategyFromString(tradeInfo[1]).Value;
+                                trade.TimeFrame = MyEnumConverter.TimeFrameFromString(tradeInfo[2]).Value;
                                 trade.SampleSizeId = currentSampleSizeId;
 
 

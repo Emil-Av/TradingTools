@@ -76,7 +76,7 @@ namespace Models.ViewModels
 
                 if (errors.Any())
                 {
-                    return error = string.Join("\\", errors);
+                    return error = string.Join("<br>", errors);
                 }
 
                 TimeFrame = timeFrameResult.Value;

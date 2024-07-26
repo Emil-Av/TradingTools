@@ -160,7 +160,7 @@ namespace TradingTools.Controllers
                                     return RedirectToAction(nameof(Index));
                                 }
                                 string tempTF = researchInfo[2].Replace(".csv", "");
-                                researchedTF = MyEnumConverter.TimeFrameFromString(tempTF);
+                                researchedTF = MyEnumConverter.TimeFrameFromString(tempTF).Value;
                                 // Set the sample size for the research
                                 SampleSize sampleSize = new SampleSize();
                                 sampleSize.TradeType = TradeType.Research;
