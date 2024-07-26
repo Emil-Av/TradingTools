@@ -48,12 +48,17 @@ namespace TradingTools.Controllers
             if (!string.IsNullOrEmpty(errorMsg))
             {
                 return Json(new { error = errorMsg });
-
             }
 
-            await SaveTrade(files);
-
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await SaveTrade(files);
+                return Json(new { success = "Trade saved." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = $"Error while saving the trade: {ex.Message} " });
+            }
         }
 
         public IActionResult Index()
@@ -76,8 +81,8 @@ namespace TradingTools.Controllers
                     // If the sample size is full or there is no sample size for those paramaters (lastSampleSize == 0), create a new sample size
                     if (isFull || lastSampleSizeId == 0)
                     {
-                        SampleSize newSampleSize = 
-                            new SampleSize { Strategy = NewTradeVM.Strategy , TimeFrame = NewTradeVM.TimeFrame, TradeType = NewTradeVM.TradeType};
+                        SampleSize newSampleSize =
+                            new SampleSize { Strategy = NewTradeVM.Strategy, TimeFrame = NewTradeVM.TimeFrame, TradeType = NewTradeVM.TradeType };
                         _unitOfWork.SampleSize.Add(newSampleSize);
                         await _unitOfWork.SaveAsync();
                         lastSampleSizeId = newSampleSize.Id;

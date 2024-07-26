@@ -54,11 +54,12 @@ namespace Utilities
                     string lastSampleSizeFolder = sampleSizeFolders.Last();
                     // Trade directories in the sample size e.g. Screenshots/Research/FirstBarPullback/Sample Size 1/Trade 2
                     string[] tradesFolderInLastSampleSize = Directory.GetDirectories(lastSampleSizeFolder);
-                    string[] tradesFolders = Directory.GetDirectories(tradesFolderInLastSampleSize[0]);
+                    //string[] tradesFolders = Directory.GetDirectories(tradesFolderInLastSampleSize[0]);
                     // Check the number of trades of the last sample size
-                    if (tradesFolders.Length < 100)
+                    if (tradesFolderInLastSampleSize.Length < 100)
                     {
                         // create a folder for the trade
+                        pathToSaveFiles = lastSampleSizeFolder;
                         pathToSaveFiles = Path.Combine(Path.Combine(pathToSaveFiles, $"Trade {tradesFolderInLastSampleSize.Length + 1}"));
                         Directory.CreateDirectory(pathToSaveFiles);
                     }

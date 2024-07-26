@@ -128,6 +128,7 @@
             success: function (response) {
                 if (response['success'] !== undefined) {
                     toastr.success(response['success']);
+                    clearFields();
                 }
                 else if (response['error'] !== undefined) {
                     toastr.error(response['error']);
@@ -138,6 +139,35 @@
                 console.error('Error uploading files:', error);
             }
         });
+
+        function clearFields() {
+            // Clear fields with data-bindResearch attribute
+            $('[data-bindResearch]').each(function () {
+                if ($(this).is('input')) {
+                    // Clear the rest of the input fields
+                    $(this).val('');
+                }
+                // Clear the select fields
+                else if ($(this).is('select')) {
+                    $(this).prop('selectedIndex', 0);
+                }
+            });
+
+            // Clear fields without data-bindResearch attribute
+            $('input:not([data-bindResearch])').each(function () {
+                // Clear the files input
+                if ($(this).attr('type') === 'file') {
+                    $(this).replaceWith($(this).clone(true))
+                }
+                else {
+                    $(this).val('');
+                }
+            });
+
+            $('select:not([data-bindResearch])').each(function () {
+                $(this).prop('selectedIndex', 0);
+            });
+        }
     };
 
     /**

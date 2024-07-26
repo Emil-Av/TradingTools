@@ -95,7 +95,7 @@
                                     <div class="col-6 d-flex flex-row justify-content-between align-items-center">
                                         <div class="text-center p-4" style="border: 2px dashed #ccc; cursor: pointer;" onclick="document.getElementById('filesInput').click()">
                                             <form method="post" enctype="multipart/form-data" id="formUploadFiles" asp-action="UploadScreenshots">
-                                                <input type="file" name="screenshots" id="filesInput" class="d-none" />
+                                                <input type="file" name="screenshots" id="filesInput" class="d-none" multiple/>
                                                 <i class="fa-solid fa-file-arrow-up fa-2x text-primary"></i>
                                                 <span class="mt-2 d-block">Upload Screenshots</span>
                                             </form>
