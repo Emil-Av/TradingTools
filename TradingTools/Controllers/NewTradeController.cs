@@ -107,15 +107,20 @@ namespace TradingTools.Controllers
             {
                 if (NewTradeVM.Strategy == Strategy.FirstBarBelowAbove)
                 {
-                    id = (await _unitOfWork.SampleSize.
-                        GetAllAsync(x => x.TimeFrame == NewTradeVM.TimeFrame && x.Strategy == NewTradeVM.Strategy && x.TradeType == NewTradeVM.Type)).LastOrDefault().Id;
-                    int numberTradesInSampleSize = (await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == id)).Count;
-                    if (numberTradesInSampleSize == 100)
+                    List<SampleSize> listSampleSizes = (await _unitOfWork.SampleSize.
+                        GetAllAsync(x => x.TimeFrame == NewTradeVM.TimeFrame && x.Strategy == NewTradeVM.Strategy && x.TradeType == NewTradeVM.Type));
+                    if (listSampleSizes.Any())
                     {
-                        isFull = true;
-                    }
+                        id = listSampleSizes.Last().Id;
 
-                    return (id, isFull);
+                        int numberTradesInSampleSize = (await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == id)).Count;
+                        if (numberTradesInSampleSize == 100)
+                        {
+                            isFull = true;
+                        }
+
+                        return (id, isFull);
+                    }
                 }
             }
 

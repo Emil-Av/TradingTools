@@ -80,10 +80,9 @@ $(function () {
                 // Set the new value
                 var value = $(this).text();
                 $(menuButtons[key]).text(value);
-                LoadTradeAsync($('#spanTimeFrame').text(),
+                LoadResearchAsync($('#spanTimeFrame').text(),
                     $('#spanStrategy').text(),
                     $('#spanSampleSize').text(),
-                    showLastTrade,
                     sampleSizeChanged);
             });
         })(key);
@@ -118,7 +117,7 @@ $(function () {
      */
     // Card button 'Update' click event handler 
     $('#btnUpdate').on('click', function () {
-        updateTradeData(tradeIndex);
+        UpdateTradeData(tradeIndex);
     });
 
     // Menu button "Next" click event handler
@@ -149,7 +148,7 @@ $(function () {
             userInput = Number(event.target.value);
             if (Number.isInteger(userInput)) {
                 tradeIndex = userInput - 1;
-                displayTradeData(tradeIndex, true);
+                DisplayTradeData(tradeIndex, true);
             }
             else {
                 toastr.error("Please enter a whole number.");
@@ -173,15 +172,15 @@ $(function () {
 
     // Toggles to the next trade
     function ShowNextTrade(index) {
-        displayTradeData(index, false);
+        DisplayTradeData(index, false);
     }
     // Toggles to the previous trade
     function ShowPrevTrade(index) {
-        displayTradeData(index, false);
+        DisplayTradeData(index, false);
     }
 
-    // Loads the screenshots and the values  input/select elements in the card
-    function displayTradeData(indexToShow, canShowToastr) {
+    // Loads the screenshots and the values in input/select elements in the card
+    function DisplayTradeData(indexToShow, canShowToastr) {
         // Buttons 'prev' or 'next'
         if (indexToShow == -1 || indexToShow == 1) {
             tradeIndex += indexToShow;
@@ -216,11 +215,11 @@ $(function () {
         }
         lastTradeIndex = tradeIndex;
         $('#tradeNumberInput').val(tradeIndex + 1);
-        loadImages();
-        loadTradeData(tradeIndex); 
+        LoadImages();
+        LoadTradeData(tradeIndex); 
     }
     // Updates the database with the values from the card for the displayed trade
-    function updateTradeData(index) {
+    function UpdateTradeData(index) {
         var updatedTrade = {};
         // Get all data from the input and select fields in the card
         $('#cardBody [data-bind]').each(function () {
@@ -250,8 +249,8 @@ $(function () {
             }
         });
     }
-    // Loads the trade data into the input/select elements
-    function loadTradeData(tradeIndex) {
+    // Loads the trade data into the input/select elements. Used in the prev/next buttons or the key combination
+    function LoadTradeData(tradeIndex) {
         var trade = trades[tradeIndex];
         $('#cardBody [data-bind]').each(function () {
             var bindProperty = $(this).data('bind');
@@ -262,7 +261,7 @@ $(function () {
         $('#currentTradeId').val(trade['IdDisplay']);
     }
     // Loads the images into the carousel
-    function loadImages() {
+    function LoadImages() {
         var screenshots = trades[tradeIndex]['ScreenshotsUrlsDisplay'];
 
         var newCarouselHtml = '<ol class="carousel-indicators">';
@@ -293,6 +292,10 @@ $(function () {
         $('#tradeNumberInput').val(tradeIndex + 1);
 
         console.log(newCarouselHtml);
+    }
+
+    function LoadResearchAsync() {
+
     }
 
     /**

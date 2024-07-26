@@ -94,7 +94,7 @@ namespace TradingTools.Controllers
 
         public async Task<IActionResult> LoadTrade(string timeFrame, string strategy, string sampleSize, string trade, string showLastTrade, string sampleSizeChanged)
         {
-            userSettings = (await _unitOfWork.UserSettings.GetAllAsync()).First();
+            //userSettings = (await _unitOfWork.UserSettings.GetAllAsync()).First();
             TimeFrame timeFrame1 = TimeFrame.M5;
             Strategy strategy1 = Strategy.Cradle;
             List<string> errors = new List<string>();   
@@ -142,7 +142,7 @@ namespace TradingTools.Controllers
 
             if (errors.Any())
             {
-                string errorMsg = string.Join("\\n", errors);
+                string errorMsg = string.Join("<br>", errors);
                 return Json(new {error = errorMsg});    
             }
 
@@ -191,9 +191,9 @@ namespace TradingTools.Controllers
             // Currently no users, so there is only one data record
             userSettings = (await _unitOfWork.UserSettings.GetAllAsync()).First();
             // Get the latest sample size for the strategy and time frame
-            int? latestSampleSize = (await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy)).OrderByDescending(x => x.Id).FirstOrDefault()?.Id;
+            int? latestSampleSize = (await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy)).Last().Id;
             // Get the last trade of the sample size
-            PaperTradesVM.CurrentTrade = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.SampleSizeId == latestSampleSize)).OrderByDescending(x => x.Id).FirstOrDefault();
+            PaperTradesVM.CurrentTrade = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == latestSampleSize)).Last();
             // No trades yet
             if (PaperTradesVM.CurrentTrade == null)
             {
@@ -202,7 +202,7 @@ namespace TradingTools.Controllers
             // Get the number of sample sizes for the time frame and strategy
             PaperTradesVM.NumberSampleSizes = (await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy)).Count();
             // Get the number of trades for the sample size
-            PaperTradesVM.TradesInSampleSize = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.SampleSizeId == latestSampleSize)).Count();
+            PaperTradesVM.TradesInSampleSize = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == latestSampleSize)).Count();
             PaperTradesVM.Journal = await _unitOfWork.Journal.GetAsync(x => x.PaperTradeId == PaperTradesVM.CurrentTrade.Id);
             SanitizationHelper.SanitizeObject(PaperTradesVM.Journal);
             PaperTradesVM.Review = await _unitOfWork.Review.GetAsync(x => x.SampleSizeId == PaperTradesVM.CurrentTrade.SampleSizeId);
