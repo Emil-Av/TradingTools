@@ -73,12 +73,6 @@ namespace TradingTools.Controllers
             // Get research sample sizes
             List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research);
 
-            // Set the NumberSampleSizes for the button menu
-            ResearchVM.NumberSampleSizes = sampleSizes.Count();
-            if (ResearchVM.NumberSampleSizes == 0)
-            {
-                return View(ResearchVM);
-            }
             int lastSampleSizeId = sampleSizes.LastOrDefault().Id;
             // Get all researched trades from the DB and project the instances into ResearchFirstBarPullbackDisplay
             ResearchVM.AllTrades = (await _unitOfWork.ResearchFirstBarPullback
@@ -92,10 +86,12 @@ namespace TradingTools.Controllers
             {
                 return View(ResearchVM);
             }
+            // Set the values for the button menus
             ResearchVM.CurrentTrade = ResearchVM.AllTrades.FirstOrDefault();
             ResearchVM.CurrentSampleSize = sampleSizes.LastOrDefault();
-
-            // Set the values for the button menus. Display only values for which there are data records.
+            // Set the NumberSampleSizes for the button menu
+            ResearchVM.NumberSampleSizes = sampleSizes.Count();
+            // Display only values for which there are data records.
             foreach (SampleSize sampleSize in sampleSizes)
             {
                 if (!ResearchVM.AvailableTimeframes.Contains(sampleSize.TimeFrame))
@@ -287,226 +283,6 @@ namespace TradingTools.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-
-        #region Helper Methods
-        /// <summary>
-        ///  Converts the values from the view into the reference of the database object.
-        /// </summary>
-        /// <param name="objFromDB"></param>
-        /// <param name="objFromView"></param>
-        /// <returns></returns>
-        private ResearchFirstBarPullback ConvertToDbResearchValues(ResearchFirstBarPullback objFromDB, ResearchFirstBarPullbackDisplay objFromView)
-        {
-            objFromDB.SideType = objFromView.SideTypeDisplay;
-            if (Int32.TryParse(objFromView.OneToOneHitOnDisplay, out int oneToOne))
-            {
-                objFromDB.OneToOneHitOn = oneToOne;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsOneToThreeHitDisplay, out bool oneToThree))
-            {
-                objFromDB.IsOneToThreeHit = oneToThree;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsOneToFiveHitDisplay, out bool oneToFive))
-            {
-                objFromDB.IsOneToFiveHit = oneToFive;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsBreakevenDisplay, out bool breakEven))
-            {
-                objFromDB.IsBreakeven = breakEven;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsLossDisplay, out bool lossDisplay))
-            {
-                objFromDB.IsLoss = lossDisplay;
-            }
-            else
-            {
-
-            }
-
-            objFromDB.MaxRR = objFromView.MaxRRDisplay;
-
-            if (bool.TryParse(objFromView.MarketGaveSmthDisplay, out bool marketGaveSmth))
-            {
-                objFromDB.MarketGaveSmth = marketGaveSmth;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsEntryAfter3To5BarsDisplay, out bool entryAfter3To5Bars))
-            {
-                objFromDB.IsEntryAfter3To5Bars = entryAfter3To5Bars;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsEntryAfter5BarsDisplay, out bool entryAfter5bars))
-            {
-                objFromDB.IsEntryAfter5Bars = entryAfter5bars;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsEntryAtPreviousSwingOnTriggerDisplay, out bool entryAtPreviousSwingOnTrigger))
-            {
-                objFromDB.IsEntryAtPreviousSwingOnTrigger = entryAtPreviousSwingOnTrigger;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsEntryBeforePreviousSwingOnTriggerDisplay, out bool entryBeforePreviousSwingOnTriggerDisplay))
-            {
-                objFromDB.IsEntryBeforePreviousSwingOnTrigger = entryBeforePreviousSwingOnTriggerDisplay;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsEntryBeforePreviousSwingOn4HDisplay, out bool isEntryBeforePreviousSwingOn4H))
-            {
-                objFromDB.IsEntryBeforePreviousSwingOn4H = isEntryBeforePreviousSwingOn4H;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsEntryBeforePreviousSwingOnDDisplay, out bool isEntryBeforePreviousSwingOnD))
-            {
-                objFromDB.IsEntryBeforePreviousSwingOnD = isEntryBeforePreviousSwingOnD;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsMomentumTradeDisplay, out bool isMomentumTrade))
-            {
-                objFromDB.IsMomentumTrade = isMomentumTrade;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsTrendTradeDisplay, out bool isTrendTradeDisplay))
-            {
-                objFromDB.IsTrendTrade = isTrendTradeDisplay;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsTriggerTrendingDisplay, out bool isTriggerTrendingDisplay))
-            {
-                objFromDB.IsTriggerTrending = isTriggerTrendingDisplay;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.Is4HTrendingDisplay, out bool is4HTrendingDisplay))
-            {
-                objFromDB.Is4HTrending = is4HTrendingDisplay;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsDTrendingDisplay, out bool isDTrending))
-            {
-                objFromDB.IsDTrending = isDTrending;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsEntryAfteriBarDisplay, out bool isEntryAfteriBarDisplay))
-            {
-                objFromDB.IsEntryAfteriBar = isEntryAfteriBarDisplay;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsSignalBarStrongReversalDisplay, out bool isSignalBarStrongReversalDisplay))
-            {
-                objFromDB.IsSignalBarStrongReversal = isSignalBarStrongReversalDisplay;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsSignalBarInTradeDirectionDisplay, out bool isSignalBarInTradeDirectionDisplay))
-            {
-                objFromDB.IsSignalBarInTradeDirection = isSignalBarInTradeDirectionDisplay;
-            }
-            else
-            {
-
-            }
-
-            objFromDB.FullATROneToOneHitOn = objFromView.FullATROneToOneHitOnDisplay;
-
-            if (bool.TryParse(objFromView.IsFullATROneToThreeHitDisplay, out bool isFullATROneToThreeHit))
-            {
-                objFromDB.IsFullATROneToThreeHit = isFullATROneToThreeHit;
-            }
-            else
-            {
-
-            }
-
-            if (bool.TryParse(objFromView.IsFullATROneToFiveHitDisplay, out bool isFullATROneToFiveHit))
-            {
-                objFromDB.IsFullATROneToFiveHit = isFullATROneToFiveHit;
-            }
-            else
-            {
-
-            }
-            if (bool.TryParse(objFromView.IsFullATRBreakevenDisplay, out bool isATRBreakevenDisplay))
-            {
-                objFromDB.IsFullATRBreakeven = isATRBreakevenDisplay;
-            }
-            else
-            {
-
-            }
-
-            if (bool.TryParse(objFromView.IsFullATRLossDisplay, out bool isATRLossDisplay))
-            {
-                objFromDB.IsFullATRLoss = isATRLossDisplay;
-            }
-            else
-            {
-
-            }
-
-            objFromDB.FullATRMaxRR = objFromView.FullATRMaxRRDisplay;
-            objFromDB.FullATRMarketGaveSmth = objFromView.FullATRMarketGaveSmthDisplay;
-            objFromDB.Comment = objFromView.CommentDisplay;
-
-            return objFromDB;
-        }
-        #endregion
 
         #endregion
     }
