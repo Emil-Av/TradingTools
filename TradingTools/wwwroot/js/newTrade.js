@@ -72,6 +72,10 @@
         saveTrade();
     });
 
+    $('#btnClear').on('click', function () {
+        clearFields();
+    });
+
     // After uploading screenshots, the 'change' event is triggered. Save the files in the global variable and display the file names
     $('input[type="file"]').change(function (e) {
         var files = $(this)[0].files; // Get the files array from the input element
@@ -139,36 +143,35 @@
                 console.error('Error uploading files:', error);
             }
         });
-
-        function clearFields() {
-            // Clear fields with data-bindResearch attribute
-            $('[data-bindResearch]').each(function () {
-                if ($(this).is('input')) {
-                    // Clear the rest of the input fields
-                    $(this).val('');
-                }
-                // Clear the select fields
-                else if ($(this).is('select')) {
-                    $(this).prop('selectedIndex', 0);
-                }
-            });
-
-            // Clear fields without data-bindResearch attribute
-            $('input:not([data-bindResearch])').each(function () {
-                // Clear the files input
-                if ($(this).attr('type') === 'file') {
-                    $(this).replaceWith($(this).clone(true))
-                }
-                else {
-                    $(this).val('');
-                }
-            });
-
-            $('select:not([data-bindResearch])').each(function () {
-                $(this).prop('selectedIndex', 0);
-            });
-        }
     };
+
+    function clearFields() {
+        // Clear fields with data-bindResearch attribute
+        $('[data-bindResearch]').each(function () {
+            if ($(this).is('input')) {
+                // Clear the rest of the input fields
+                $(this).val('');
+            }
+            // Clear the select fields
+            else if ($(this).is('select')) {
+                $(this).prop('selectedIndex', 1);
+            }
+        });
+
+        // Clear fields without data-bindResearch attribute
+        $('input:not([data-bindResearch])').each(function () {
+            // Clear the files input
+            $(this).val('');
+        });
+        $('#fileList').empty();
+        $('#fileList').append('<p class="text-truncate">No uploaded files.</p>')
+        $('#formUploadFiles').trigger('reset');
+        uploadedFiles = [];
+        console.log('form resetted');
+        $('select:not([data-bindResearch])').each(function () {
+            $(this).prop('selectedIndex', 1);
+        });
+    }
 
     /**
      * ***************************

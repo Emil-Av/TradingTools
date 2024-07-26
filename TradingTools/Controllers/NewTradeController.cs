@@ -69,7 +69,7 @@ namespace TradingTools.Controllers
         private async Task SaveTrade(IFormFile[] files)
         {
             int lastSampleSizeId;
-            if (NewTradeVM.TradeType == TradeType.Research)
+            if (NewTradeVM.Type == TradeType.Research)
             {
                 if (NewTradeVM.ResearchData is ResearchFirstBarPullbackDisplay researchData)
                 {
@@ -82,7 +82,7 @@ namespace TradingTools.Controllers
                     if (isFull || lastSampleSizeId == 0)
                     {
                         SampleSize newSampleSize =
-                            new SampleSize { Strategy = NewTradeVM.Strategy, TimeFrame = NewTradeVM.TimeFrame, TradeType = NewTradeVM.TradeType };
+                            new SampleSize { Strategy = NewTradeVM.Strategy, TimeFrame = NewTradeVM.TimeFrame, TradeType = NewTradeVM.Type };
                         _unitOfWork.SampleSize.Add(newSampleSize);
                         await _unitOfWork.SaveAsync();
                         lastSampleSizeId = newSampleSize.Id;
@@ -103,12 +103,12 @@ namespace TradingTools.Controllers
             int id = 0;
             bool isFull = false;
             // New trade is Research
-            if (NewTradeVM.TradeType == TradeType.Research)
+            if (NewTradeVM.Type == TradeType.Research)
             {
                 if (NewTradeVM.Strategy == Strategy.FirstBarBelowAbove)
                 {
                     id = (await _unitOfWork.SampleSize.
-                        GetAllAsync(x => x.TimeFrame == NewTradeVM.TimeFrame && x.Strategy == NewTradeVM.Strategy && x.TradeType == NewTradeVM.TradeType)).LastOrDefault().Id;
+                        GetAllAsync(x => x.TimeFrame == NewTradeVM.TimeFrame && x.Strategy == NewTradeVM.Strategy && x.TradeType == NewTradeVM.Type)).LastOrDefault().Id;
                     int numberTradesInSampleSize = (await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == id)).Count;
                     if (numberTradesInSampleSize == 100)
                     {

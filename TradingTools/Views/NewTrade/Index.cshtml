@@ -44,7 +44,7 @@
                     <div class="col-auto p-2">
                         <div class="dropdown">
                             <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Trade Type: <span id="spanTradeType"></span>
+                                Type: <span id="spanTradeType"></span>
                             </button>
                             <div class="dropdown-menu animated--fade-in" id="dropdownBtnTradeType" aria-labelledby="dropdownMenuButton">
                                 @foreach (TradeType tradeType in Enum.GetValues(typeof(TradeType)))
@@ -123,7 +123,10 @@
             <div class="row justify-content-center">
                 <div class="col-10 mt-4">
                     <div class="card-footer mt-2 d-flex justify-content-end">
-                        <button class="btn btn-info" id="btnSave">
+                        <button class="btn btn-warning" id="btnClear">
+                            <span class="text"><i class="fa-solid fa-broom mr-2"></i>Clear</span>
+                        </button>
+                        <button class="btn btn-info ml-1" id="btnSave">
                             <span class="text"><i class="fa-regular fa-floppy-disk mr-2"></i>Save</span>
                         </button>
                     </div>

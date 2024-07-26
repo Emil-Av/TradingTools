@@ -30,7 +30,7 @@ namespace Models.ViewModels
 
         public Strategy Strategy { get; set; }
 
-        public TradeType TradeType { get; set; }
+        public TradeType Type { get; set; }
 
         public SideType Side { get; set; }
 
@@ -50,12 +50,41 @@ namespace Models.ViewModels
             try
             {
                 Dictionary<string, string> tradeDataObject = JsonConvert.DeserializeObject<Dictionary<string, string>>(tradeParams);
-                TimeFrame = MyEnumConverter.TimeFrameFromString(tradeDataObject["timeFrame"]);
-                Strategy = MyEnumConverter.StrategyFromString(tradeDataObject["strategy"]);
-                TradeType = MyEnumConverter.TradeTypeFromString(tradeDataObject["tradeType"]);
-                Side = MyEnumConverter.SideTypeFromString(tradeDataObject["tradeSide"]);
+                Result<TimeFrame> timeFrameResult = MyEnumConverter.TimeFrameFromString(tradeDataObject["timeFrame"]);
+                Result<Strategy> strategyResult = MyEnumConverter.StrategyFromString(tradeDataObject["strategy"]);
+                Result<TradeType> typeResult = MyEnumConverter.TradeTypeFromString(tradeDataObject["tradeType"]);
+                Result<SideType> sideResult = MyEnumConverter.SideTypeFromString(tradeDataObject["tradeSide"]);
 
-                if (TradeType == TradeType.Research && Strategy == Strategy.FirstBarBelowAbove)
+                List<string> errors = new List<string>();
+
+                if (!timeFrameResult.Success)
+                {
+                    errors.Add(timeFrameResult.ErrorMessage);
+                }
+                if (!strategyResult.Success)
+                {
+                    errors.Add(strategyResult.ErrorMessage);    
+                }
+                if (!typeResult.Success)
+                {
+                    errors.Add(typeResult.ErrorMessage);
+                }
+                if (!sideResult.Success)
+                {
+                    errors.Add(sideResult.ErrorMessage);
+                }
+
+                if (errors.Any())
+                {
+                    return error = string.Join("\\", errors);
+                }
+
+                TimeFrame = timeFrameResult.Value;
+                Strategy = strategyResult.Value;
+                Type = typeResult.Value;
+                Side = sideResult.Value;
+
+                if (Type == TradeType.Research && Strategy == Strategy.FirstBarBelowAbove)
                 {
                     ResearchData = JsonConvert.DeserializeObject<ResearchFirstBarPullbackDisplay>(tradeData);
                 }

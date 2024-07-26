@@ -4,7 +4,7 @@ namespace Shared
 {
     public class MyEnumConverter
     {
-        public static SideType SideTypeFromString(string sideType)
+        public static Result<SideType> SideTypeFromString(string sideType)
         {
             Dictionary<string, SideType> sideTypes = new Dictionary<string, SideType>() 
             {
@@ -12,10 +12,17 @@ namespace Shared
                 { "Short", SideType.Short }
             };
 
-            return sideTypes[sideType];
+            try
+            {
+                return Result<SideType>.SuccessResult(sideTypes[sideType]);
+            }
+            catch (Exception ex) 
+            {
+                return Result<SideType>.ErrorResult("Side not selected.");
+            }
         }
 
-        public static TradeType TradeTypeFromString(string tradeType)
+        public static Result<TradeType> TradeTypeFromString(string tradeType)
         {
             Dictionary<string, TradeType> tradeTypes = new Dictionary<string, TradeType>()
             {
@@ -24,7 +31,14 @@ namespace Shared
                 { "Research", TradeType.Research },
             };
 
-            return tradeTypes[tradeType];
+            try
+            {
+                return Result<TradeType>.SuccessResult(tradeTypes[tradeType]);
+            }
+            catch (Exception ex)
+            {
+                return Result<TradeType>.ErrorResult("Type not selected.");
+            }
         }
 
         public static string TradeTypeFromEnum(TradeType tradeType)
@@ -39,8 +53,9 @@ namespace Shared
             return tradeTypes[tradeType];
         }
 
-        public static TimeFrame TimeFrameFromString(string tf)
+        public static Result<TimeFrame> TimeFrameFromString(string tf)
         {
+
             Dictionary<string, TimeFrame> timeFrames = new Dictionary<string, TimeFrame>()
             {
                 { "5M", TimeFrame.M5 },
@@ -54,7 +69,14 @@ namespace Shared
 
             };
 
-            return timeFrames[tf];
+            try
+            {
+                return Result<TimeFrame>.SuccessResult(timeFrames[tf]);
+            }
+            catch (Exception ex)
+            {
+                return Result<TimeFrame>.ErrorResult("Time frame not selected.");
+            }
         }
 
         public static string TimeFrameFromEnum(TimeFrame tf)
@@ -75,7 +97,7 @@ namespace Shared
             return timeFrames[tf];
         }
 
-        public static Strategy StrategyFromString(string strategy)
+        public static Result<Strategy> StrategyFromString(string strategy)
         {
             Dictionary<string, Strategy> strategies = new Dictionary<string, Strategy>()
             {
@@ -83,7 +105,14 @@ namespace Shared
                 { "First Bar Pullback", Strategy.FirstBarBelowAbove }
             };
 
-            return strategies[strategy];
+            try
+            {
+                return Result<Strategy>.SuccessResult(strategies[strategy]);
+            }
+            catch (Exception ex)
+            {
+                return Result<Strategy>.ErrorResult("Strategy not selected.");
+            }
         }
 
         public static string StrategyFromEnum(Strategy? strategy)
