@@ -44,7 +44,7 @@ namespace TradingTools.Controllers
                 return Json(new { error = "Trade values are empty." });
             }
             // Set the values of NewTradeVM properties
-            string errorMsg = NewTradeVM.SetValues(tradeParams, tradeData);
+            string errorMsg = NewTradeVM.SetTradeParams(tradeParams, tradeData);
             if (!string.IsNullOrEmpty(errorMsg))
             {
                 return Json(new { error = errorMsg });
@@ -68,29 +68,23 @@ namespace TradingTools.Controllers
 
         private async Task SaveTrade(IFormFile[] files)
         {
-            int lastSampleSizeId;
             if (NewTradeVM.Type == TradeType.Research)
             {
                 if (NewTradeVM.ResearchData is ResearchFirstBarPullbackDisplay researchData)
                 {
                     ResearchFirstBarPullback newTrade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(researchData);
                     // Check if there is a sample size for the parameters and if it's full.
-                    var sampleSizeData = await GetLastSampleSizeData();
-                    lastSampleSizeId = sampleSizeData.id;
-                    bool isFull = sampleSizeData.isFull;
-                    // If the sample size is full or there is no sample size for those paramaters (lastSampleSize == 0), create a new sample size
-                    if (isFull || lastSampleSizeId == 0)
+                    var sampleSize = await GetLastSampleSizeData();
+                    // If the sample size is full or there is no sample size for those paramaters (id == 0), create a new sample size
+                    if (sampleSize.isFull || sampleSize.id == 0)
                     {
                         SampleSize newSampleSize =
                             new SampleSize { Strategy = NewTradeVM.Strategy, TimeFrame = NewTradeVM.TimeFrame, TradeType = NewTradeVM.Type };
                         _unitOfWork.SampleSize.Add(newSampleSize);
                         await _unitOfWork.SaveAsync();
-                        lastSampleSizeId = newSampleSize.Id;
+                        sampleSize.id = newSampleSize.Id;
                     }
-                    newTrade.SampleSizeId = lastSampleSizeId;
-                    // TODO: Adjust the FilePaths to be able to be displayed
-                    // Create either properties or a new class for the entry prices.
-                    // The files are not saved in the right folder
+                    newTrade.SampleSizeId = sampleSize.id;
                     await AppHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newTrade, files);
                     _unitOfWork.ResearchFirstBarPullback.Add(newTrade);
                     await _unitOfWork.SaveAsync();
@@ -113,8 +107,10 @@ namespace TradingTools.Controllers
                     {
                         id = listSampleSizes.Last().Id;
 
+                        int maxTradesProSampleSize = 100;
                         int numberTradesInSampleSize = (await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == id)).Count;
-                        if (numberTradesInSampleSize == 100)
+
+                        if (numberTradesInSampleSize == maxTradesProSampleSize)
                         {
                             isFull = true;
                         }

@@ -44,34 +44,34 @@ namespace Models.ViewModels
 
         #region Method
 
-        public string SetValues(string tradeParams, string tradeData)
+        public string SetTradeParams(string tradeParams, string tradeData)
         {
             string error = string.Empty;
             try
             {
                 Dictionary<string, string> tradeDataObject = JsonConvert.DeserializeObject<Dictionary<string, string>>(tradeParams);
-                Result<TimeFrame> timeFrameResult = MyEnumConverter.TimeFrameFromString(tradeDataObject["timeFrame"]);
-                Result<Strategy> strategyResult = MyEnumConverter.StrategyFromString(tradeDataObject["strategy"]);
-                Result<TradeType> typeResult = MyEnumConverter.TradeTypeFromString(tradeDataObject["tradeType"]);
-                Result<SideType> sideResult = MyEnumConverter.SideTypeFromString(tradeDataObject["tradeSide"]);
+                ToEnumFromStringResult<TimeFrame> timeFrameResult = MyEnumConverter.TimeFrameFromString(tradeDataObject["timeFrame"]);
+                ToEnumFromStringResult<Strategy> strategyResult = MyEnumConverter.StrategyFromString(tradeDataObject["strategy"]);
+                ToEnumFromStringResult<TradeType> typeResult = MyEnumConverter.TradeTypeFromString(tradeDataObject["tradeType"]);
+                ToEnumFromStringResult<SideType> sideResult = MyEnumConverter.SideTypeFromString(tradeDataObject["tradeSide"]);
 
                 List<string> errors = new List<string>();
 
                 if (!timeFrameResult.Success)
                 {
-                    errors.Add(timeFrameResult.ErrorMessage);
+                    errors.Add("Time frame not selected.");
                 }
                 if (!strategyResult.Success)
                 {
-                    errors.Add(strategyResult.ErrorMessage);    
+                    errors.Add("Strategy not selected");    
                 }
                 if (!typeResult.Success)
                 {
-                    errors.Add(typeResult.ErrorMessage);
+                    errors.Add("Type not selected.");
                 }
                 if (!sideResult.Success)
                 {
-                    errors.Add(sideResult.ErrorMessage);
+                    errors.Add("Side not selected.");
                 }
 
                 if (errors.Any())

@@ -17,8 +17,18 @@ namespace Utilities
     /// </summary>
     public static class AppHelper
     {
+        /// <summary>
+        ///  Creates the folder for the new trade and saves the screenshot files in it.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="webRootPath"></param>
+        /// <param name="vm"></param>
+        /// <param name="newTrade"></param>
+        /// <param name="files"></param>
+        /// <returns></returns>
         public static async Task<List<string>> SaveFilesAsync<T>(string webRootPath, T vm, object newTrade, IFormFile[] files)
         {
+            #region Create folders
             // /Screenshots
             string screenshotsDir = Path.Combine(webRootPath, "Screenshots");
             List<string> screenshotsPaths = new List<string>();
@@ -80,6 +90,9 @@ namespace Utilities
                     Directory.CreateDirectory(pathToSaveFiles);
                 }
 
+                #endregion
+
+                // Save the files
                 try
                 {
                     foreach (IFormFile file in files)

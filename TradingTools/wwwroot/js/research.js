@@ -80,7 +80,7 @@ $(function () {
                 // Set the new value
                 var value = $(this).text();
                 $(menuButtons[key]).text(value);
-                LoadResearchAsync($('#spanTimeFrame').text(),
+                LoadResearchSampleSizeAsync($('#spanTimeFrame').text(),
                     $('#spanStrategy').text(),
                     $('#spanSampleSize').text(),
                     sampleSizeChanged);
@@ -115,6 +115,7 @@ $(function () {
      * Region even handlers begins
      * ***************************
      */
+
     // Card button 'Update' click event handler 
     $('#btnUpdate').on('click', function () {
         UpdateTradeData(tradeIndex);
@@ -138,7 +139,6 @@ $(function () {
             // Right arrow key pressed
         } else if (event.which === 39) {
             ShowNextTrade(1);
-            // Add your code to handle right arrow key press
         }
     });
 
@@ -216,7 +216,7 @@ $(function () {
         lastTradeIndex = tradeIndex;
         $('#tradeNumberInput').val(tradeIndex + 1);
         LoadImages();
-        LoadTradeData(tradeIndex); 
+        LoadTradeData(tradeIndex);
     }
     // Updates the database with the values from the card for the displayed trade
     function UpdateTradeData(index) {
@@ -294,13 +294,54 @@ $(function () {
         console.log(newCarouselHtml);
     }
 
-    function LoadResearchAsync() {
+    function LoadResearchSampleSizeAsync(timeFrame, strategy, sampleSizeNumber, isSampleSizeChanged) {
 
+        // make the API call
+        $.ajax({
+            method: 'POST',
+            url: '/research/loadResearchSampleSize',
+            dataType: 'JSON',
+            data: {
+                timeFrame: timeFrame,
+                strategy: strategy,
+                sampleSizeNumber: sampleSizeNumber
+            },
+            success: function (response) {
+                if (response['error'] !== undefined) {
+                    toastr.error(response['error']);
+                }
+                var researchVM = JSON.parse(response.researchVM);
+                tradeIndex = 0;
+                trades = researchVM.AllTrades;
+                LoadTradeData(1);
+                LoadImages();
+            },
+            error: function (jqXHR, exception) // code for exceptions
+            {
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connect.\n Verify Network.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Requested page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal Server Error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Requested JSON parse failed.';
+                } else if (exception === 'timeout') {
+                    msg = 'Time out error.';
+                } else if (exception === 'abort') {
+                    msg = 'Ajax request aborted.';
+                } else {
+                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                }
+                alert(msg);
+            }
+        });
+
+        /**
+         * ***************************
+         * Region methods
+         * ***************************
+         */
     }
-
-    /**
-     * ***************************
-     * Region methods
-     * ***************************
-     */
 });

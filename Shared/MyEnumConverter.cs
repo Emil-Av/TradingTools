@@ -4,7 +4,7 @@ namespace Shared
 {
     public class MyEnumConverter
     {
-        public static Result<SideType> SideTypeFromString(string sideType)
+        public static ToEnumFromStringResult<SideType> SideTypeFromString(string sideType)
         {
             Dictionary<string, SideType> sideTypes = new Dictionary<string, SideType>() 
             {
@@ -14,15 +14,15 @@ namespace Shared
 
             try
             {
-                return Result<SideType>.SuccessResult(sideTypes[sideType]);
+                return ToEnumFromStringResult<SideType>.SuccessResult(sideTypes[sideType]);
             }
-            catch (Exception ex) 
+            catch (Exception) 
             {
-                return Result<SideType>.ErrorResult("Side not selected.");
+                return ToEnumFromStringResult<SideType>.ErrorResult($"Error converting side type from a string. Value given: {sideType}");
             }
         }
 
-        public static Result<TradeType> TradeTypeFromString(string tradeType)
+        public static ToEnumFromStringResult<TradeType> TradeTypeFromString(string tradeType)
         {
             Dictionary<string, TradeType> tradeTypes = new Dictionary<string, TradeType>()
             {
@@ -33,11 +33,11 @@ namespace Shared
 
             try
             {
-                return Result<TradeType>.SuccessResult(tradeTypes[tradeType]);
+                return ToEnumFromStringResult<TradeType>.SuccessResult(tradeTypes[tradeType]);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Result<TradeType>.ErrorResult("Type not selected.");
+                return ToEnumFromStringResult<TradeType>.ErrorResult($"Error converting the trade type from a string. Value given: {tradeType}");
             }
         }
 
@@ -53,7 +53,7 @@ namespace Shared
             return tradeTypes[tradeType];
         }
 
-        public static Result<TimeFrame> TimeFrameFromString(string tf)
+        public static ToEnumFromStringResult<TimeFrame> TimeFrameFromString(string timeFrame)
         {
 
             Dictionary<string, TimeFrame> timeFrames = new Dictionary<string, TimeFrame>()
@@ -71,15 +71,15 @@ namespace Shared
 
             try
             {
-                return Result<TimeFrame>.SuccessResult(timeFrames[tf]);
+                return ToEnumFromStringResult<TimeFrame>.SuccessResult(timeFrames[timeFrame]);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Result<TimeFrame>.ErrorResult("Time frame not selected.");
+                return ToEnumFromStringResult<TimeFrame>.ErrorResult($"Error converting the time frame from as string. Value given: {timeFrame}");
             }
         }
 
-        public static string TimeFrameFromEnum(TimeFrame tf)
+        public static string TimeFrameFromEnum(TimeFrame timeFrame)
         {
             Dictionary<TimeFrame, string> timeFrames = new Dictionary<TimeFrame, string>()
             {
@@ -94,10 +94,10 @@ namespace Shared
 
             };
 
-            return timeFrames[tf];
+            return timeFrames[timeFrame];
         }
 
-        public static Result<Strategy> StrategyFromString(string strategy)
+        public static ToEnumFromStringResult<Strategy> StrategyFromString(string strategy)
         {
             Dictionary<string, Strategy> strategies = new Dictionary<string, Strategy>()
             {
@@ -107,11 +107,11 @@ namespace Shared
 
             try
             {
-                return Result<Strategy>.SuccessResult(strategies[strategy]);
+                return ToEnumFromStringResult<Strategy>.SuccessResult(strategies[strategy]);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Result<Strategy>.ErrorResult("Strategy not selected.");
+                return ToEnumFromStringResult<Strategy>.ErrorResult($"Error converting the strategy from a string. Value given: {strategy}");
             }
         }
 

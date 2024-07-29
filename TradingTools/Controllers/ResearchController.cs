@@ -14,6 +14,10 @@ using System.Reflection.Metadata.Ecma335;
 using Utilities;
 using SharedEnums.Enums;
 using Shared;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Newtonsoft.Json.Linq;
+using System.Globalization;
+using Newtonsoft.Json.Serialization;
 
 namespace TradingTools.Controllers
 {
@@ -43,9 +47,39 @@ namespace TradingTools.Controllers
 
         #endregion
 
+        #region Private Properties
+
+        const int IndexMethod = 0;
+
+        #endregion
+
         #region Methods
 
+        #region Public Methods
+
         [HttpPost]
+        public async Task<IActionResult> LoadResearchSampleSize(string timeFrame, string strategy, string sampleSizeNumber)
+        {
+            string errorMsg = ResearchVM.SetSampleSizeParams(timeFrame, strategy, sampleSizeNumber);
+            if (!string.IsNullOrEmpty(errorMsg))
+            {
+                return Json(new { error = errorMsg });
+            }
+
+            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research && x.TimeFrame == ResearchVM.CurrentTimeFrame && x.Strategy == ResearchVM.CurrentStrategy);
+
+            errorMsg = await LoadSampleSizeData(sampleSizes, ResearchVM.CurrentSampleSizeId);
+
+            if (!string.IsNullOrEmpty(errorMsg))
+            {
+                return Json(new { error = errorMsg });
+            }
+
+            string researchVM = JsonConvert.SerializeObject(ResearchVM);
+
+            return Json(new { researchVM });
+        }
+
         public async Task<IActionResult> UpdateTrade([FromBody] ResearchFirstBarPullbackDisplay currentTrade)
         {
             if (currentTrade == null)
@@ -73,24 +107,13 @@ namespace TradingTools.Controllers
             // Get research sample sizes
             List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research);
 
-            int lastSampleSizeId = sampleSizes.LastOrDefault().Id;
-            // Get all researched trades from the DB and project the instances into ResearchFirstBarPullbackDisplay
-            ResearchVM.AllTrades = (await _unitOfWork.ResearchFirstBarPullback
-                                    .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId))
-                                    .Select(x => EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(x))
-                                    .ToList();
-            ResearchVM.AllTrades.ForEach(x => SanitizationHelper.SanitizeObject(x));
+            string errorMsg = await LoadSampleSizeData(sampleSizes, IndexMethod);
 
-            // Should not happen
-            if (!ResearchVM.AllTrades.Any())
+            if (!string.IsNullOrEmpty(errorMsg))
             {
-                return View(ResearchVM);
+                return Json(new {error =  errorMsg});   
             }
-            // Set the values for the button menus
-            ResearchVM.CurrentTrade = ResearchVM.AllTrades.FirstOrDefault();
-            ResearchVM.CurrentSampleSize = sampleSizes.LastOrDefault();
-            // Set the NumberSampleSizes for the button menu
-            ResearchVM.NumberSampleSizes = sampleSizes.Count();
+
             // Display only values for which there are data records.
             foreach (SampleSize sampleSize in sampleSizes)
             {
@@ -106,6 +129,8 @@ namespace TradingTools.Controllers
             }
             return View(ResearchVM);
         }
+
+
         /// <summary>
         ///  The .zip file has to have the following format: Research/Sample Size 1/Trades folder and .csv file. The .csv file has to have format Research-EnumStrategy(e.g. 0)-EnumTimeFrame(e.g. 10M): e.g. Research-0-10M.csv
         /// </summary>
@@ -177,13 +202,13 @@ namespace TradingTools.Controllers
                                     {
                                         ResearchFirstBarPullback researchTrade = new ResearchFirstBarPullback();
                                         for (int i = 0; i < csvData.Count; i++)
-                                        {   
+                                        {
                                             // First row is column names
                                             if (i == 0)
                                             {
                                                 continue;
                                             }
-                                            
+
                                             // Half ATR
                                             if (i % 2 != 0)
                                             {
@@ -283,6 +308,52 @@ namespace TradingTools.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        #endregion
+
+        #region Private Methods
+
+        private async Task<string> LoadSampleSizeData(List<SampleSize> sampleSizes, int sampleSizeNumber)
+        {
+            string errorMsg = string.Empty;
+            int lastSampleSizeId = 0;
+            if (sampleSizeNumber == IndexMethod)
+            {
+                lastSampleSizeId = sampleSizes.LastOrDefault().Id;
+            }
+            else 
+            {
+                if (sampleSizeNumber <= sampleSizes.Count)
+                {
+                    lastSampleSizeId = sampleSizes[sampleSizeNumber - 1].Id;
+                }
+                else
+                {
+                    lastSampleSizeId = sampleSizes.Last().Id;
+                }
+            }
+            // Get all researched trades from the DB and project the instances into ResearchFirstBarPullbackDisplay
+            ResearchVM.AllTrades = (await _unitOfWork.ResearchFirstBarPullback
+                                    .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId))
+                                    .Select(x => EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(x))
+                                    .ToList();
+            ResearchVM.AllTrades.ForEach(x => SanitizationHelper.SanitizeObject(x));
+
+            // Should not happen
+            if (!ResearchVM.AllTrades.Any())
+            {
+                errorMsg = "No trades available for this sample size.";
+            }
+            // Set the values for the button menus
+            ResearchVM.CurrentTrade = ResearchVM.AllTrades.FirstOrDefault();
+            ResearchVM.CurrentSampleSize = sampleSizes.FirstOrDefault(x => x.Id == lastSampleSizeId);
+            // Set the NumberSampleSizes for the button menu
+            ResearchVM.NumberSampleSizes = sampleSizes.Count();
+
+            return errorMsg;
+        }
+
+        #endregion
 
         #endregion
     }
