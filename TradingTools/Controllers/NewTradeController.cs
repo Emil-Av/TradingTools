@@ -72,7 +72,8 @@ namespace TradingTools.Controllers
             {
                 if (NewTradeVM.ResearchData is ResearchFirstBarPullbackDisplay researchData)
                 {
-                    ResearchFirstBarPullback newTrade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(researchData);
+                    ResearchFirstBarPullback newTrade = 
+                        EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(researchData);
                     // Check if there is a sample size for the parameters and if it's full.
                     var sampleSize = await GetLastSampleSizeData();
                     // If the sample size is full or there is no sample size for those paramaters (id == 0), create a new sample size
@@ -85,7 +86,7 @@ namespace TradingTools.Controllers
                         sampleSize.id = newSampleSize.Id;
                     }
                     newTrade.SampleSizeId = sampleSize.id;
-                    await AppHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newTrade, files);
+                    await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newTrade, files);
                     _unitOfWork.ResearchFirstBarPullback.Add(newTrade);
                     await _unitOfWork.SaveAsync();
                 }

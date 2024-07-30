@@ -300,7 +300,7 @@ namespace TradingTools.Controllers
 
                                 if (!canCreateNewTrade)
                                 {
-                                    currentFolder = AppHelper.CreateScreenshotFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath, 4);
+                                    currentFolder = ScreenshotsHelper.CreateScreenshotFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath, 4);
                                 }
 
                                 try

@@ -62,7 +62,7 @@ namespace DataAccess.Repository
                     }
                     catch (Exception ex)
                     {
-                        // Return error
+
                     }
 
                 }

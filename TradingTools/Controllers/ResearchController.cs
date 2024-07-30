@@ -268,7 +268,7 @@ namespace TradingTools.Controllers
                                     {
                                         tradeIndex = tempTradeIndex - 1;
                                     }
-                                    currentFolder = AppHelper.CreateScreenshotFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath, 3);
+                                    currentFolder = ScreenshotsHelper.CreateScreenshotFolders(tradeInfo, currentFolder, entry.FullName, wwwRootPath, 3);
 
                                     if (researchTrades[tradeIndex].ScreenshotsUrls == null)
                                     {
@@ -352,7 +352,7 @@ namespace TradingTools.Controllers
                 errorMsg = "No trades available for this sample size.";
             }
             // Set the values for the button menus
-            ResearchVM.CurrentTrade = ResearchVM.AllTrades.FirstOrDefault()!;
+            ResearchVM.ResearchFirstBarPullbackDisplay = ResearchVM.AllTrades.FirstOrDefault()!;
             ResearchVM.CurrentSampleSize = sampleSizes.FirstOrDefault(x => x.Id == lastSampleSizeId)!;
             ResearchVM.CurrentTimeFrame = ResearchVM.CurrentSampleSize.TimeFrame;
             // Set the NumberSampleSizes for the button menu

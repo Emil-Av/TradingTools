@@ -1,18 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.ViewModels.DisplayClasses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SharedEnums.Enums;
 using Shared;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Shared.Enums;
 //using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Models.ViewModels
 {
-    public class ResearchVM
+    public class ResearchVM : IResearchFirstBPBDisplayModel
     {
         #region Constructor
         public ResearchVM()
@@ -21,14 +16,23 @@ namespace Models.ViewModels
             AvailableTimeframes = new List<TimeFrame>();
             YesNoOptions = new List<SelectListItem>
             {
-                new SelectListItem {Value = "1", Text = "Yes"},
-                new SelectListItem {Value = "0", Text = "No"}
+                new SelectListItem {Value = "0", Text = "No"},
+                new SelectListItem {Value = "1", Text = "Yes"}
+            };
+
+            TradeRating = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "0", Text = "A+"},
+                new SelectListItem { Value = "1", Text = "A"},
+                new SelectListItem { Value = "2", Text = "A-"},
+                new SelectListItem { Value = "3", Text = "Book of Horror"}
             };
         }
 
         #endregion
 
         #region Public Properties
+
         public TimeFrame CurrentTimeFrame { get; set; }
 
         public Strategy CurrentStrategy { get; set; }
@@ -40,11 +44,13 @@ namespace Models.ViewModels
         // The selected sample size for the selected time frame and strategy (e.g. 2nd out of 5)
         public int CurrentSampleSizeNumber { get; set; }
 
-        public ResearchFirstBarPullbackDisplay CurrentTrade { get; set; }
+        public ResearchFirstBarPullbackDisplay ResearchFirstBarPullbackDisplay { get; set; }
 
         public List<ResearchFirstBarPullbackDisplay> AllTrades { get; set; }
 
         public List<SelectListItem> YesNoOptions { get; set; }
+
+        public List<SelectListItem> TradeRating {  get; set; }
 
         public List<Strategy> AvailableStrategies { get; set; }
 

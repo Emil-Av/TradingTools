@@ -13,9 +13,9 @@ using Models;
 namespace Utilities
 {
     /// <summary>
-    ///  Provides static methods used in the app.
+    ///  Provides static methods for creating folders and saving screenshot files.
     /// </summary>
-    public static class AppHelper
+    public static class ScreenshotsHelper
     {
         /// <summary>
         ///  Creates the folder for the new trade and saves the screenshot files in it.

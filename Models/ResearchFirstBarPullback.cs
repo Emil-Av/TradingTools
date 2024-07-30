@@ -73,6 +73,7 @@ namespace Models
 
         public bool IsSignalBarInTradeDirection { get; set; }
 
+        #region Full ATR
         public int FullATROneToOneHitOn { get; set; }
 
         public bool IsFullATROneToThreeHit { get; set; }
@@ -86,6 +87,8 @@ namespace Models
         public int FullATRMaxRR { get; set; }
 
         public bool FullATRMarketGaveSmth { get; set; }
+
+        #endregion
 
         public string? Comment { get; set; }
 

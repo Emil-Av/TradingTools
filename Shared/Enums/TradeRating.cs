@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Shared.Enums
 {
-    public enum TradeRating { APlus, A, AMinus, B, Unacceptable }
+    public enum TradeRating { APlus, A, AMinus, BookOfHorror }
 }

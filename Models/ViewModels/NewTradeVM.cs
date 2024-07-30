@@ -12,15 +12,24 @@ using System.Threading.Tasks;
 
 namespace Models.ViewModels
 {
-    public class NewTradeVM
+    public class NewTradeVM : IResearchFirstBPBDisplayModel
     {
         public NewTradeVM()
         {
             YesNoOptions = new List<SelectListItem>
             {
-                new SelectListItem { Value = "1", Text = "Yes" },
-                new SelectListItem { Value = "0", Text = "No" }
+                new SelectListItem { Value = "0", Text = "No" },
+                new SelectListItem { Value = "1", Text = "Yes" }
             };
+
+            TradeRating = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "0", Text = "A+"},
+                new SelectListItem { Value = "1", Text = "A"},
+                new SelectListItem { Value = "2", Text = "A-"},
+                new SelectListItem { Value = "3", Text = "Book of Horror"}
+            };
+
             ResearchData = new();
             ResearchFirstBarPullbackDisplay = new();
         }
@@ -39,6 +48,8 @@ namespace Models.ViewModels
         public ResearchFirstBarPullbackDisplay ResearchFirstBarPullbackDisplay { get; set; }
 
         public List<SelectListItem> YesNoOptions { get; set; }
+
+        public List<SelectListItem> TradeRating { get; set; }
 
         #endregion
 
