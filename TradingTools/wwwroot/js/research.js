@@ -32,12 +32,13 @@ $(function () {
     */
 
 
-    function SetMenuValues(displayedTrade) {
+    function SetMenuValues(researchVM) {
         // Menu Buttons
-        var numberSampleSizes = paperTradesVM['paperTradesVM']['numberSampleSizes'];
-        var tradesInSampleSize = paperTradesVM['paperTradesVM']['tradesInSampleSize'];
+        var numberSampleSizes = researchVM.NumberSampleSizes;
+        var tradesInSampleSize = researchVM.TradesInSampleSize;
+        $('#tradesInSampleSize').val('/' + tradesInSampleSize);
         // Set the SampleSize menu
-        $('#spanSampleSize').text(paperTradesVM['paperTradesVM']['currentSampleSize']);
+        $('#spanSampleSize').text(researchVM.CurrentSampleSizeNumber);
         $('#dropdownBtnSampleSize').empty();
         var sampleSizes = '';
         for (var i = numberSampleSizes; i > 0; i--) {
@@ -179,7 +180,7 @@ $(function () {
         DisplayTradeData(index, false);
     }
 
-    // Loads the screenshots and the values in input/select elements in the card
+    // Loads the screenshots and the values in the input/select elements in the card
     function DisplayTradeData(indexToShow, canShowToastr) {
         // Buttons 'prev' or 'next'
         if (indexToShow == -1 || indexToShow == 1) {
@@ -295,7 +296,6 @@ $(function () {
     }
 
     function LoadResearchSampleSizeAsync(timeFrame, strategy, sampleSizeNumber, isSampleSizeChanged) {
-
         // make the API call
         $.ajax({
             method: 'POST',
@@ -304,17 +304,21 @@ $(function () {
             data: {
                 timeFrame: timeFrame,
                 strategy: strategy,
-                sampleSizeNumber: sampleSizeNumber
+                sampleSizeNumber: sampleSizeNumber,
+                isSampleSizeChanged: isSampleSizeChanged
             },
             success: function (response) {
                 if (response['error'] !== undefined) {
                     toastr.error(response['error']);
                 }
-                var researchVM = JSON.parse(response.researchVM);
+                console.log(response);
+                researchVM = JSON.parse(response.researchVM);
                 tradeIndex = 0;
                 trades = researchVM.AllTrades;
-                LoadTradeData(1);
+                LoadTradeData(0);
                 LoadImages();
+                SetMenuValues(researchVM);
+                SetSelectedItemClass();
             },
             error: function (jqXHR, exception) // code for exceptions
             {

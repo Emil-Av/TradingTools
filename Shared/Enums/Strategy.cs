@@ -1,4 +1,4 @@
 ﻿namespace SharedEnums.Enums
 {
-    public enum Strategy { FirstBarBelowAbove, Cradle }
+    public enum Strategy { FirstBarPullback, Cradle }
 }

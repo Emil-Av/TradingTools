@@ -49,7 +49,7 @@ namespace TradingTools.Controllers
 
         #region Private Properties
 
-        const int IndexMethod = 0;
+        private const int IndexMethod = 0;
 
         #endregion
 
@@ -58,9 +58,9 @@ namespace TradingTools.Controllers
         #region Public Methods
 
         [HttpPost]
-        public async Task<IActionResult> LoadResearchSampleSize(string timeFrame, string strategy, string sampleSizeNumber)
+        public async Task<IActionResult> LoadResearchSampleSize(string timeFrame, string strategy, string sampleSizeNumber, string isSampleSizeChanged)
         {
-            string errorMsg = ResearchVM.SetSampleSizeParams(timeFrame, strategy, sampleSizeNumber);
+            string errorMsg = ResearchVM.SetSampleSizeParams(timeFrame, strategy, sampleSizeNumber, isSampleSizeChanged);
             if (!string.IsNullOrEmpty(errorMsg))
             {
                 return Json(new { error = errorMsg });
@@ -105,7 +105,7 @@ namespace TradingTools.Controllers
         public async Task<IActionResult> Index()
         {
             // Get research sample sizes
-            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research);
+            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research && x.TimeFrame == TimeFrame.M10 && x.Strategy == Strategy.FirstBarPullback);
 
             string errorMsg = await LoadSampleSizeData(sampleSizes, IndexMethod);
 
@@ -113,6 +113,8 @@ namespace TradingTools.Controllers
             {
                 return Json(new {error =  errorMsg});   
             }
+
+            sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research);
 
             // Display only values for which there are data records.
             foreach (SampleSize sampleSize in sampleSizes)
@@ -317,18 +319,23 @@ namespace TradingTools.Controllers
         {
             string errorMsg = string.Empty;
             int lastSampleSizeId = 0;
+            // Method is called from the Index()
             if (sampleSizeNumber == IndexMethod)
             {
                 lastSampleSizeId = sampleSizes.LastOrDefault().Id;
             }
+            // Ajax API call
             else 
             {
-                if (sampleSizeNumber <= sampleSizes.Count)
+                // If different sample size is selected for the same time frame and strategy
+                if (ResearchVM.HasSampleSizeChanged)
                 {
                     lastSampleSizeId = sampleSizes[sampleSizeNumber - 1].Id;
                 }
+                // Different time frame and/or strategy is selected
                 else
                 {
+                    sampleSizeNumber = sampleSizes.Count;
                     lastSampleSizeId = sampleSizes.Last().Id;
                 }
             }
@@ -345,10 +352,13 @@ namespace TradingTools.Controllers
                 errorMsg = "No trades available for this sample size.";
             }
             // Set the values for the button menus
-            ResearchVM.CurrentTrade = ResearchVM.AllTrades.FirstOrDefault();
-            ResearchVM.CurrentSampleSize = sampleSizes.FirstOrDefault(x => x.Id == lastSampleSizeId);
+            ResearchVM.CurrentTrade = ResearchVM.AllTrades.FirstOrDefault()!;
+            ResearchVM.CurrentSampleSize = sampleSizes.FirstOrDefault(x => x.Id == lastSampleSizeId)!;
+            ResearchVM.CurrentTimeFrame = ResearchVM.CurrentSampleSize.TimeFrame;
             // Set the NumberSampleSizes for the button menu
-            ResearchVM.NumberSampleSizes = sampleSizes.Count();
+            ResearchVM.NumberSampleSizes = sampleSizes.Count;
+            ResearchVM.TradesInSampleSize = ResearchVM.AllTrades.Count;
+            ResearchVM.CurrentSampleSizeNumber = sampleSizeNumber;
 
             return errorMsg;
         }

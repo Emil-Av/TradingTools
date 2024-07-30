@@ -28,7 +28,7 @@ namespace Models.ViewModels
 
         #endregion
 
-        #region Properties
+        #region Public Properties
         public TimeFrame CurrentTimeFrame { get; set; }
 
         public Strategy CurrentStrategy { get; set; }
@@ -36,6 +36,9 @@ namespace Models.ViewModels
         public SampleSize CurrentSampleSize { get; set; }
 
         public int CurrentSampleSizeId { get; set; }
+
+        // The selected sample size for the selected time frame and strategy (e.g. 2nd out of 5)
+        public int CurrentSampleSizeNumber { get; set; }
 
         public ResearchFirstBarPullbackDisplay CurrentTrade { get; set; }
 
@@ -53,11 +56,13 @@ namespace Models.ViewModels
         // The current number of trades for the latest sample size
         public int TradesInSampleSize { get; set; }
 
+        public bool HasSampleSizeChanged { get; set; }
+
         #endregion
 
         #region Methods
 
-        public string SetSampleSizeParams(string timeFrame, string strategy, string sampleSizeNumber)
+        public string SetSampleSizeParams(string timeFrame, string strategy, string sampleSizeNumber, string isSampleSizeChanged)
         {
             List<string> errors = new List<string>();
             string error = string.Empty;
@@ -78,6 +83,14 @@ namespace Models.ViewModels
             else
             {
                 CurrentSampleSizeId = _sampleSizeNumber;
+            }
+            if (bool.TryParse(isSampleSizeChanged, out bool tempIsSampleSizeChanged))
+            {
+                HasSampleSizeChanged = tempIsSampleSizeChanged;
+            }
+            else
+            {
+                errors.Add("Error parsing isSampleSizeChanged variable");
             }
 
             if (errors.Any())

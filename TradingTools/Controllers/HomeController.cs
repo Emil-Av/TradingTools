@@ -32,7 +32,7 @@ namespace TradingTools.Controllers
                 _unitOfWork.UserSettings.Add(new UserSettings()
                 {
                     PTTimeFrame = TimeFrame.M10,
-                    PTStrategy = Strategy.FirstBarBelowAbove
+                    PTStrategy = Strategy.FirstBarPullback
                 });
 
                 _unitOfWork.SaveAsync();

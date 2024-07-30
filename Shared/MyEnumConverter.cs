@@ -102,7 +102,7 @@ namespace Shared
             Dictionary<string, Strategy> strategies = new Dictionary<string, Strategy>()
             {
                 { "Cradle", Strategy.Cradle },
-                { "First Bar Pullback", Strategy.FirstBarBelowAbove }
+                { "First Bar Pullback", Strategy.FirstBarPullback }
             };
 
             try
@@ -120,7 +120,7 @@ namespace Shared
             Dictionary<Strategy?, string> strategies = new Dictionary<Strategy?, string>()
             {
                 { Strategy.Cradle, "Cradle" },
-                { Strategy.FirstBarBelowAbove, "First Bar Pullback" }
+                { Strategy.FirstBarPullback, "First Bar Pullback" }
             };
 
             return strategies[strategy];

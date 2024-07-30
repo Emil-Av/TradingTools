@@ -84,7 +84,7 @@ namespace Models.ViewModels
                 Type = typeResult.Value;
                 Side = sideResult.Value;
 
-                if (Type == TradeType.Research && Strategy == Strategy.FirstBarBelowAbove)
+                if (Type == TradeType.Research && Strategy == Strategy.FirstBarPullback)
                 {
                     ResearchData = JsonConvert.DeserializeObject<ResearchFirstBarPullbackDisplay>(tradeData);
                 }

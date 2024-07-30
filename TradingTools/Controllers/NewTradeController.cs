@@ -99,7 +99,7 @@ namespace TradingTools.Controllers
             // New trade is Research
             if (NewTradeVM.Type == TradeType.Research)
             {
-                if (NewTradeVM.Strategy == Strategy.FirstBarBelowAbove)
+                if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
                 {
                     List<SampleSize> listSampleSizes = (await _unitOfWork.SampleSize.
                         GetAllAsync(x => x.TimeFrame == NewTradeVM.TimeFrame && x.Strategy == NewTradeVM.Strategy && x.TradeType == NewTradeVM.Type));
