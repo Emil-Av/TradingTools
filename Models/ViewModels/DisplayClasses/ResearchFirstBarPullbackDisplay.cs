@@ -13,6 +13,7 @@ namespace Models.ViewModels.DisplayClasses
     public class ResearchFirstBarPullbackDisplay
     {
         /// <summary>
+        /// 
         ///  Class for the ResearchView. Display at the end of the property name indicates that the property should be displayed in the view (some of the        entity properties will not be displayed).
         /// </summary>
 
