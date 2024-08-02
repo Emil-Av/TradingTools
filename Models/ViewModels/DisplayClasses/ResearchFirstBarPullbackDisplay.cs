@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Shared.Enums;
@@ -13,7 +14,6 @@ namespace Models.ViewModels.DisplayClasses
     public class ResearchFirstBarPullbackDisplay
     {
         /// <summary>
-        /// 
         ///  Class for the ResearchView. Display at the end of the property name indicates that the property should be displayed in the view (some of the        entity properties will not be displayed).
         /// </summary>
 
@@ -97,7 +97,7 @@ namespace Models.ViewModels.DisplayClasses
         public string IsFullATRLossDisplay { get; set; }
 
         public int FullATRMaxRRDisplay { get; set; }
-        public bool FullATRMarketGaveSmthDisplay { get; set; }
+        public string FullATRMarketGaveSmthDisplay { get; set; }
 
         #endregion
 

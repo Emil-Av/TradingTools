@@ -80,6 +80,7 @@ namespace TradingTools.Controllers
             return Json(new { researchVM });
         }
 
+        [HttpPost]
         public async Task<IActionResult> UpdateTrade([FromBody] ResearchFirstBarPullbackDisplay currentTrade)
         {
             if (currentTrade == null)

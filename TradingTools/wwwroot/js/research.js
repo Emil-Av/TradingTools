@@ -223,20 +223,22 @@ $(function () {
     function UpdateTradeData(index) {
         var updatedTrade = {};
         // Get all data from the input and select fields in the card
-        $('#cardBody [data-bind]').each(function () {
-            var bindProperty = $(this).data('bind');
+        $('#cardBodyResearch [data-bind-research]').each(function () {
+            var bindProperty = $(this).data('bind-research');
             updatedTrade[bindProperty] = $(this).val();
         });
         // Add the Id and the Screenshots
+        updatedTrade['TradeRatingDisplay'] = parseInt($('#TradeRatingInput').val());
         updatedTrade['IdDisplay'] = trades[index]['IdDisplay'];
         updatedTrade['ScreenshotsUrlsDisplay'] = trades[index]['ScreenshotsUrlsDisplay'];
+        console.log(updatedTrade);
         // make the API call
         $.ajax({
             method: 'POST',
             url: '/research/updatetrade',
             contentType: 'application/json; charset=utf-8',
             dataType: 'JSON',
-            data: JSON.stringify(updatedTrade),
+            data: JSON.stringify(updatedTrade) ,
             success: function (response) {
                 if (response['success'] !== undefined) {
                     toastr.success(response['success']);
