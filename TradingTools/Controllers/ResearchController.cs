@@ -68,7 +68,7 @@ namespace TradingTools.Controllers
 
             List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research && x.TimeFrame == ResearchVM.CurrentTimeFrame && x.Strategy == ResearchVM.CurrentStrategy);
 
-            errorMsg = await LoadSampleSizeData(sampleSizes, ResearchVM.CurrentSampleSizeId);
+            errorMsg = await LoadViewModelData(sampleSizes, ResearchVM.CurrentSampleSizeId);
 
             if (!string.IsNullOrEmpty(errorMsg))
             {
@@ -108,7 +108,7 @@ namespace TradingTools.Controllers
             // Get research sample sizes
             List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research && x.TimeFrame == TimeFrame.M10 && x.Strategy == Strategy.FirstBarPullback);
 
-            string errorMsg = await LoadSampleSizeData(sampleSizes, IndexMethod);
+            string errorMsg = await LoadViewModelData(sampleSizes, IndexMethod);
 
             if (!string.IsNullOrEmpty(errorMsg))
             {
@@ -316,7 +316,7 @@ namespace TradingTools.Controllers
 
         #region Private Methods
 
-        private async Task<string> LoadSampleSizeData(List<SampleSize> sampleSizes, int sampleSizeNumber)
+        private async Task<string> LoadViewModelData(List<SampleSize> sampleSizes, int sampleSizeNumber)
         {
             string errorMsg = string.Empty;
             int lastSampleSizeId = 0;
@@ -356,10 +356,11 @@ namespace TradingTools.Controllers
             ResearchVM.ResearchFirstBarPullbackDisplay = ResearchVM.AllTrades.FirstOrDefault()!;
             ResearchVM.CurrentSampleSize = sampleSizes.FirstOrDefault(x => x.Id == lastSampleSizeId)!;
             ResearchVM.CurrentTimeFrame = ResearchVM.CurrentSampleSize.TimeFrame;
+            ResearchVM.CurrentSampleSizeNumber = sampleSizeNumber;
+            ResearchVM.CurrentSampleSizeId = lastSampleSizeId;
             // Set the NumberSampleSizes for the button menu
             ResearchVM.NumberSampleSizes = sampleSizes.Count;
             ResearchVM.TradesInSampleSize = ResearchVM.AllTrades.Count;
-            ResearchVM.CurrentSampleSizeNumber = sampleSizeNumber;
 
             return errorMsg;
         }

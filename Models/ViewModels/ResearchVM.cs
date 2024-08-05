@@ -3,7 +3,6 @@ using Models.ViewModels.DisplayClasses;
 using SharedEnums.Enums;
 using Shared;
 using Shared.Enums;
-//using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Models.ViewModels
 {

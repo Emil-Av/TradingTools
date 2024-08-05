@@ -231,7 +231,6 @@ $(function () {
         updatedTrade['TradeRatingDisplay'] = parseInt($('#TradeRatingInput').val());
         updatedTrade['IdDisplay'] = trades[index]['IdDisplay'];
         updatedTrade['ScreenshotsUrlsDisplay'] = trades[index]['ScreenshotsUrlsDisplay'];
-        console.log(updatedTrade);
         // make the API call
         $.ajax({
             method: 'POST',
@@ -255,8 +254,8 @@ $(function () {
     // Loads the trade data into the input/select elements. Used in the prev/next buttons or the key combination
     function LoadTradeData(tradeIndex) {
         var trade = trades[tradeIndex];
-        $('#cardBody [data-bind]').each(function () {
-            var bindProperty = $(this).data('bind');
+        $('#cardBodyResearch [data-bind-research]').each(function () {
+            var bindProperty = $(this).data('bind-research');
             if (trade.hasOwnProperty(bindProperty)) {
                 $(this).val(trade[bindProperty]);
             }
