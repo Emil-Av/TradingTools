@@ -12,13 +12,10 @@ $(function () {
     */
 
     // menuClicked, clickedMenuValue: When a new trade has to be loaded, one of the buttons has to be clicked (either TimeFrame, Strategy..). In case no trade exists for the selection, set the last value. Used in LoadTradeAsync()
-    var menuClicked;
-    var clickedMenuValue;
     // Global index for the currently displayed trade. Can be used in the 'trades' variable
     var tradeIndex = 0;
     var lastTradeIndex = 0;
     var sampleSizeChanged;
-    var canShowToastr = false;
     // The model
     var researchVM;
     var trades = $('#tradesData').data('trades');
@@ -81,7 +78,7 @@ $(function () {
                 // Set the new value
                 var value = $(this).text();
                 $(menuButtons[key]).text(value);
-                LoadResearchSampleSizeAsync($('#spanTimeFrame').text(),
+                loadResearchSampleSizeAsync($('#spanTimeFrame').text(),
                     $('#spanStrategy').text(),
                     $('#spanSampleSize').text(),
                     sampleSizeChanged);
@@ -119,27 +116,45 @@ $(function () {
 
     // Card button 'Update' click event handler 
     $('#btnUpdate').on('click', function () {
-        UpdateTradeData(tradeIndex);
+        updateTradeData(tradeIndex);
+    });
+
+    // Card button 'Delete' click event handler 
+    $('#btnDelete').on('click', function () {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "All data incl. screenshots will be gone.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteTrade();
+            }
+        });
+        
     });
 
     // Menu button "Next" click event handler
     $('#btnNext').on('click', function () {
-        ShowNextTrade(1);
+        showNextTrade(1);
     });
 
     // Menu button "Previous" click event handler
     $('#btnPrev').on('click', function () {
-        ShowPrevTrade(-1);
+        showPrevTrade(-1);
     });
 
     // Event handler when the left or the right arrow is pressed. Displays the trade accordingly.
     $(document).on('keydown', function (event) {
         // Left arrow key pressed
         if (event.which === 37) {
-            ShowPrevTrade(-1);
+            showPrevTrade(-1);
             // Right arrow key pressed
         } else if (event.which === 39) {
-            ShowNextTrade(1);
+            showNextTrade(1);
         }
     });
 
@@ -149,7 +164,7 @@ $(function () {
             userInput = Number(event.target.value);
             if (Number.isInteger(userInput)) {
                 tradeIndex = userInput - 1;
-                DisplayTradeData(tradeIndex, true);
+                displayTradeData(tradeIndex, true);
             }
             else {
                 toastr.error("Please enter a whole number.");
@@ -172,16 +187,16 @@ $(function () {
      */
 
     // Toggles to the next trade
-    function ShowNextTrade(index) {
-        DisplayTradeData(index, false);
+    function showNextTrade(index) {
+        displayTradeData(index, false);
     }
     // Toggles to the previous trade
-    function ShowPrevTrade(index) {
-        DisplayTradeData(index, false);
+    function showPrevTrade(index) {
+        displayTradeData(index, false);
     }
 
     // Loads the screenshots and the values in the input/select elements in the card
-    function DisplayTradeData(indexToShow, canShowToastr) {
+    function displayTradeData(indexToShow, canShowToastr) {
         // Buttons 'prev' or 'next'
         if (indexToShow == -1 || indexToShow == 1) {
             tradeIndex += indexToShow;
@@ -216,11 +231,64 @@ $(function () {
         }
         lastTradeIndex = tradeIndex;
         $('#tradeNumberInput').val(tradeIndex + 1);
-        LoadImages();
-        LoadTradeData(tradeIndex);
+        loadImages();
+        loadTradeData();
     }
+
+    function deleteTrade() {
+        var currentTradeNumber = parseInt($('#tradeNumberInput').val());
+        var id = trades[currentTradeNumber - 1]['IdDisplay'];
+        if (currentTradeNumber - 1 <= 0) {
+            tradeIndex = 0;
+        }
+        else {
+            tradeIndex = currentTradeNumber - 1;
+        }
+        $.ajax({
+            method: 'DELETE',
+            url: '/research/delete',
+            dataType: 'JSON',
+            data: {
+                id: id
+            },
+            success: function (response) {
+                if (response['error'] !== undefined) {
+                    toastr.error(response['error']);
+                }
+                console.log(response);
+                toastr.success('Trades deleted.');
+                trades = JSON.parse(response['jsonTrades']);
+                loadTradeData();
+                loadImages();
+                $('#tradeNumberInput').val(tradeIndex + 1);
+                $('#tradesInSampleSize').val(trades.length);
+            },
+            error: function (jqXHR, exception) // code for exceptions
+            {
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connect.\n Verify Network.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Requested page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal Server Error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Requested JSON parse failed.';
+                } else if (exception === 'timeout') {
+                    msg = 'Time out error.';
+                } else if (exception === 'abort') {
+                    msg = 'Ajax request aborted.';
+                } else {
+                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                }
+                alert(msg);
+            }
+
+        });
+    }
+
     // Updates the database with the values from the card for the displayed trade
-    function UpdateTradeData(index) {
+    function updateTradeData(index) {
         var updatedTrade = {};
         // Get all data from the input and select fields in the card
         $('#cardBodyResearch [data-research]').each(function () {
@@ -252,7 +320,7 @@ $(function () {
         });
     }
     // Loads the trade data into the input/select elements. Used in the prev/next buttons or the key combination
-    function LoadTradeData(tradeIndex) {
+    function loadTradeData() {
         var trade = trades[tradeIndex];
         $('#cardBodyResearch [data-research]').each(function () {
             var bindProperty = $(this).data('research');
@@ -263,7 +331,7 @@ $(function () {
         $('#currentTradeId').val(trade['IdDisplay']);
     }
     // Loads the images into the carousel
-    function LoadImages() {
+    function loadImages() {
         var screenshots = trades[tradeIndex]['ScreenshotsUrlsDisplay'];
         if (screenshots === null) {
             toastr.error("No screenshots for the selected trade.");
@@ -300,7 +368,7 @@ $(function () {
         console.log(newCarouselHtml);
     }
 
-    function LoadResearchSampleSizeAsync(timeFrame, strategy, sampleSizeNumber, isSampleSizeChanged) {
+    function loadResearchSampleSizeAsync(timeFrame, strategy, sampleSizeNumber, isSampleSizeChanged) {
         // make the API call
         $.ajax({
             method: 'POST',
@@ -320,8 +388,8 @@ $(function () {
                 researchVM = JSON.parse(response.researchVM);
                 tradeIndex = 0;
                 trades = researchVM.AllTrades;
-                LoadTradeData(0);
-                LoadImages();
+                loadTradeData();
+                loadImages();
                 SetMenuValues(researchVM);
                 SetSelectedItemClass();
             },

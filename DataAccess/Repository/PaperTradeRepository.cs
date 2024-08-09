@@ -21,7 +21,7 @@ namespace DataAccess.Repository
 
         public async Task UpdateAsync(PaperTrade paperTrade)
         {
-            PaperTrade? objFromDb = await _db.PaperTrades.FirstOrDefaultAsync(x => x.Id == paperTrade.Id);
+            PaperTrade? objFromDb = await _db.PaperTrades.FindAsync(paperTrade.Id);
             if (objFromDb != null)
             {
                 objFromDb.Symbol = paperTrade.Symbol;

@@ -57,6 +57,37 @@ namespace TradingTools.Controllers
 
         #region Public Methods
 
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                if (ResearchVM.CurrentStrategy == Strategy.FirstBarPullback)
+                {
+                    ResearchFirstBarPullback trade = await _unitOfWork.ResearchFirstBarPullback.GetAsync(x => x.Id == id);
+                    if (trade == null)
+                    {
+                        return Json(new { error = "No trade was found for this id." });
+                    }
+                    _unitOfWork.ResearchFirstBarPullback.Remove(trade);
+                    await _unitOfWork.SaveAsync();
+                    List<ResearchFirstBarPullback> listAllTrades = await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == trade.SampleSizeId);
+                    foreach (ResearchFirstBarPullback researchFirstBarPullback in listAllTrades)
+                    {
+                        ResearchVM.AllTrades.Add(EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(researchFirstBarPullback));
+                    }
+                    string jsonTrades = JsonConvert.SerializeObject(ResearchVM.AllTrades);
+
+                    return Json(new { jsonTrades });
+                }
+                return Json(new { error = "Delete method not implemented for this strategy." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message });
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> LoadResearchSampleSize(string timeFrame, string strategy, string sampleSizeNumber, string isSampleSizeChanged)
         {
@@ -112,7 +143,7 @@ namespace TradingTools.Controllers
 
             if (!string.IsNullOrEmpty(errorMsg))
             {
-                return Json(new {error =  errorMsg});   
+                return Json(new { error = errorMsg });
             }
 
             sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research);
@@ -131,6 +162,8 @@ namespace TradingTools.Controllers
                 {
                     ResearchVM.AvailableStrategies.Add(sampleSize.Strategy);
                 }
+                // Sort the strategies in ascending order
+                ResearchVM.AvailableStrategies.Sort();
             }
             return View(ResearchVM);
         }
@@ -328,7 +361,7 @@ namespace TradingTools.Controllers
                 lastSampleSizeId = sampleSizes.LastOrDefault().Id;
             }
             // Ajax API call
-            else 
+            else
             {
                 // If different sample size is selected for the same time frame and strategy
                 if (ResearchVM.HasSampleSizeChanged)

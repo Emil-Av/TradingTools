@@ -21,7 +21,7 @@ namespace DataAccess.Repository
 
         public async Task UpdateAsync(UserSettings userSettings)
         {
-            UserSettings? objFromDb = await _db.UserSettings.FirstOrDefaultAsync(x => x.Id == userSettings.Id);
+            UserSettings? objFromDb = await _db.UserSettings.FindAsync(userSettings.Id);
             if (objFromDb != null)
             {
                 objFromDb.PTStrategy = userSettings.PTStrategy;

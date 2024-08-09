@@ -34,7 +34,7 @@ namespace DataAccess.Repository
         {
             // Get the object from the database
             // TODO: if objFromDb is null, I don't get any error message after Update()
-            ResearchFirstBarPullback? objFromDb = await _db.ResearchFirstBarPullbacks.FirstOrDefaultAsync(x => x.Id == researchTrade.Id);
+            ResearchFirstBarPullback? objFromDb = await _db.ResearchFirstBarPullbacks.FindAsync(researchTrade.Id);
             if (objFromDb != null)
             {
                 // Get the type of the object

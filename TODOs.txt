@@ -1,1 +1,1 @@
-1. Delete a research trade - think about how tradeIndex should be set to when the current trade is deleted.
+1. Code what happens if the last deleted trade in the research sample size is deleted

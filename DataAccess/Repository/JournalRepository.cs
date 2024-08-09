@@ -21,7 +21,7 @@ namespace DataAccess.Repository
 
         public async Task UpdateAsync(Journal journal)
         {
-            Journal? objFromDb = await _db.Journals.FirstOrDefaultAsync(x => x.Id == journal.Id);
+            Journal? objFromDb = await _db.Journals.FindAsync(journal.Id);
             if (objFromDb != null)
             {
                 objFromDb.Pre = journal.Pre;

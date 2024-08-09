@@ -21,7 +21,7 @@ namespace DataAccess.Repository
 
         public async Task UpdateAsync(Review review)
         {
-            Review? objFromDb = await _db.Reviews.FirstOrDefaultAsync(x => x.Id == review.Id);
+            Review? objFromDb = await _db.Reviews.FindAsync(review.Id);
             if (objFromDb != null)
             {
                 objFromDb.First = review.First;

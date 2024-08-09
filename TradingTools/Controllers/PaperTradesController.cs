@@ -193,7 +193,7 @@ namespace TradingTools.Controllers
             // Get the latest sample size for the strategy and time frame
             int? latestSampleSize = (await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy)).Last().Id;
             // Get the last trade of the sample size
-            PaperTradesVM.CurrentTrade = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == latestSampleSize)).Last();
+            PaperTradesVM.CurrentTrade = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == latestSampleSize)).LastOrDefault()!;
             // No trades yet
             if (PaperTradesVM.CurrentTrade == null)
             {
