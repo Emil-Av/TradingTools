@@ -124,6 +124,8 @@ namespace TradingTools.Controllers
                 {
                     ResearchVM.AvailableTimeframes.Add(sampleSize.TimeFrame);
                 }
+                // Set the time frames in ascending order
+                ResearchVM.AvailableTimeframes.Sort();
 
                 if (!ResearchVM.AvailableStrategies.Contains(sampleSize.Strategy))
                 {

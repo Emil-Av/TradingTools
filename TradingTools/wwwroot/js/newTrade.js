@@ -84,6 +84,10 @@
         for (var i = 0; i < files.length; i++) {
             uploadedFiles.push(files[i]);
         }
+        // Sort the screenshots to be in ascending order based on the lastModified property
+        uploadedFiles.sort(function (a, b) {
+            return a.lastModified - b.lastModified;
+        });
 
         displayNames();
     });
@@ -116,8 +120,8 @@
         formData.append('tradeParams', JSON.stringify(tradeParams));
 
         var tradeData = {};
-        $('#cardBodyResearch [data-bindresearch]').each(function () {
-            var bindProperty = $(this).data('bindresearch');
+        $('#cardBodyResearch [data-research]').each(function () {
+            var bindProperty = $(this).data('research');
             tradeData[bindProperty] = $(this).val();
         });
 
@@ -146,8 +150,8 @@
     };
 
     function clearFields() {
-        // Clear fields with data-bindResearch attribute
-        $('[data-bindResearch]').each(function () {
+        // Clear fields with data-research attribute
+        $('[data-research]').each(function () {
             if ($(this).is('input')) {
                 // Clear the rest of the input fields
                 $(this).val('');
@@ -158,8 +162,8 @@
             }
         });
 
-        // Clear fields without data-bindResearch attribute
-        $('input:not([data-bindResearch])').each(function () {
+        // Clear fields without data-research attribute
+        $('input:not([data-research])').each(function () {
             // Clear the files input
             $(this).val('');
         });
@@ -167,8 +171,7 @@
         $('#fileList').append('<p class="text-truncate">No uploaded files.</p>')
         $('#formUploadFiles').trigger('reset');
         uploadedFiles = [];
-        console.log('form resetted');
-        $('select:not([data-bindResearch])').each(function () {
+        $('select:not([data-research])').each(function () {
             $(this).prop('selectedIndex', 1);
         });
     }

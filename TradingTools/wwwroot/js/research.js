@@ -223,8 +223,8 @@ $(function () {
     function UpdateTradeData(index) {
         var updatedTrade = {};
         // Get all data from the input and select fields in the card
-        $('#cardBodyResearch [data-bind-research]').each(function () {
-            var bindProperty = $(this).data('bind-research');
+        $('#cardBodyResearch [data-research]').each(function () {
+            var bindProperty = $(this).data('research');
             updatedTrade[bindProperty] = $(this).val();
         });
         // Add the Id and the Screenshots
@@ -254,8 +254,8 @@ $(function () {
     // Loads the trade data into the input/select elements. Used in the prev/next buttons or the key combination
     function LoadTradeData(tradeIndex) {
         var trade = trades[tradeIndex];
-        $('#cardBodyResearch [data-bind-research]').each(function () {
-            var bindProperty = $(this).data('bind-research');
+        $('#cardBodyResearch [data-research]').each(function () {
+            var bindProperty = $(this).data('research');
             if (trade.hasOwnProperty(bindProperty)) {
                 $(this).val(trade[bindProperty]);
             }
@@ -265,6 +265,10 @@ $(function () {
     // Loads the images into the carousel
     function LoadImages() {
         var screenshots = trades[tradeIndex]['ScreenshotsUrlsDisplay'];
+        if (screenshots === null) {
+            toastr.error("No screenshots for the selected trade.");
+            return;
+        }
 
         var newCarouselHtml = '<ol class="carousel-indicators">';
         for (var i = 0; i < screenshots.length; i++) {
