@@ -139,6 +139,12 @@ namespace TradingTools.Controllers
             // Get research sample sizes
             List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research && x.TimeFrame == TimeFrame.M10 && x.Strategy == Strategy.FirstBarPullback);
 
+            // No researched trades
+            if (sampleSizes.Count == 0)
+            {
+                return View(ResearchVM);
+            }
+
             string errorMsg = await LoadViewModelData(sampleSizes, IndexMethod);
 
             if (!string.IsNullOrEmpty(errorMsg))
