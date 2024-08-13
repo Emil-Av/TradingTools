@@ -1,1 +1,1 @@
-1. Code what happens if the last deleted trade in the research sample size is deleted
+ResearchController: sync when the last trade of a sample size is deleted. Then all values in the view must be resetted, the next trades must be displayed, if any. Also start the app and try to select the 10M: the sample size is not displayed.
