@@ -1,1 +1,1 @@
-ResearchController: sync when the last trade of a sample size is deleted. Then all values in the view must be resetted, the next trades must be displayed, if any. Also start the app and try to select the 10M: the sample size is not displayed.
+create a first trade for the 2nd sample size for 10M in the research and then delete the trade which must delete the sample size along with it and then reset the params in the view

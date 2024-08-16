@@ -67,6 +67,14 @@ namespace Models.ViewModels
 
         #region Methods
 
+        /// <summary>
+        ///  Sets the paramaters for the sample size that has to be displayed (time frame, strategy)
+        /// </summary>
+        /// <param name="timeFrame"></param>
+        /// <param name="strategy"></param>
+        /// <param name="sampleSizeNumber"></param>
+        /// <param name="isSampleSizeChanged"></param>
+        /// <returns></returns>
         public string SetSampleSizeParams(string timeFrame, string strategy, string sampleSizeNumber, string isSampleSizeChanged)
         {
             List<string> errors = new List<string>();

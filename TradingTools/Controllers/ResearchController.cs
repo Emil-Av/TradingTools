@@ -64,48 +64,8 @@ namespace TradingTools.Controllers
             {
                 if (ResearchVM.CurrentStrategy == Strategy.FirstBarPullback)
                 {
-                    ResearchFirstBarPullback trade = await _unitOfWork.ResearchFirstBarPullback.GetAsync(x => x.Id == id);
-                    if (trade == null)
-                    {
-                        return Json(new { error = "No trade was found for this id." });
-                    }
-                    _unitOfWork.ResearchFirstBarPullback.Remove(trade);
-
-                    // Get the rest of the trades in this sample size
-                    List<ResearchFirstBarPullback> listAllTrades = await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == trade.SampleSizeId);
-                    string jsonTrades = string.Empty;
-                    // The sample size is empty now
-                    if (!listAllTrades.Any())
-                    {
-                        SampleSize sampleSize = await _unitOfWork.SampleSize.GetAsync(x => x.Id == trade.SampleSizeId);
-                        // Delete the empty sample size
-                        _unitOfWork.SampleSize.Remove(sampleSize);
-
-                        // Check if there are more sample sizes for the paramaters. If yes get the last
-                        int lastSampleSizeId = (await _unitOfWork.SampleSize.GetAllAsync(x => x.Strategy == trade.Strategy && x.TimeFrame == trade.TimeFrame && x.TradeType == TradeType.Research)).FirstOrDefault().Id;
-
-                        // There are other sample sizes for these paramaters. Get the trades for the last of them
-                        if (lastSampleSizeId != null)
-                        {
-                            listAllTrades = await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == lastSampleSizeId);
-                        }
-                        // No more sample sizes for these parameters. The trade that was deleted was the last for these paramaters
-                        // Check if there are any other sample sizes (any TF, any Strategy)
-                        else
-                        {
-                            ResearchVM.AvailableTimeframes.Remove((TimeFrame)trade.TimeFrame!);
-                        }
-                    }
-
-                    foreach (ResearchFirstBarPullback researchFirstBarPullback in listAllTrades)
-                    {
-                        ResearchVM.AllTrades.Add(EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(researchFirstBarPullback));
-                    }
-                    //jsonTrades = JsonConvert.SerializeObject(ResearchVM.AllTrades);
-
-
-                    await _unitOfWork.SaveAsync();
-                    return Json(new { jsonTrades });
+                    JsonResult jsonResul = await DeleteFirstBarPullback(id);
+                    return jsonResul;
                 }
                 return Json(new { error = "Delete method not implemented for this strategy." });
             }
@@ -114,6 +74,51 @@ namespace TradingTools.Controllers
                 return Json(new { error = ex.Message });
             }
         }
+
+        private async Task<JsonResult> DeleteFirstBarPullback(int id)
+        {
+            ResearchFirstBarPullback trade = await _unitOfWork.ResearchFirstBarPullback.GetAsync(x => x.Id == id);
+            if (trade == null)
+            {
+                return Json(new { error = "No trade was found for this id." });
+            }
+            _unitOfWork.ResearchFirstBarPullback.Remove(trade);
+            await _unitOfWork.SaveAsync();
+            // Get the rest of the trades in this sample size
+            List<ResearchFirstBarPullback> listAllTrades = await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == trade.SampleSizeId);
+            string jsonTrades = string.Empty;
+            // The sample size is empty now
+            if (!listAllTrades.Any())
+            {
+                SampleSize sampleSize = await _unitOfWork.SampleSize.GetAsync(x => x.Id == trade.SampleSizeId);
+                // Delete the empty sample size
+                _unitOfWork.SampleSize.Remove(sampleSize);
+
+                // Check if there are more sample sizes for the paramaters. If yes get the last
+                int lastSampleSizeId = (await _unitOfWork.SampleSize.GetAllAsync(x => x.Strategy == trade.Strategy && x.TimeFrame == trade.TimeFrame && x.TradeType == TradeType.Research)).LastOrDefault()!.Id;
+
+                // There are other sample sizes for these paramaters. Get the trades for the last of them
+                if (lastSampleSizeId != 0)
+                {
+                    listAllTrades = await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == lastSampleSizeId);
+                }
+                // No more sample sizes for these parameters. The trade that was deleted was the last for these paramaters
+                // Check if there are any other sample sizes (any TF, any Strategy)
+                else
+                {
+                    ResearchVM.AvailableTimeframes.Remove((TimeFrame)trade.TimeFrame!);
+                }
+            }
+
+            foreach (ResearchFirstBarPullback researchFirstBarPullback in listAllTrades)
+            {
+                ResearchVM.AllTrades.Add(EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(researchFirstBarPullback));
+            }
+
+            await _unitOfWork.SaveAsync();
+
+            return Json(new { jsonTrades });
+        } 
 
         [HttpPost]
         public async Task<IActionResult> LoadResearchSampleSize(string timeFrame, string strategy, string sampleSizeNumber, string isSampleSizeChanged)
@@ -164,7 +169,6 @@ namespace TradingTools.Controllers
         public async Task<IActionResult> Index()
         {
             // Get research sample sizes
-            //List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research && x.TimeFrame == TimeFrame.M10 && x.Strategy == Strategy.FirstBarPullback);
             List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research);
 
             // No researched trades
@@ -426,7 +430,7 @@ namespace TradingTools.Controllers
             ResearchVM.CurrentSampleSizeNumber = sampleSizeNumber;
             ResearchVM.CurrentSampleSizeId = lastSampleSizeId;
             // Set the NumberSampleSizes for the button menu
-            ResearchVM.NumberSampleSizes = sampleSizes.Count;
+            ResearchVM.NumberSampleSizes = sampleSizes.Count(x => x.TimeFrame == ResearchVM.CurrentTimeFrame);
             ResearchVM.TradesInSampleSize = ResearchVM.AllTrades.Count;
 
             return errorMsg;
