@@ -243,8 +243,7 @@ namespace TradingTools.Controllers
                         PaperTrade? trade = null;
                         Journal? journal = null;
                         SampleSize? sampleSize = null;
-                        List<ZipArchiveEntry> sortedEntries = archive.Entries.
-                                                                        OrderBy(e => e.FullName, new NaturalStringComparer()).ToList();
+                        List<ZipArchiveEntry> sortedEntries = [..archive.Entries.OrderBy(e => e.FullName, new NaturalStringComparer())];
                         foreach (var entry in sortedEntries)
                         {
                             // Entry is a folder
@@ -358,7 +357,7 @@ namespace TradingTools.Controllers
                         {
                             string xmlContent = reader.ReadToEnd();
                             XDocument xmlDoc = XDocument.Parse(xmlContent);
-                            List<XElement> nodes = xmlDoc.Descendants().Where(e => e.Name.LocalName == "p").ToList();
+                            List<XElement> nodes = [..xmlDoc.Descendants().Where(e => e.Name.LocalName == "p")];
                             string lastJournal = string.Empty;
                             foreach (XElement node in nodes)
                             {
