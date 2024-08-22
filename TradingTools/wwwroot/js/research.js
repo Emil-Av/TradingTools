@@ -29,7 +29,7 @@ $(function () {
     */
 
 
-    function SetMenuValues(researchVM) {
+    function setMenuValues(researchVM) {
         // Menu Buttons
         var numberSampleSizes = researchVM.NumberSampleSizes;
         var tradesInSampleSize = researchVM.TradesInSampleSize;
@@ -61,7 +61,7 @@ $(function () {
     // Attach a click event for each <a> element of each menu.
     for (var key in menuButtons) {
         (function (key) {
-            SetSelectedItemClass(key);
+            setSelectedItemClass(key);
             // Change the value of the span in the button
             $(key).on('click', '.dropdown-item', function () {
                 // Save the old value. If there is no trade in the DB for the selected trade, the menu's old value should be displayed.
@@ -87,7 +87,7 @@ $(function () {
     }
 
     // Mark the selected drop down item of the buttons on the top
-    function SetSelectedItemClass() {
+    function setSelectedItemClass() {
         // Set the "selected item" color
         for (var key in menuButtons) {
             $(key + ' a').each(function () {
@@ -134,7 +134,7 @@ $(function () {
                 deleteTrade();
             }
         });
-        
+
     });
 
     // Menu button "Next" click event handler
@@ -255,13 +255,7 @@ $(function () {
                 if (response['error'] !== undefined) {
                     toastr.error(response['error']);
                 }
-                console.log(response);
-                toastr.success('Trades deleted.');
-                trades = JSON.parse(response['jsonTrades']);
-                loadTradeData();
-                loadImages();
-                $('#tradeNumberInput').val(tradeIndex + 1);
-                $('#tradesInSampleSize').val(trades.length);
+                loadViewData(response);
             },
             error: function (jqXHR, exception) // code for exceptions
             {
@@ -305,7 +299,7 @@ $(function () {
             url: '/research/updatetrade',
             contentType: 'application/json; charset=utf-8',
             dataType: 'JSON',
-            data: JSON.stringify(updatedTrade) ,
+            data: JSON.stringify(updatedTrade),
             success: function (response) {
                 if (response['success'] !== undefined) {
                     toastr.success(response['success']);
@@ -384,14 +378,7 @@ $(function () {
                 if (response['error'] !== undefined) {
                     toastr.error(response['error']);
                 }
-                console.log(response);
-                researchVM = JSON.parse(response.researchVM);
-                tradeIndex = 0;
-                trades = researchVM.AllTrades;
-                loadTradeData();
-                loadImages();
-                SetMenuValues(researchVM);
-                SetSelectedItemClass();
+                loadViewData(response);
             },
             error: function (jqXHR, exception) // code for exceptions
             {
@@ -415,10 +402,23 @@ $(function () {
             }
         });
 
-        /**
-         * ***************************
-         * Region methods
-         * ***************************
-         */
+
     }
+
+    function loadViewData(response) {
+        researchVM = JSON.parse(response.researchVM);
+        tradeIndex = 0;
+        trades = researchVM.AllTrades;
+        loadTradeData();
+        loadImages();
+        setMenuValues(researchVM);
+        setSelectedItemClass();
+    }
+
+
+    /**
+    * ***************************
+    * Region methods
+    * ***************************
+    */
 });

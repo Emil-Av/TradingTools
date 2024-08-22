@@ -81,6 +81,7 @@ namespace TradingTools.Controllers
         {
             ResearchFirstBarPullback trade = await _unitOfWork.ResearchFirstBarPullback.GetAsync(x => x.Id == id);
             SampleSize sampleSize = await _unitOfWork.SampleSize.GetAsync(x => x.Id == trade.SampleSizeId);
+            List<SampleSize> sampleSizes = null;
             Strategy currentStrategy = sampleSize.Strategy;
             TimeFrame currentTF = sampleSize.TimeFrame;
             if (trade == null)
@@ -100,7 +101,7 @@ namespace TradingTools.Controllers
                 await _unitOfWork.SaveAsync();
 
                 // Check if there are more sample sizes for the paramaters. If yes get the last
-                List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.Strategy == sampleSize.Strategy && x.TimeFrame == sampleSize.TimeFrame && x.TradeType == TradeType.Research);
+                sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.Strategy == sampleSize.Strategy && x.TimeFrame == sampleSize.TimeFrame && x.TradeType == TradeType.Research);
 
                 int lastSampleSizeId = 0;
                 // No more sample sizes for these parameters. The trade that was deleted was the last for these paramaters
@@ -128,20 +129,32 @@ namespace TradingTools.Controllers
                     {
                         lastSampleSizeId = sampleSizes.LastOrDefault()!.Id;
                         listAllTrades = await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == lastSampleSizeId);
-
-                        if (listAllTrades.Any())
-                        {
-                            foreach (ResearchFirstBarPullback researchFirstBarPullback in listAllTrades)
-                            {
-                                ResearchVM.AllTrades.Add(EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(researchFirstBarPullback));
-                            }
-                        }
                     }
                 }
             }
+
+            if (listAllTrades.Any())
+            {
+                foreach (ResearchFirstBarPullback researchFirstBarPullback in listAllTrades)
+                {
+                    ResearchVM.AllTrades.Add(EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(researchFirstBarPullback));
+                }
+            }
+            else
+            {
+                RedirectToAction(nameof(Index));
+            }
+
+            SampleSize currentSampleSize = sampleSizes.SingleOrDefault(x => x.Id == listAllTrades[0].SampleSizeId);
+            ResearchVM.CurrentStrategy = currentSampleSize.Strategy;
+            ResearchVM.CurrentTimeFrame = currentSampleSize.TimeFrame;
+            ResearchVM.CurrentSampleSizeNumber = sampleSizes.Count;
+            ResearchVM.TradesInSampleSize = listAllTrades.Count;
+            ResearchVM.NumberSampleSizes = sampleSizes.Count;
+            string researchVM = JsonConvert.SerializeObject(ResearchVM);
             // The method should be able to delete the sample size, and then get the trades from the last sample size for the given params.
             // Convert the trades and the new menu values in json and return that.
-            return Json(new { jsonTrades });
+            return Json(new { researchVM });
         }
 
         [HttpPost]
