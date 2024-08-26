@@ -120,7 +120,7 @@ namespace Utilities
                             }
                             catch (Exception ex)
                             {
-                                Debug.WriteLine($"Error deleting file {downloadedFilePath}");
+                                Debug.WriteLine($"Error deleting file {downloadedFilePath}: {ex.Message}");
                             }
                         }
                     }
