@@ -61,10 +61,10 @@ namespace Models.ViewModels
             try
             {
                 Dictionary<string, string> tradeDataObject = JsonConvert.DeserializeObject<Dictionary<string, string>>(tradeParams);
-                ToEnumFromStringResult<TimeFrame> timeFrameResult = MyEnumConverter.TimeFrameFromString(tradeDataObject["timeFrame"]);
-                ToEnumFromStringResult<Strategy> strategyResult = MyEnumConverter.StrategyFromString(tradeDataObject["strategy"]);
-                ToEnumFromStringResult<TradeType> typeResult = MyEnumConverter.TradeTypeFromString(tradeDataObject["tradeType"]);
-                ToEnumFromStringResult<SideType> sideResult = MyEnumConverter.SideTypeFromString(tradeDataObject["tradeSide"]);
+                Result<TimeFrame> timeFrameResult = MyEnumConverter.TimeFrameFromString(tradeDataObject["timeFrame"]);
+                Result<Strategy> strategyResult = MyEnumConverter.StrategyFromString(tradeDataObject["strategy"]);
+                Result<TradeType> typeResult = MyEnumConverter.TradeTypeFromString(tradeDataObject["tradeType"]);
+                Result<SideType> sideResult = MyEnumConverter.SideTypeFromString(tradeDataObject["tradeSide"]);
 
                 List<string> errors = new List<string>();
 

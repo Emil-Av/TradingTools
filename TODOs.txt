@@ -1,1 +1,0 @@
-create a first trade for the 2nd sample size for 10M in the research and then delete the trade which must delete the sample size along with it and then reset the params in the view

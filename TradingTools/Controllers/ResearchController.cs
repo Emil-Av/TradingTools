@@ -73,7 +73,7 @@ namespace TradingTools.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { error = ex.Message });
+                return Json(new { error = $"Error in Delete(): {ex.Message})" });
             }
         }
 
@@ -135,6 +135,10 @@ namespace TradingTools.Controllers
 
             if (listAllTrades.Any())
             {
+                if (sampleSizes == null)
+                {
+                    sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.Id == listAllTrades.First().SampleSizeId);
+                }
                 foreach (ResearchFirstBarPullback researchFirstBarPullback in listAllTrades)
                 {
                     ResearchVM.AllTrades.Add(EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(researchFirstBarPullback));
@@ -145,6 +149,7 @@ namespace TradingTools.Controllers
                 RedirectToAction(nameof(Index));
             }
 
+            // Set the values for the view
             SampleSize currentSampleSize = sampleSizes.SingleOrDefault(x => x.Id == listAllTrades[0].SampleSizeId);
             ResearchVM.CurrentStrategy = currentSampleSize.Strategy;
             ResearchVM.CurrentTimeFrame = currentSampleSize.TimeFrame;

@@ -100,7 +100,7 @@ namespace TradingTools.Controllers
             List<string> errors = new List<string>();   
             // Check and parse the paramaters
 
-            ToEnumFromStringResult<TimeFrame> resultTimeFrame = MyEnumConverter.TimeFrameFromString(timeFrame);
+            Result<TimeFrame> resultTimeFrame = MyEnumConverter.TimeFrameFromString(timeFrame);
             if (!resultTimeFrame.Success)
             {
                 errors.Add(resultTimeFrame.ErrorMessage);
@@ -110,7 +110,7 @@ namespace TradingTools.Controllers
                 timeFrame1 = resultTimeFrame.Value;
             }
 
-            ToEnumFromStringResult<Strategy> resultStrategy = MyEnumConverter.StrategyFromString(strategy);
+            Result<Strategy> resultStrategy = MyEnumConverter.StrategyFromString(strategy);
 
             if (!resultStrategy.Success)
             {

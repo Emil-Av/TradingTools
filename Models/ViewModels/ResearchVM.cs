@@ -79,8 +79,8 @@ namespace Models.ViewModels
         {
             List<string> errors = new List<string>();
             string error = string.Empty;
-            ToEnumFromStringResult<TimeFrame> timeFrameResult = MyEnumConverter.TimeFrameFromString(timeFrame);
-            ToEnumFromStringResult<Strategy> strategyResult = MyEnumConverter.StrategyFromString(strategy);
+            Result<TimeFrame> timeFrameResult = MyEnumConverter.TimeFrameFromString(timeFrame);
+            Result<Strategy> strategyResult = MyEnumConverter.StrategyFromString(strategy);
             if (!timeFrameResult.Success)
             {
                 errors.Add(timeFrameResult.ErrorMessage);

@@ -95,6 +95,7 @@ namespace Utilities
                 // Save the files
                 try
                 {
+                    string downloadFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
                     foreach (IFormFile file in files)
                     {
                         string filePath = Path.Combine(pathToSaveFiles, file.FileName);
@@ -109,7 +110,21 @@ namespace Utilities
                             }
                             trade.ScreenshotsUrls.Add(dbFilePath);
                         }
+                        string downloadedFilePath = Path.Combine(downloadFolder, file.FileName);
+                        // Delete the file from the download directory
+                        if (File.Exists(downloadedFilePath))
+                        {
+                            try
+                            {
+                                File.Delete(downloadedFilePath);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine($"Error deleting file {downloadedFilePath}");
+                            }
+                        }
                     }
+
                 }
                 catch (Exception ex)
                 {
