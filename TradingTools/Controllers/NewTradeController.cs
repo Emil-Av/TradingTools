@@ -70,30 +70,41 @@ namespace TradingTools.Controllers
         {
             if (NewTradeVM.Type == TradeType.Research)
             {
-                if (NewTradeVM.ResearchData is ResearchFirstBarPullbackDisplay researchData)
+                if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
                 {
-                    ResearchFirstBarPullback newTrade = 
-                        EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(researchData);
-                    // Check if there is a sample size for the parameters and if it's full.
-                    var sampleSize = await GetLastSampleSizeData();
-                    // If the sample size is full or there is no sample size for those paramaters (id == 0), create a new sample size
-                    if (sampleSize.isFull || sampleSize.id == 0)
+
+                    if (NewTradeVM.ResearchData is ResearchFirstBarPullbackDisplay researchData)
                     {
-                        SampleSize newSampleSize =
-                            new SampleSize { Strategy = NewTradeVM.Strategy, TimeFrame = NewTradeVM.TimeFrame, TradeType = NewTradeVM.Type };
-                        _unitOfWork.SampleSize.Add(newSampleSize);
+                        ResearchFirstBarPullback newTrade =
+                            EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(researchData);
+                        // Check if there is a sample size for the parameters and if it's full.
+                        var sampleSize = await GetLastSampleSizeData(maxTradesProSampleSize: 100);
+                        // If the sample size is full or there is no sample size for those paramaters (id == 0), create a new sample size
+                        if (sampleSize.isFull || sampleSize.id == 0)
+                        {
+                            SampleSize newSampleSize =
+                                new SampleSize { Strategy = NewTradeVM.Strategy, TimeFrame = NewTradeVM.TimeFrame, TradeType = NewTradeVM.Type };
+                            _unitOfWork.SampleSize.Add(newSampleSize);
+                            await _unitOfWork.SaveAsync();
+                            sampleSize.id = newSampleSize.Id;
+                        }
+                        newTrade.SampleSizeId = sampleSize.id;
+                        await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newTrade, files);
+                        _unitOfWork.ResearchFirstBarPullback.Add(newTrade);
                         await _unitOfWork.SaveAsync();
-                        sampleSize.id = newSampleSize.Id;
                     }
-                    newTrade.SampleSizeId = sampleSize.id;
-                    await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newTrade, files);
-                    _unitOfWork.ResearchFirstBarPullback.Add(newTrade);
-                    await _unitOfWork.SaveAsync();
+                }
+            }
+            else if (NewTradeVM.Type == TradeType.PaperTrade)
+            {
+                if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
+                {
+
                 }
             }
         }
 
-        private async Task<(int id, bool isFull)> GetLastSampleSizeData()
+        private async Task<(int id, bool isFull)> GetLastSampleSizeData(int maxTradesProSampleSize)
         {
             int id = 0;
             bool isFull = false;
@@ -108,7 +119,6 @@ namespace TradingTools.Controllers
                     {
                         id = listSampleSizes.Last().Id;
 
-                        int maxTradesProSampleSize = 100;
                         int numberTradesInSampleSize = (await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == id)).Count;
 
                         if (numberTradesInSampleSize == maxTradesProSampleSize)

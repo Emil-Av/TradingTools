@@ -64,9 +64,42 @@
 
     /**
      * ***************************
-     * Region functions begins
+     * Region event handlers begins
      * ***************************
      */
+
+    $('#headerMenu').on('click', '.dropdown-item', function () {
+        var currentCardMenu = $(this).text();
+        console.log(currentCardMenu);
+        // Display TradeData tabs
+        if (currentCardMenu == 'Trade Data') {
+            $('#tradeDataTabHeaders').removeClass('d-none');
+            $('#tradeDataTabContent').removeClass('d-none');
+            $('#researchDataTabHeaders').addClass('d-none');
+            $('#researchDataTabContent').addClass('d-none');
+        }
+        // Display Research Tabs
+        else {
+            $('#researchDataTabHeaders').removeClass('d-none');
+            $('#researchDataTabContent').removeClass('d-none');
+            $('#tradeDataTabHeaders').addClass('d-none');
+            $('#tradeDataTabContent').addClass('d-none');
+        }
+
+        // Set the text of the card menu
+        if (currentCardMenu !== $('#currentMenu').text()) {
+            $('#currentMenu').text(currentCardMenu);
+            $(this).addClass('bg-gray-400');
+        }
+
+        // Remove the bg color of the last selected item
+        $('#headerMenu a').each(function () {
+            // if a dropdown item has the bg-gray-400 class and the text of the current item being iterated is different than the text in the #currentMenu, than that was the previously selected option
+            if ($(this).hasClass('bg-gray-400') && $(this).text() !== $('#currentMenu').text()) {
+                $(this).removeClass('bg-gray-400');
+            }
+        });
+    });
 
     $('#btnSave').on('click', function () {
         saveTrade();
@@ -92,6 +125,17 @@
         displayNames();
     });
 
+    /**
+     * ***************************
+     * Region event handlers ends
+     * ***************************
+     */
+
+    /**
+     * ***************************
+     * Region functions begins
+     * ***************************
+     */
     function displayNames() {
         var fileList = $('#fileList');
         fileList.removeClass('text-center').addClass('text-left');
