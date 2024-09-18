@@ -22,10 +22,12 @@
     // Create key, value array: key is the button menu, value is the span element. The span element is the selected value from the dropdown menu.
     var menuButtons =
     {
+        '#dropdownBtnStatus': '#spanStatus',
         '#dropdownBtnTimeFrame': '#spanTimeFrame',
         '#dropdownBtnStrategy': '#spanStrategy',
         '#dropdownBtnTradeType': '#spanTradeType',
-        '#dropdownBtnTradeSide': '#spanTradeSide'
+        '#dropdownBtnTradeSide': '#spanTradeSide',
+        '#dropdownBtnOrderType': '#spanOrderType'
     };
 
     // Attach a click event for each <a> element of each menu.
@@ -143,7 +145,7 @@
 
         for (var i = 0; i < uploadedFiles.length; i++) {
             fileName = (i + 1) + '. ' + uploadedFiles[i].name;
-            fileList.append('<p class="text-truncate">' + fileName + '<span class="text-success ml-2">&#10003;</span</p>');
+            fileList.append('<p class="text-truncate">' + fileName + '</p>');
         }
     }
 
@@ -151,32 +153,48 @@
 
         var formData = new FormData();
 
+        // Trades without screenshots should not be saved
+        if (uploadedFiles.length == 0) {
+            toastr.error("No screenshots uploaded.");
+            return;
+        }
+
         for (var i = 0; i < uploadedFiles.length; i++) {
             formData.append('files', uploadedFiles[i]);
         }
 
         var tradeParams = {};
+        tradeParams['status'] = $('#spanStatus').text();
         tradeParams['timeFrame'] = $('#spanTimeFrame').text();
         tradeParams['strategy'] = $('#spanStrategy').text();
         tradeParams['tradeType'] = $('#spanTradeType').text();
         tradeParams['tradeSide'] = $('#spanTradeSide').text();
+        tradeParams['orderType'] = $('#spanOrderType').text();
 
         formData.append('tradeParams', JSON.stringify(tradeParams));
 
-        var tradeData = {};
-        $('#cardBodyResearch [data-research]').each(function () {
+        var researchData = {};
+        $('#cardBody [data-research]').each(function () {
             var bindProperty = $(this).data('research');
+            researchData[bindProperty] = $(this).val();
+        });
+
+        formData.append('researchData', JSON.stringify(researchData));
+
+        var tradeData = {};
+        $('#cardBody [data-trade-data]').each(function () {
+            var bindProperty = $(this).data('trade-data');
             tradeData[bindProperty] = $(this).val();
         });
 
         formData.append('tradeData', JSON.stringify(tradeData));
 
         $.ajax({
-            url: '/newtrade/savenewtrade',
             type: 'POST',
-            data: formData,
+            url: '/newtrade/savenewtrade',
             processData: false, // Don't process the files, otherwise jQuery will transform the data into a query string
             contentType: false, // Set content type to false as FormData will handle it
+            data: formData,
             success: function (response) {
                 if (response['success'] !== undefined) {
                     toastr.success(response['success']);

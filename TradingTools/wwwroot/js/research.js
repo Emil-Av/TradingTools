@@ -16,6 +16,7 @@ $(function () {
     var tradeIndex = 0;
     var lastTradeIndex = 0;
     var sampleSizeChanged;
+    var currentCardMenu = 'Trade Data';
     // The model
     var researchVM;
     var trades = $('#tradesData').data('trades');
@@ -113,6 +114,41 @@ $(function () {
      * Region even handlers begins
      * ***************************
      */
+
+    $('#headerMenu').on('click', '.dropdown-item', function () {
+        currentCardMenu = $(this).text();
+        // Display Journal tabs
+        if (currentCardMenu == 'Trade Data') {
+            currentTab = '#pre';
+            $('#tradeDataTabHeaders').removeClass('d-none');
+            $('#tradeDataTabContent').removeClass('d-none');
+            $('#researchDataTabHeaders').addClass('d-none');
+            $('#researchDataTabContent').addClass('d-none');
+        }
+        // Display Review tabs
+        else {
+            currentTab = '#first';
+            $('#researchDataTabHeaders').removeClass('d-none');
+            $('#researchDataTabContent').removeClass('d-none');
+            $('#tradeDataTabHeaders').addClass('d-none');
+            $('#tradeDataTabContent').addClass('d-none');
+        }
+
+        // Set the text of the card menu
+        if (currentCardMenu !== $('#currentMenu').text()) {
+            $('#currentMenu').text(currentCardMenu);
+            $(this).addClass('bg-gray-400');
+
+            // Remove the bg color of the last selected item
+            $('#headerMenu a').each(function () {
+                // if a dropdown item has the bg-gray-400 class and the text of the current item being iterated is different than the text in the #currentMenu, than that was the previously selected option
+                if ($(this).hasClass('bg-gray-400') && $(this).text() !== $('#currentMenu').text()) {
+                    $(this).removeClass('bg-gray-400');
+                }
+            });
+        }
+    });
+
 
     // Card button 'Update' click event handler 
     $('#btnUpdate').on('click', function () {
@@ -285,7 +321,7 @@ $(function () {
     function updateTradeData(index) {
         var updatedTrade = {};
         // Get all data from the input and select fields in the card
-        $('#cardBodyResearch [data-research]').each(function () {
+        $('#cardBody [data-research]').each(function () {
             var bindProperty = $(this).data('research');
             updatedTrade[bindProperty] = $(this).val();
         });
@@ -316,7 +352,7 @@ $(function () {
     // Loads the trade data into the input/select elements. Used in the prev/next buttons or the key combination
     function loadTradeData() {
         var trade = trades[tradeIndex];
-        $('#cardBodyResearch [data-research]').each(function () {
+        $('#cardBody [data-research]').each(function () {
             var bindProperty = $(this).data('research');
             if (trade.hasOwnProperty(bindProperty)) {
                 $(this).val(trade[bindProperty]);

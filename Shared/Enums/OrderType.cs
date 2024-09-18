@@ -1,4 +1,4 @@
 ﻿namespace SharedEnums.Enums
 {
-    public enum OrderType { Limit, Market }
+    public enum OrderType { Market, Limit, StopLoss }
 }

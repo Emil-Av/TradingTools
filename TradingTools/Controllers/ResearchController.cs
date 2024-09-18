@@ -107,7 +107,7 @@ namespace TradingTools.Controllers
                 // No more sample sizes for these parameters. The trade that was deleted was the last for these paramaters
                 if (!sampleSizes.Any())
                 {
-                    ResearchVM.AvailableTimeframes.Remove((TimeFrame)trade.TimeFrame!);
+                    ResearchVM.AvailableTimeframes.Remove((TimeFrame)sampleSize.TimeFrame!);
                 }
                 // Get the last sample size id for these paramaters
                 else
@@ -476,6 +476,11 @@ namespace TradingTools.Controllers
             ResearchVM.TradesInSampleSize = ResearchVM.AllTrades.Count;
 
             return errorMsg;
+        }
+
+        private void LoadTradeData()
+        {
+
         }
 
         #endregion

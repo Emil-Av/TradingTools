@@ -54,7 +54,7 @@ $(function () {
         $.ajax({
             method: 'POST',
             url: '/papertrades/updatereview',
-            contentType: "application/json; charset=utf-8",
+            contentType: 'application/json; charset=utf-8',
             dataType: 'JSON',
             data: JSON.stringify(dataToSend),
             success: function (response) {

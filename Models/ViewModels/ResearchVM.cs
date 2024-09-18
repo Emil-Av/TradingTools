@@ -13,6 +13,8 @@ namespace Models.ViewModels
         {
             AvailableStrategies = new List<Strategy>();
             AvailableTimeframes = new List<TimeFrame>();
+            TradeData = new();
+
             YesNoOptions = new List<SelectListItem>
             {
                 new SelectListItem {Value = "0", Text = "No"},
@@ -26,6 +28,12 @@ namespace Models.ViewModels
                 new SelectListItem { Value = "2", Text = "A-"},
                 new SelectListItem { Value = "3", Text = "Book of Horror"}
             };
+
+            OrderType = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "0", Text = "Market"},
+                new SelectListItem { Value = "1", Text = "Limit"},
+            };
         }
 
         #endregion
@@ -36,6 +44,8 @@ namespace Models.ViewModels
 
         public Strategy CurrentStrategy { get; set; }
 
+        public Status Status { get; set; }
+
         public SampleSize CurrentSampleSize { get; set; }
 
         public int CurrentSampleSizeId { get; set; }
@@ -45,11 +55,15 @@ namespace Models.ViewModels
 
         public ResearchFirstBarPullbackDisplay ResearchFirstBarPullbackDisplay { get; set; }
 
+        public TradeDisplay TradeDisplay { get; set; }
+
         public List<ResearchFirstBarPullbackDisplay> AllTrades { get; set; }
 
         public List<SelectListItem> YesNoOptions { get; set; }
 
-        public List<SelectListItem> TradeRating {  get; set; }
+        public List<SelectListItem> TradeRating { get; set; }
+
+        public List<SelectListItem> OrderType { get; set; }
 
         public List<Strategy> AvailableStrategies { get; set; }
 

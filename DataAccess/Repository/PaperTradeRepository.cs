@@ -30,18 +30,14 @@ namespace DataAccess.Repository
                 objFromDb.StopPrice = paperTrade.StopPrice;
                 objFromDb.Targets = paperTrade.Targets;
                 objFromDb.ExitPrice = paperTrade.ExitPrice; 
-                objFromDb.Profit = paperTrade.Profit; 
-                objFromDb.Loss = paperTrade.Loss;
+                objFromDb.PnL = paperTrade.PnL; 
+                objFromDb.IsLoss = paperTrade.IsLoss;
                 objFromDb.Fee = paperTrade.Fee;
-                objFromDb.TimeFrame = paperTrade.TimeFrame;
                 objFromDb.Status = paperTrade.Status;
-                objFromDb.Strategy = paperTrade.Strategy;
                 objFromDb.SideType = paperTrade.SideType;
                 objFromDb.OrderType = paperTrade.OrderType;
                 objFromDb.ScreenshotsUrls = paperTrade.ScreenshotsUrls;
-                objFromDb.EntryTime = paperTrade.EntryTime;
-                objFromDb.ExitTime = paperTrade.ExitTime;
-                objFromDb.TradeDuration = paperTrade.TradeDuration;
+                objFromDb.TradeDurationInCandles = paperTrade.TradeDurationInCandles;
             }
         }
     }

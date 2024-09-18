@@ -11,8 +11,6 @@ namespace Models
 {
     public class ResearchFirstBarPullback : Trade
     {
-        public int Id { get; set; }
-
         /// <summary>
         ///  Risk to reward ratio 1:1.
         /// </summary>
@@ -32,8 +30,6 @@ namespace Models
         public bool IsOneToFiveHit { get; set; }
 
         public bool IsBreakeven { get; set; }
-
-        public bool IsLoss { get; set; }
 
         /// <summary>
         ///  Maximum risk to reward ratio. The number is always in ratio 1:MaxRR (e.g. 1:3)

@@ -27,7 +27,7 @@ namespace Shared
 
         public static Result<T> ErrorResult(string errorMessage)
         {
-            return new Result<T>(default(T)!, false, errorMessage);
+            return new Result<T>(default(T), false, errorMessage);
         }
     }
 }

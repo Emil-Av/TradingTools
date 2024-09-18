@@ -11,6 +11,21 @@
         <div class="container mb-4">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-auto d-flex align-items-center flex-wrap justify-content-center">
+                    <!-- Menu Status -->
+                    <div class="col-auto p-2">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Status: <span id="spanStatus"></span>
+                            </button>
+                            <div class="dropdown-menu animated--fade-in" id="dropdownBtnStatus" aria-labelledby="dropdownMenuButton">
+                                @foreach (Status status in Enum.GetValues(typeof(Status)))
+                                {
+                                    <a class="dropdown-item" role="button">@status.ToString()</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
                     <!-- Menu Time Frame -->
                     <div class="col-auto p-2">
                         <div class="dropdown">
@@ -68,6 +83,20 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Menu Order Type -->
+                    <div class="col-auto p-2">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Order Type: <span id="spanOrderType"></span>
+                            </button>
+                            <div class="dropdown-menu animated--fade-in" id="dropdownBtnOrderType" aria-labelledby="dropdownMenuButton">
+                                @foreach (OrderType orderType in Enum.GetValues(typeof(OrderType)))
+                                {
+                                    <a class="dropdown-item" role="button">@MyEnumConverter.OrderTypeFromEnum(orderType)</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <!-- Menu buttons ends -->
                 <!-- Card prices and screenshots -->
@@ -95,7 +124,7 @@
                                     <div class="col-6 d-flex flex-row justify-content-between align-items-center">
                                         <div class="text-center p-4" style="border: 2px dashed #ccc; cursor: pointer;" onclick="document.getElementById('filesInput').click()">
                                             <form method="post" enctype="multipart/form-data" id="formUploadFiles" asp-action="UploadScreenshots">
-                                                <input type="file" name="screenshots" id="filesInput" class="d-none" multiple/>
+                                                <input type="file" name="screenshots" id="filesInput" class="d-none" multiple />
                                                 <i class="fa-solid fa-file-arrow-up fa-2x text-primary"></i>
                                                 <span class="mt-2 d-block">Upload Screenshots</span>
                                             </form>

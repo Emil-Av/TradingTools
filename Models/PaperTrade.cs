@@ -14,13 +14,5 @@ namespace Models
         {
             ScreenshotsUrls = new List<string>();
         }
-        public int Id { get; set; }
-
-        // Navigation property
-        public int SampleSizeId { get; set; }
-        [ForeignKey(nameof(SampleSizeId))]
-
-        public SampleSize? SampleSize { get; set; }
-
     }
 }

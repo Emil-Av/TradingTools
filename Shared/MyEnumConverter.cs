@@ -4,6 +4,55 @@ namespace Shared
 {
     public class MyEnumConverter
     {
+        public static string OrderTypeFromEnum(OrderType orderType)
+        {
+            Dictionary<OrderType, string> statusType = new Dictionary<OrderType, string>()
+            {
+                { OrderType.Market, "Market" },
+                { OrderType.Limit, "Limit" },
+                { OrderType.StopLoss, "Stop Loss" }
+            };
+
+            return statusType[orderType];
+        }
+
+        public static Result<OrderType> OrderTypeFromString(string orderType)
+        {
+            Dictionary<string, OrderType> orderTypes = new Dictionary<string, OrderType>()
+            {
+                { "Market", OrderType.Market },
+                { "Limit", OrderType.Limit },
+                { "Stop Loss", OrderType.StopLoss }
+            };
+            try
+            {
+                return Result<OrderType>.SuccessResult(orderTypes[orderType]);
+            }
+            catch
+            {
+                return Result<OrderType>.ErrorResult($"Error converting order type from a string. Value given: {orderType}");
+            }
+        }
+
+        public static Result<Status> StatusFromString(string status)
+        {
+            Dictionary<string, Status> statusTypes = new Dictionary<string, Status>()
+            {
+                { "Pending", Status.Pending },
+                { "Opened", Status.Opened },
+                { "Closed", Status.Closed }
+            };
+
+            try
+            {
+                return Result<Status>.SuccessResult(statusTypes[status]);
+            }
+            catch
+            {
+                return Result<Status>.ErrorResult($"Error converting status from a string. Value given: {status}");
+            }
+        }
+
         public static Result<SideType> SideTypeFromString(string sideType)
         {
             Dictionary<string, SideType> sideTypes = new Dictionary<string, SideType>() 
@@ -16,7 +65,7 @@ namespace Shared
             {
                 return Result<SideType>.SuccessResult(sideTypes[sideType]);
             }
-            catch (Exception) 
+            catch
             {
                 return Result<SideType>.ErrorResult($"Error converting side type from a string. Value given: {sideType}");
             }
@@ -35,7 +84,7 @@ namespace Shared
             {
                 return Result<TradeType>.SuccessResult(tradeTypes[tradeType]);
             }
-            catch (Exception)
+            catch
             {
                 return Result<TradeType>.ErrorResult($"Error converting the trade type from a string. Value given: {tradeType}");
             }
@@ -73,7 +122,7 @@ namespace Shared
             {
                 return Result<TimeFrame>.SuccessResult(timeFrames[timeFrame]);
             }
-            catch (Exception)
+            catch
             {
                 return Result<TimeFrame>.ErrorResult($"Error converting the time frame from as string. Value given: {timeFrame}");
             }
@@ -109,7 +158,7 @@ namespace Shared
             {
                 return Result<Strategy>.SuccessResult(strategies[strategy]);
             }
-            catch (Exception)
+            catch
             {
                 return Result<Strategy>.ErrorResult($"Error converting the strategy from a string. Value given: {strategy}");
             }

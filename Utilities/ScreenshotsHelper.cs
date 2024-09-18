@@ -40,7 +40,7 @@ namespace Utilities
             if (vm is NewTradeVM viewModel)
             {
                 string pathToSaveFiles = string.Empty;
-                string tradeType = MyEnumConverter.TradeTypeFromEnum(viewModel.Type);
+                string tradeType = MyEnumConverter.TradeTypeFromEnum(viewModel.TradeType);
                 pathToSaveFiles = Path.Combine(screenshotsDir, tradeType);
                 if (!Directory.Exists(pathToSaveFiles))
                 {

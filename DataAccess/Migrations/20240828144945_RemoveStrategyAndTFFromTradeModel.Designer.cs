@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240828144945_RemoveStrategyAndTFFromTradeModel")]
+    partial class RemoveStrategyAndTFFromTradeModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,58 +63,52 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<double>("EntryPrice")
+                    b.Property<double?>("EntryPrice")
                         .HasColumnType("float");
 
-                    b.Property<double>("ExitPrice")
+                    b.Property<double?>("ExitPrice")
                         .HasColumnType("float");
 
-                    b.Property<double>("Fee")
+                    b.Property<double?>("Fee")
                         .HasColumnType("float");
 
-                    b.Property<bool>("IsLoss")
-                        .HasColumnType("bit");
+                    b.Property<double?>("Loss")
+                        .HasColumnType("float");
 
-                    b.Property<int>("OrderType")
+                    b.Property<int?>("OrderType")
                         .HasColumnType("int");
 
-                    b.Property<double?>("PnL")
+                    b.Property<double?>("Profit")
                         .HasColumnType("float");
-
-                    b.Property<int>("ResearchId")
-                        .HasColumnType("int");
 
                     b.Property<int>("SampleSizeId")
                         .HasColumnType("int");
 
                     b.Property<string>("ScreenshotsUrls")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SideType")
+                    b.Property<int?>("SideType")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
+                    b.Property<int?>("Status")
                         .HasColumnType("int");
 
-                    b.Property<double>("StopPrice")
+                    b.Property<double?>("StopPrice")
                         .HasColumnType("float");
 
                     b.Property<string>("Symbol")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Targets")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TradeDurationInCandles")
+                    b.Property<int>("TradeDuration")
                         .HasColumnType("int");
 
-                    b.Property<int>("TradeRating")
+                    b.Property<int?>("TradeRating")
                         .HasColumnType("int");
 
-                    b.Property<double>("TriggerPrice")
+                    b.Property<double?>("TriggerPrice")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
@@ -132,13 +129,13 @@ namespace DataAccess.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("EntryPrice")
+                    b.Property<double?>("EntryPrice")
                         .HasColumnType("float");
 
-                    b.Property<double>("ExitPrice")
+                    b.Property<double?>("ExitPrice")
                         .HasColumnType("float");
 
-                    b.Property<double>("Fee")
+                    b.Property<double?>("Fee")
                         .HasColumnType("float");
 
                     b.Property<bool>("FullATRMarketGaveSmth")
@@ -216,6 +213,9 @@ namespace DataAccess.Migrations
                     b.Property<bool>("IsTriggerTrending")
                         .HasColumnType("bit");
 
+                    b.Property<double?>("Loss")
+                        .HasColumnType("float");
+
                     b.Property<bool>("MarketGaveSmth")
                         .HasColumnType("bit");
 
@@ -225,46 +225,40 @@ namespace DataAccess.Migrations
                     b.Property<int>("OneToOneHitOn")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrderType")
+                    b.Property<int?>("OrderType")
                         .HasColumnType("int");
 
-                    b.Property<double?>("PnL")
+                    b.Property<double?>("Profit")
                         .HasColumnType("float");
-
-                    b.Property<int>("ResearchId")
-                        .HasColumnType("int");
 
                     b.Property<int>("SampleSizeId")
                         .HasColumnType("int");
 
                     b.Property<string>("ScreenshotsUrls")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SideType")
+                    b.Property<int?>("SideType")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
+                    b.Property<int?>("Status")
                         .HasColumnType("int");
 
-                    b.Property<double>("StopPrice")
+                    b.Property<double?>("StopPrice")
                         .HasColumnType("float");
 
                     b.Property<string>("Symbol")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Targets")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TradeDurationInCandles")
+                    b.Property<int>("TradeDuration")
                         .HasColumnType("int");
 
-                    b.Property<int>("TradeRating")
+                    b.Property<int?>("TradeRating")
                         .HasColumnType("int");
 
-                    b.Property<double>("TriggerPrice")
+                    b.Property<double?>("TriggerPrice")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
