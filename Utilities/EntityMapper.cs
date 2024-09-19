@@ -74,6 +74,19 @@ namespace Utilities
                             entityProp.SetValue(entity, intValue);
                         }
                     }
+                    else if (viewModelProp.PropertyType == typeof(string) && entityProp.PropertyType == typeof(double))
+                    {
+                        if (double.TryParse((string)viewModelProp.GetValue(viewModel), out double intValue))
+                        {
+                            entityProp.SetValue(entity, intValue);
+                        }
+                    } else if (viewModelProp.PropertyType == typeof(string) && entityProp.PropertyType == typeof(double?))
+                    {
+                        if (double.TryParse((string)viewModelProp.GetValue(viewModel), out double intValue))
+                        {
+                            entityProp.SetValue(entity, intValue);
+                        }
+                    }
                     else
                     {
                         entityProp.SetValue(entity, viewModelProp.GetValue(viewModel));

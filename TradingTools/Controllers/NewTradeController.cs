@@ -68,28 +68,26 @@ namespace TradingTools.Controllers
 
         private async Task SaveTrade(IFormFile[] files)
         {
-            if (NewTradeVM.TradeType == TradeType.Research && NewTradeVM.Strategy == Strategy.FirstBarPullback)
+            // Research
+            if (NewTradeVM.TradeType == TradeType.Research)
             {
-                if (NewTradeVM.ResearchData is ResearchFirstBarPullbackDisplay researchData)
+                if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
                 {
-                    int num = await SaveResearch(researchData, 100);
-                    // What is that: researchData = (ResearchFirstBarPullbackDisplay)null;
-                }
-                else if (NewTradeVM.TradeType == TradeType.Research || NewTradeVM.Strategy != Strategy.FirstBarPullback)
-                {
+                    ResearchFirstBarPullbackDisplay viewData = NewTradeVM.ResearchData as ResearchFirstBarPullbackDisplay;
+                    // Save the values from the view and return a DB entity. The entity contains the SampleSizeId.
+                    ResearchFirstBarPullback researchTrade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(viewData);
+                    var sampleSizeData = await ProcessSampleSize(maxTradesProSampleSize: 100);
+                    researchTrade.SampleSizeId = sampleSizeData.id;
+                    await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, researchTrade, files);
 
+                    _unitOfWork.ResearchFirstBarPullback.Add(researchTrade);
+                    await _unitOfWork.SaveAsync();
                 }
                 else
                 {
-                    int researchID = 0;
-                    if (NewTradeVM.ResearchData is ResearchFirstBarPullbackDisplay researchData)
-                    {
-                        researchID = await SaveResearch(researchData, 20);
-                        Trade trade = EntityMapper.ViewModelToEntity<Trade, TradeDisplay>(NewTradeVM.TradeDisplay);
-                        // What is that: researchData = (ResearchFirstBarPullbackDisplay)null;
-                        // What is that: trade = (Trade) null;
-                    }
+                    // Research other strategies
                 }
+                #region ToDelete
                 //if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
                 //{
 
@@ -114,28 +112,47 @@ namespace TradingTools.Controllers
                 //        await _unitOfWork.SaveAsync();
                 //    }
                 //}
+                #endregion
             }
+            // Trades or PaperTrades
+            else
+            {
+                if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
+                {
+                    ResearchFirstBarPullbackDisplay viewData = NewTradeVM.ResearchData as ResearchFirstBarPullbackDisplay;
+                    ResearchFirstBarPullback researchTrade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(viewData);
+                    // Save the values from the view and return a DB entity. The entity contains the SampleSizeId.
+                    var sampleSizeData = await ProcessSampleSize(maxTradesProSampleSize: 20);
+                    // Save the values from the view and return a DB entity.
+                    PaperTrade newTrade = EntityMapper.ViewModelToEntity<PaperTrade, TradeDisplay>(NewTradeVM.TradeDisplay);
+                    await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newTrade, files);
+                    newTrade.ResearchId = researchTrade.Id;
+                    newTrade.SampleSizeId = researchTrade.SampleSizeId;
+                    // TODO: the new trade needs a review and journal id. Class Trade should have foreign keys to Journal and Review, not the other way around. Check the GetLastSampleSizeData(). There might be no need for if else.. Think about it
+                    _unitOfWork.PaperTrade.Add(newTrade);
+                    await _unitOfWork.SaveAsync();
+                }
+                else if (NewTradeVM.Strategy == Strategy.Cradle)
+                {
+
+                }
+            }
+            
 
             #region Local Helper Methods
-            async Task<int> SaveResearch(ResearchFirstBarPullbackDisplay researchData, int maxTradesProSampleSize)
+
+            async Task<(int id, bool isFull)> ProcessSampleSize(int maxTradesProSampleSize)
             {
-                ResearchFirstBarPullback researchTrade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(researchData);
-                var sampleSize = await GetLastSampleSizeData(maxTradesProSampleSize);
-                if (sampleSize.isFull || sampleSize.id == 0)
+                var sampleSizeData = await GetLastSampleSizeData(maxTradesProSampleSize);
+                if (sampleSizeData.isFull || sampleSizeData.id == 0)
                 {
                     SampleSize newSampleSize = new() { Strategy = NewTradeVM.Strategy, TimeFrame = NewTradeVM.TimeFrame, TradeType = NewTradeVM.TradeType };
                     _unitOfWork.SampleSize.Add(newSampleSize);
                     await _unitOfWork.SaveAsync();
-                    sampleSize.id = newSampleSize.Id;
-                    // newSampleSize = (SampleSize) null;
+                    sampleSizeData.id = newSampleSize.Id;
                 }
-                researchTrade.SampleSizeId = sampleSize.id;
-                List<string> stringList = await ScreenshotsHelper.SaveFilesAsync<NewTradeVM>(_webHostEnvironment.WebRootPath, NewTradeVM, researchTrade, files);
-                _unitOfWork.ResearchFirstBarPullback.Add(researchTrade);
-                await _unitOfWork.SaveAsync();
 
-                // researchTrade = (ResearchFirstBarPullback) null;
-                return researchTrade.Id;
+                return sampleSizeData;
             }
 
             async Task<(int id, bool isFull)> GetLastSampleSizeData(int maxTradesProSampleSize)

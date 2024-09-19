@@ -13,7 +13,6 @@ namespace Models.ViewModels
         {
             AvailableStrategies = new List<Strategy>();
             AvailableTimeframes = new List<TimeFrame>();
-            TradeData = new();
 
             YesNoOptions = new List<SelectListItem>
             {

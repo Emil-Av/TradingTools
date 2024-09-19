@@ -7,7 +7,7 @@ namespace Models
     public class Trade
     {
         public int Id { get; set; }
-        public string Symbol { get; set; }
+        public string? Symbol { get; set; }
 
         public double TriggerPrice { get; set; }
 
@@ -17,7 +17,7 @@ namespace Models
 
         public double ExitPrice { get; set; }
 
-        public List<double> Targets { get; set; }
+        public List<double>? Targets { get; set; }
 
         public double? PnL { get; set; }
 

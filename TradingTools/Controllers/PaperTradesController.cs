@@ -191,7 +191,7 @@ namespace TradingTools.Controllers
             // Currently no users, so there is only one data record
             userSettings = (await _unitOfWork.UserSettings.GetAllAsync()).First();
             // Get the latest sample size for the strategy and time frame
-            PaperTradesVM.CurrentSampleSize = (await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy)).Last();
+            PaperTradesVM.CurrentSampleSize = (await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.TradeType == TradeType.PaperTrade)).Last();
 
             int latestSampleSizeId = PaperTradesVM.CurrentSampleSize.Id;
             // Get the last trade of the sample size

@@ -12,7 +12,7 @@ namespace Models
     {
         public PaperTrade()
         {
-            ScreenshotsUrls = new List<string>();
+           
         }
     }
 }
