@@ -33,15 +33,17 @@ namespace Models
 
         public TradeRating TradeRating { get; set; }
 
-        public List<string> ScreenshotsUrls { get; set; }
+        public List<string>? ScreenshotsUrls { get; set; }
 
         public int SampleSizeId { get; set; }
-        [ForeignKey(nameof(SampleSizeId))]
 
+        [ForeignKey(nameof(SampleSizeId))]
         public SampleSize? SampleSize { get; set; }
 
         public int ResearchId { get; set; }
+
         [ForeignKey(nameof(ResearchId))]
+        public ResearchFirstBarPullback? ResearchFirstBarPullback { get; set; }
 
         public int TradeDurationInCandles { get; set; }
     }

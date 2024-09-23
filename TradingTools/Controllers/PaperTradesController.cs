@@ -202,7 +202,7 @@ namespace TradingTools.Controllers
                 return View(PaperTradesVM);
             }
             // Get the number of sample sizes for the time frame and strategy
-            PaperTradesVM.NumberSampleSizes = (await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy)).Count();
+            PaperTradesVM.NumberSampleSizes = (await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.TradeType == TradeType.PaperTrade)).Count();
             // Get the number of trades for the sample size
             PaperTradesVM.TradesInSampleSize = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == latestSampleSizeId)).Count();
             PaperTradesVM.Journal = await _unitOfWork.Journal.GetAsync(x => x.PaperTradeId == PaperTradesVM.CurrentTrade.Id);

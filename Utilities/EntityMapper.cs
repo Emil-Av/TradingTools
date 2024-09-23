@@ -15,7 +15,7 @@ namespace Utilities
         public static TViewModelProperty EntityToViewModel<TEntity, TViewModelProperty>(TEntity entity) where TViewModelProperty : new()
         {
             var currentTrade = new TViewModelProperty();
-            var entityType = typeof(TEntity); 
+            var entityType = typeof(TEntity);
             var viewModelPropType = typeof(TViewModelProperty);
 
             foreach (var entityProp in entityType.GetProperties())
@@ -80,7 +80,8 @@ namespace Utilities
                         {
                             entityProp.SetValue(entity, intValue);
                         }
-                    } else if (viewModelProp.PropertyType == typeof(string) && entityProp.PropertyType == typeof(double?))
+                    }
+                    else if (viewModelProp.PropertyType == typeof(string) && entityProp.PropertyType == typeof(double?))
                     {
                         if (double.TryParse((string)viewModelProp.GetValue(viewModel), out double intValue))
                         {

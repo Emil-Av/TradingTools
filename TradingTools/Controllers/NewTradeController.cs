@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using NuGet.Protocol;
 using Shared;
 using SharedEnums.Enums;
+using System.Diagnostics;
 using Utilities;
 
 namespace TradingTools.Controllers
@@ -117,105 +118,117 @@ namespace TradingTools.Controllers
             // Trades or PaperTrades
             else
             {
-                if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
-                {
-                    ResearchFirstBarPullbackDisplay viewData = NewTradeVM.ResearchData as ResearchFirstBarPullbackDisplay;
-                    ResearchFirstBarPullback researchTrade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(viewData);
-                    // Save the values from the view and return a DB entity. The entity contains the SampleSizeId.
-                    var sampleSizeData = await ProcessSampleSize(maxTradesProSampleSize: 20);
-                    // Save the values from the view and return a DB entity.
-                    PaperTrade newTrade = EntityMapper.ViewModelToEntity<PaperTrade, TradeDisplay>(NewTradeVM.TradeDisplay);
-                    await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newTrade, files);
-                    newTrade.ResearchId = researchTrade.Id;
-                    newTrade.SampleSizeId = researchTrade.SampleSizeId;
-                    // TODO: the new trade needs a review and journal id. Class Trade should have foreign keys to Journal and Review, not the other way around. Check the GetLastSampleSizeData(). There might be no need for if else.. Think about it
-                    _unitOfWork.PaperTrade.Add(newTrade);
-                    await _unitOfWork.SaveAsync();
-                }
-                else if (NewTradeVM.Strategy == Strategy.Cradle)
-                {
-
-                }
-            }
-            
-
-            #region Local Helper Methods
-
-            async Task<(int id, bool isFull)> ProcessSampleSize(int maxTradesProSampleSize)
-            {
-                var sampleSizeData = await GetLastSampleSizeData(maxTradesProSampleSize);
-                if (sampleSizeData.isFull || sampleSizeData.id == 0)
-                {
-                    SampleSize newSampleSize = new() { Strategy = NewTradeVM.Strategy, TimeFrame = NewTradeVM.TimeFrame, TradeType = NewTradeVM.TradeType };
-                    _unitOfWork.SampleSize.Add(newSampleSize);
-                    await _unitOfWork.SaveAsync();
-                    sampleSizeData.id = newSampleSize.Id;
-                }
-
-                return sampleSizeData;
-            }
-
-            async Task<(int id, bool isFull)> GetLastSampleSizeData(int maxTradesProSampleSize)
-            {
-                // TradeDisplay tradeDisplay = new(); // What is the purpose here?
-                int id = 0;
-                bool isFull = false;
-                // New trade is Research
-                List<SampleSize> listSampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == NewTradeVM.TimeFrame && x.Strategy == NewTradeVM.Strategy && x.TradeType == NewTradeVM.TradeType);
-                if (!listSampleSizes.Any())
-                {
-                    return (0, false);
-                }
-
-                id = listSampleSizes.Last().Id;
-                int numberTradesInSampleSize = 0;
-
-                if (NewTradeVM.TradeType == TradeType.Research)
+                try
                 {
                     if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
                     {
-                        List<ResearchFirstBarPullback> researchedTrades = await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == id);
-                        numberTradesInSampleSize = researchedTrades.Count;
+                        ResearchFirstBarPullbackDisplay viewData = NewTradeVM.ResearchData as ResearchFirstBarPullbackDisplay;
+                        // Save the values from the view and return a DB entity.
+                        ResearchFirstBarPullback researchData = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(viewData);
+                        var sampleSizeData = await ProcessSampleSize(maxTradesProSampleSize: 20);
+                        researchData.SampleSizeId = sampleSizeData.id;
+                        _unitOfWork.ResearchFirstBarPullback.Add(researchData);
+                        await _unitOfWork.SaveAsync();
+
+                        // Save the values from the view and return a DB entity.
+                        PaperTrade newTrade = EntityMapper.ViewModelToEntity<PaperTrade, TradeDisplay>(NewTradeVM.TradeDisplay);
+                        await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newTrade, files);
+                        newTrade.ResearchId = researchData.Id;
+                        newTrade.SampleSizeId = sampleSizeData.id;
+
+                        // Set the new Journal reference
+                        Journal journal = new();
+                        _unitOfWork.Journal.Add(journal);
+                        await _unitOfWork.SaveAsync();
+                        newTrade.JournalId = journal.Id;
+
+                        // Save the new trade
+                        _unitOfWork.PaperTrade.Add(newTrade);
+                        await _unitOfWork.SaveAsync();
+                    }
+                    else if (NewTradeVM.Strategy == Strategy.Cradle)
+                    {
+
                     }
                 }
-                else if (NewTradeVM.Strategy != Strategy.FirstBarPullback)
+                catch (Exception ex)
                 {
-
+                    Debug.Write($"Error occured in SaveTrade(): {ex.Message}");
                 }
+            }
+        }
 
-                if (numberTradesInSampleSize == maxTradesProSampleSize)
-                {
-                    isFull = true;
-                }
-
-                //if (NewTradeVM.Type == TradeType.Research)
-                //{
-                //    if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
-                //    {
-                //        List<SampleSize> listSampleSizes = (await _unitOfWork.SampleSize.
-                //            GetAllAsync(x => x.TimeFrame == NewTradeVM.TimeFrame && x.Strategy == NewTradeVM.Strategy && x.TradeType == NewTradeVM.Type));
-                //        if (listSampleSizes.Any())
-                //        {
-                //            id = listSampleSizes.Last().Id;
-
-                //            int numberTradesInSampleSize = (await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == id)).Count;
-
-                //            if (numberTradesInSampleSize == maxTradesProSampleSize)
-                //            {
-                //                isFull = true;
-                //            }
-
-                //            return (id, isFull);
-                //        }
-                //    }
-                //}
-
-                return (id, isFull);
+        /// <summary>
+        ///  Checks if the last sample size for the given trade paramaters is full. Retuns true/false and the sample size id.
+        /// </summary>
+        /// <param name="maxTradesProSampleSize"></param>
+        /// <returns></returns>
+        private async Task<(int id, bool isFull)> CheckLastSampleSize(int maxTradesProSampleSize)
+        {
+            int id = 0;
+            bool isFull = false;
+            // New trade is Research
+            List<SampleSize> listSampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == NewTradeVM.TimeFrame && x.Strategy == NewTradeVM.Strategy && x.TradeType == NewTradeVM.TradeType);
+            if (!listSampleSizes.Any())
+            {
+                return (0, false);
             }
 
-            #endregion
-        }
-    }
+            id = listSampleSizes.Last().Id;
+            int numberTradesInSampleSize = 0;
 
-    #endregion
+            // Research
+            if (NewTradeVM.TradeType == TradeType.Research)
+            {
+                if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
+                {
+                    List<ResearchFirstBarPullback> researchedTrades = await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == id);
+                    numberTradesInSampleSize = researchedTrades.Count;
+                }
+            }
+            // Trade or PaperTrade
+            else if (NewTradeVM.TradeType == TradeType.PaperTrade)
+            {
+                List<PaperTrade> trades = await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == id);
+                numberTradesInSampleSize = trades.Count;
+            }
+
+            if (numberTradesInSampleSize == maxTradesProSampleSize)
+            {
+                isFull = true;
+            }
+
+            return (id, isFull);
+        }
+
+        /// <summary>
+        ///  Creates a new sample size if the last one was full. Creates a new review if new sample size is created.
+        /// </summary>
+        /// <param name="maxTradesProSampleSize"></param>
+        /// <returns></returns>
+        private async Task<(int id, bool wasFull)> ProcessSampleSize(int maxTradesProSampleSize)
+        {
+            var sampleSizeData = await CheckLastSampleSize(maxTradesProSampleSize);
+            if (sampleSizeData.isFull || sampleSizeData.id == 0)
+            {
+                SampleSize newSampleSize = new() { Strategy = NewTradeVM.Strategy, TimeFrame = NewTradeVM.TimeFrame, TradeType = NewTradeVM.TradeType };
+                _unitOfWork.SampleSize.Add(newSampleSize);
+                await _unitOfWork.SaveAsync();
+                sampleSizeData.id = newSampleSize.Id;
+
+                // Create a new review for the new sample size
+                if (NewTradeVM.TradeType != TradeType.Research)
+                {
+                    Review review = new();
+                    _unitOfWork.Review.Add(review);
+                    review.SampleSizeId = sampleSizeData.id;
+                    await _unitOfWork.SaveAsync();
+                }
+            }
+
+            return sampleSizeData;
+        }
+
+        #endregion
+    }
 }
