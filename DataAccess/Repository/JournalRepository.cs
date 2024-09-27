@@ -28,7 +28,6 @@ namespace DataAccess.Repository
                 objFromDb.During = journal.During;
                 objFromDb.Exit = journal.Exit;
                 objFromDb.Post = journal.Post;
-                objFromDb.PaperTradeId = journal.PaperTradeId;
             }
         }
     }

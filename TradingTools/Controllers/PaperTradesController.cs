@@ -8,6 +8,8 @@ using Utilities;
 using Models.ViewModels;
 using SharedEnums.Enums;
 using Shared;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Linq;
 
 
 namespace TradingTools.Controllers
@@ -49,7 +51,8 @@ namespace TradingTools.Controllers
             }
 
             SanitizationHelper.SanitizeObject(data.Review);
-            Review review = await _unitOfWork.Review.GetAsync(x => x.SampleSizeId == data.CurrentTrade.SampleSizeId);
+            int? reviewID = (await _unitOfWork.SampleSize.GetAsync(x => x.Id == data.CurrentTrade.SampleSizeId)).ReviewId;
+            Review review = await _unitOfWork.Review.GetAsync(x => x.Id == reviewID);
             if (review != null)
             {
                 review.First = data.Review.First;
@@ -79,7 +82,7 @@ namespace TradingTools.Controllers
 
             SanitizationHelper.SanitizeObject(data.Journal);
 
-            Journal journal = await _unitOfWork.Journal.GetAsync(x => x.PaperTradeId == data.CurrentTrade.Id);
+            Journal journal = await _unitOfWork.Journal.GetAsync(x => x.Id == data.CurrentTrade.JournalId);
             if (journal != null)
             {
                 journal.Pre = data.Journal.Pre;
@@ -94,10 +97,9 @@ namespace TradingTools.Controllers
 
         public async Task<IActionResult> LoadTrade(string timeFrame, string strategy, string sampleSize, string trade, string showLastTrade, string sampleSizeChanged)
         {
-            //userSettings = (await _unitOfWork.UserSettings.GetAllAsync()).First();
             TimeFrame timeFrame1 = TimeFrame.M5;
             Strategy strategy1 = Strategy.Cradle;
-            List<string> errors = new List<string>();   
+            List<string> errors = new List<string>();
             // Check and parse the paramaters
 
             Result<TimeFrame> resultTimeFrame = MyEnumConverter.TimeFrameFromString(timeFrame);
@@ -143,7 +145,7 @@ namespace TradingTools.Controllers
             if (errors.Any())
             {
                 string errorMsg = string.Join("<br>", errors);
-                return Json(new {error = errorMsg});    
+                return Json(new { error = errorMsg });
             }
 
             List<SampleSize> listSampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.Strategy == strategy1 && x.TimeFrame == timeFrame1);
@@ -178,9 +180,10 @@ namespace TradingTools.Controllers
             // Set the values for the ajax response
             PaperTradesVM.NumberSampleSizes = listSampleSizes.Count();
             PaperTradesVM.TradesInSampleSize = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == sampleSizeId)).Count();
-            PaperTradesVM.Journal = await _unitOfWork.Journal.GetAsync(x => x.PaperTradeId == PaperTradesVM.CurrentTrade.Id);
+            PaperTradesVM.Journal = await _unitOfWork.Journal.GetAsync(x => x.Id == PaperTradesVM.CurrentTrade!.JournalId);
             SanitizationHelper.SanitizeObject(PaperTradesVM.Journal);
-            PaperTradesVM.Review = await _unitOfWork.Review.GetAsync(x => x.SampleSizeId == PaperTradesVM.CurrentTrade.SampleSizeId);
+            int? reviewID = (await _unitOfWork.SampleSize.GetAsync(x => x.Id == PaperTradesVM.CurrentTrade!.SampleSizeId)).ReviewId;
+            PaperTradesVM.Review = await _unitOfWork.Review.GetAsync(x => x.Id == reviewID);
             SanitizationHelper.SanitizeObject(PaperTradesVM.Review);
 
             // Send the response
@@ -191,11 +194,19 @@ namespace TradingTools.Controllers
             // Currently no users, so there is only one data record
             userSettings = (await _unitOfWork.UserSettings.GetAllAsync()).First();
             // Get the latest sample size for the strategy and time frame
-            PaperTradesVM.CurrentSampleSize = (await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.TradeType == TradeType.PaperTrade)).Last();
+            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.TradeType == TradeType.PaperTrade);
+            if (sampleSizes.Any())
+            {
+                PaperTradesVM.CurrentSampleSize = sampleSizes.Last();
+            }
+            else
+            {
+                return View(PaperTradesVM);
+            }
 
-            int latestSampleSizeId = PaperTradesVM.CurrentSampleSize.Id;
             // Get the last trade of the sample size
-            PaperTradesVM.CurrentTrade = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == latestSampleSizeId)).LastOrDefault()!;
+            PaperTradesVM.CurrentTrade = 
+                (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == PaperTradesVM.CurrentSampleSize.Id)).LastOrDefault()!;
             // No trades yet
             if (PaperTradesVM.CurrentTrade == null)
             {
@@ -204,10 +215,11 @@ namespace TradingTools.Controllers
             // Get the number of sample sizes for the time frame and strategy
             PaperTradesVM.NumberSampleSizes = (await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.TradeType == TradeType.PaperTrade)).Count();
             // Get the number of trades for the sample size
-            PaperTradesVM.TradesInSampleSize = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == latestSampleSizeId)).Count();
-            PaperTradesVM.Journal = await _unitOfWork.Journal.GetAsync(x => x.PaperTradeId == PaperTradesVM.CurrentTrade.Id);
+            PaperTradesVM.TradesInSampleSize = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == PaperTradesVM.CurrentSampleSize.Id)).Count();
+            PaperTradesVM.Journal = await _unitOfWork.Journal.GetAsync(x => x.Id == PaperTradesVM.CurrentTrade.JournalId);
             SanitizationHelper.SanitizeObject(PaperTradesVM.Journal);
-            PaperTradesVM.Review = await _unitOfWork.Review.GetAsync(x => x.SampleSizeId == PaperTradesVM.CurrentTrade.SampleSizeId);
+            int? reviewID = (await _unitOfWork.SampleSize.GetAsync(x => x.Id == PaperTradesVM.CurrentTrade!.SampleSizeId)).ReviewId;
+            PaperTradesVM.Review = await _unitOfWork.Review.GetAsync(x => x.Id == reviewID);
             SanitizationHelper.SanitizeObject(PaperTradesVM.Review);
 
             return View(PaperTradesVM);
@@ -245,7 +257,7 @@ namespace TradingTools.Controllers
                         PaperTrade? trade = null;
                         Journal? journal = null;
                         SampleSize? sampleSize = null;
-                        List<ZipArchiveEntry> sortedEntries = [..archive.Entries.OrderBy(e => e.FullName, new NaturalStringComparer())];
+                        List<ZipArchiveEntry> sortedEntries = [.. archive.Entries.OrderBy(e => e.FullName, new NaturalStringComparer())];
                         foreach (var entry in sortedEntries)
                         {
                             // Entry is a folder
@@ -259,7 +271,7 @@ namespace TradingTools.Controllers
                                     {
                                         _unitOfWork.PaperTrade.Add(trade);
                                         await _unitOfWork.SaveAsync();
-                                        journal.PaperTradeId = trade.Id;
+                                        trade.JournalId = journal.Id;
                                         _unitOfWork.Journal.Add(journal);
                                         _unitOfWork.SaveAsync();
                                     }
@@ -287,12 +299,11 @@ namespace TradingTools.Controllers
                                     //sampleSize.Strategy = (Strategy)trade.Strategy;
                                     //sampleSize.TimeFrame = (TimeFrame)trade.TimeFrame;
                                     _unitOfWork.SampleSize.Add(sampleSize);
-                                    _unitOfWork.SaveAsync();
 
                                     // Each sample size has it's own review
                                     Review review = new Review();
-                                    review.SampleSizeId = sampleSize.Id;
                                     _unitOfWork.Review.Add(review);
+                                    sampleSize.ReviewId = review.Id;
                                     await _unitOfWork.SaveAsync();
                                 }
 
@@ -356,7 +367,7 @@ namespace TradingTools.Controllers
                         {
                             string xmlContent = reader.ReadToEnd();
                             XDocument xmlDoc = XDocument.Parse(xmlContent);
-                            List<XElement> nodes = [..xmlDoc.Descendants().Where(e => e.Name.LocalName == "p")];
+                            List<XElement> nodes = [.. xmlDoc.Descendants().Where(e => e.Name.LocalName == "p")];
                             string lastJournal = string.Empty;
                             foreach (XElement node in nodes)
                             {

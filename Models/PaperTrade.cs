@@ -10,14 +10,7 @@ namespace Models
 {
     public class PaperTrade : Trade
     {
-        public int JournalId { get; set; }
 
-        [ForeignKey(nameof(JournalId))]
-        public Journal? Journal { get; set; }
 
-        public int ReviewId { get; set; }
-
-        [ForeignKey(nameof(ReviewId))]
-        public Review? Review { get; set; }
     }
 }

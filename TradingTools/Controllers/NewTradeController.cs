@@ -167,7 +167,6 @@ namespace TradingTools.Controllers
         {
             int id = 0;
             bool isFull = false;
-            // New trade is Research
             List<SampleSize> listSampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == NewTradeVM.TimeFrame && x.Strategy == NewTradeVM.Strategy && x.TradeType == NewTradeVM.TradeType);
             if (!listSampleSizes.Any())
             {
@@ -221,8 +220,9 @@ namespace TradingTools.Controllers
                 {
                     Review review = new();
                     _unitOfWork.Review.Add(review);
-                    review.SampleSizeId = sampleSizeData.id;
                     await _unitOfWork.SaveAsync();
+                    newSampleSize.ReviewId = review.Id;
+                    await _unitOfWork.SampleSize.UpdateAsync(newSampleSize);
                 }
             }
 

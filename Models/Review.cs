@@ -19,10 +19,5 @@ namespace Models
         public string? Forth { get; set; }
         public string? Summary { get; set; }
 
-        // Navigation property
-        public int? SampleSizeId { get; set; }
-        [ForeignKey(nameof(SampleSizeId))]
-
-        public SampleSize SampleSize { get; set; }
     }
 }

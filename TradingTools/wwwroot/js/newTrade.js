@@ -187,6 +187,14 @@
             tradeData[bindProperty] = $(this).val();
         });
 
+        const targetsArray = tradeData['TargetsDisplay'].split(',').map(value => value.trim());
+        if (tradeData['TargetsDisplay'].length == 0) {
+            tradeData['TargetsDisplay'] = '';
+        }
+        else {
+            tradeData['TargetsDisplay'] = targetsArray.map(value => parseFloat(value));
+        }
+
         formData.append('tradeData', JSON.stringify(tradeData));
 
         $.ajax({

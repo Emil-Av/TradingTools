@@ -22,7 +22,7 @@ namespace Models.ViewModels.DisplayClasses
 
         public string ExitPriceDisplay { get; set; }
 
-        public List<string> TargetsDisplay { get; set; }
+        public List<double>? TargetsDisplay { get; set; }
 
         public string PnLDisplay { get; set; }
 

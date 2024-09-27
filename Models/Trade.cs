@@ -35,16 +35,25 @@ namespace Models
 
         public List<string>? ScreenshotsUrls { get; set; }
 
+        public int TradeDurationInCandles { get; set; }
+        
+        /// <summary>
+        ///  Based on the trade type, the research type can be determined.
+        /// </summary>
+        public int? ResearchId { get; set; }
+
         public int SampleSizeId { get; set; }
 
         [ForeignKey(nameof(SampleSizeId))]
         public SampleSize? SampleSize { get; set; }
 
-        public int ResearchId { get; set; }
+        /// <summary>
+        ///  All trades except research trades will have a Journal.
+        /// </summary>
+        public int? JournalId { get; set; }
 
-        [ForeignKey(nameof(ResearchId))]
-        public ResearchFirstBarPullback? ResearchFirstBarPullback { get; set; }
+        [ForeignKey(nameof(JournalId))]
+        public Journal? Journal { get; set; }
 
-        public int TradeDurationInCandles { get; set; }
     }
 }

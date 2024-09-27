@@ -19,10 +19,5 @@ namespace Models
 
         public string? Post { get; set; }
 
-        // Navigation property
-        public int PaperTradeId { get; set; }
-        [ForeignKey(nameof(PaperTradeId))]
-
-        public PaperTrade? PaperTrade { get; set; }
     }
 }
