@@ -16,7 +16,7 @@ $(function () {
     var paperTradesVM;
     var currentTab = '#pre'; // Always the start value
     var isEditorShown = false;
-    var currentCardMenu = 'Journal';
+    var currentCardMenu = 'Trade Data';
 
     /**
     * ******************************
@@ -37,7 +37,7 @@ $(function () {
     */
 
     // Send the data to the controller
-    function UpdateReview() {
+    function updateReview() {
         let dataToSend =
         {
             CurrentTrade: {
@@ -69,8 +69,12 @@ $(function () {
         });
     }
 
+    function updateTradeData() {
+        alert('in updateTradeData()');
+    }
+
     // Send the data to the controller
-    function UpdateJournal() {
+    function updateJournal() {
         let dataToSend =
         {
             CurrentTrade: {
@@ -102,28 +106,32 @@ $(function () {
 
     // When the content is double clicked, it can be edited (summernote is displayed)
     $('#tabContentJournal').on('dblclick', function () {
-        OpenEditor();
+        openEditor();
     });
 
     $('#tabContentReview').on('dblclick', function () {
-        OpenEditor();
+        openEditor();
     });
     // On tab change
     $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         if (isEditorShown) {
-            SaveEditorText();
+            saveEditorText();
         }
         currentTab = '#' + $(e.target).attr('aria-controls');
     });
 
+    $('#btnUpdate').on('click', function () {
+        updateTradeData();
+    });
+
     // Open editor and show the buttons
     $('#btnEdit').on('click', function () {
-        OpenEditor();
+        openEditor();
     });
 
     // Save the journal changes
     $('#btnSave').on('click', function () {
-        SaveEditorText();
+        saveEditorText();
     });
 
     // Close the editor and show 'Edit' button
@@ -133,10 +141,10 @@ $(function () {
         $(currentTab).removeClass('d-none');
         $('#cardBody').addClass('card-body');
         isEditorShown = false;
-        ToggleFooterButtons();
+        toggleFooterButtons();
     });
 
-    function ToggleFooterButtons() {
+    function toggleFooterButtons() {
         if ($('#btnEdit').hasClass('d-none')) {
             $('#btnEdit').removeClass('d-none');
             $('.editorOnBtns').addClass('d-none');
@@ -148,7 +156,7 @@ $(function () {
     }
 
     // Save the journal in the DB and toggle the buttons
-    function SaveEditorText() {
+    function saveEditorText() {
         $('#cardBody').addClass('card-body');
         isEditorShown = false;
         // Save the text from the editor
@@ -162,22 +170,25 @@ $(function () {
         // Close the editor
         $('#summernote').summernote('code', '');
         $('#summernote').summernote('destroy');
-        ToggleFooterButtons();
+        toggleFooterButtons();
         // If a change has been made, save it
         if (editorText !== oldTabContent) {
-            if (currentCardMenu === 'Journal') {
-                UpdateJournal();
+            if (currentCardMenu == 'Trade Data') {
+                updateTradeData();
+            }
+            else if (currentCardMenu === 'Journal') {
+                updateJournal();
             }
             else {
-                UpdateReview();
+                updateReview();
             }
         }
     }
 
     // Open the summernote editor
-    function OpenEditor() {
+    function openEditor() {
         $('#cardBody').removeClass('card-body');
-        ToggleFooterButtons();
+        toggleFooterButtons();
         // Hide the tabContent of the journal and show the summernote instead
         // Get the text from the tabContent
         let currentTabContent = $(currentTab).html();
@@ -205,29 +216,56 @@ $(function () {
 
     $('#headerMenu').on('click', '.dropdown-item', function () {
         if (isEditorShown) {
-            SaveEditorText();
+            saveEditorText();
         }
-        currentCardMenu = $(this).text();
+
+        currentCardMenu = $(this).attr('id');
+
+        if (currentCardMenu == 'itemTradingData') {
+            $('#tradeDataTabHeaders').removeClass('d-none');
+            $('#tradeDataTabContent').removeClass('d-none');
+            $('#journalTabHeaders').addClass('d-none');
+            $('#journalTabContent').addClass('d-none');
+            $('#reviewTabHeaders').addClass('d-none');
+            $('#reviewTabContent').addClass('d-none');
+            $('#btnUpdate').removeClass('d-none');
+        }
         // Display Journal tabs
-        if (currentCardMenu == 'Journal') {
+        else if (currentCardMenu == 'itemJournal') {
             currentTab = '#pre';
             $('#journalTabHeaders').removeClass('d-none');
             $('#journalTabContent').removeClass('d-none');
             $('#reviewTabHeaders').addClass('d-none');
             $('#reviewTabContent').addClass('d-none');
+            $('#tradeDataTabHeaders').addClass('d-none');
+            $('#tradeDataTabContent').addClass('d-none');
+            $('#btnUpdate').addClass('d-none');
         }
         // Display Review tabs
         else {
             currentTab = '#first';
-            $('#journalTabHeaders').addClass('d-none');
-            $('#journalTabContent').addClass('d-none');
             $('#reviewTabHeaders').removeClass('d-none');
             $('#reviewTabContent').removeClass('d-none');
+            $('#journalTabHeaders').addClass('d-none');
+            $('#journalTabContent').addClass('d-none');
+            $('#tradeDataTabHeaders').addClass('d-none');
+            $('#tradeDataTabContent').addClass('d-none');
+            $('#btnUpdate').addClass('d-none');
         }
 
         // Set the text of the card menu
         if (currentCardMenu !== $('#currentMenu').text()) {
-            $('#currentMenu').text(currentCardMenu);
+            var menuText = '';
+            if (currentCardMenu == 'itemTradingData') {
+                menuText = 'Trade Data';
+            }
+            else if (currentCardMenu == 'itemJournal') {
+                menuText = 'Journal';
+            }
+            else {
+                menuText = 'Review';
+            }
+            $('#currentMenu').text(menuText);
             $(this).addClass('bg-gray-400');
 
             // Remove the bg color of the last selected item
@@ -408,7 +446,7 @@ $(function () {
 
         // Menu card header
         currentCardMenu = 'Journal';
-        $('#cardMenuJournal').trigger('click');
+        $('#cardMenuTradeData').trigger('click');
     }
 
     // Load the images into the carousel

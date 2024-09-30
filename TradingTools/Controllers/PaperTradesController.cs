@@ -215,7 +215,8 @@ namespace TradingTools.Controllers
             // Get the number of sample sizes for the time frame and strategy
             PaperTradesVM.NumberSampleSizes = (await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.TradeType == TradeType.PaperTrade)).Count();
             // Get the number of trades for the sample size
-            PaperTradesVM.TradesInSampleSize = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == PaperTradesVM.CurrentSampleSize.Id)).Count();
+            PaperTradesVM.TradesInSampleSize = 
+                (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == PaperTradesVM.CurrentSampleSize.Id)).Count();
             PaperTradesVM.Journal = await _unitOfWork.Journal.GetAsync(x => x.Id == PaperTradesVM.CurrentTrade.JournalId);
             SanitizationHelper.SanitizeObject(PaperTradesVM.Journal);
             int? reviewID = (await _unitOfWork.SampleSize.GetAsync(x => x.Id == PaperTradesVM.CurrentTrade!.SampleSizeId)).ReviewId;
