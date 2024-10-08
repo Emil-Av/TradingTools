@@ -14,9 +14,9 @@ namespace TradingTools.Controllers
         {
             _unitOfWork = unitOfWork;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            CheckOrCreateUserSettings();
+            await CheckOrCreateUserSettings();
 
             return View();
         }

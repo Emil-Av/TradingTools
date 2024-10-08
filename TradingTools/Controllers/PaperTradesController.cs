@@ -10,6 +10,7 @@ using SharedEnums.Enums;
 using Shared;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Linq;
+using Models.ViewModels.DisplayClasses;
 
 
 namespace TradingTools.Controllers
@@ -22,7 +23,6 @@ namespace TradingTools.Controllers
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
             PaperTradesVM = new PaperTradesVM();
-
         }
 
         #endregion
@@ -41,6 +41,22 @@ namespace TradingTools.Controllers
         #endregion
 
         #region Methods
+
+        [HttpPost]
+
+        public async Task<IActionResult> UpdateTradeData([FromBody] TradeDisplay tradeData)
+        {
+            if (!ModelState.IsValid)
+            {
+                // Inspect model binding errors here
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                string allErrors = string.Join(", ", errors);
+                return Json(new { error = allErrors }); 
+            }
+
+            return Json(new { success = "Trade updated" });
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> UpdateReview([FromBody] PaperTradesVM data)

@@ -70,7 +70,26 @@ $(function () {
     }
 
     function updateTradeData() {
-        alert('in updateTradeData()');
+
+        var tradeData = GetTradeData();
+
+        $.ajax({
+            method: 'POST',
+            url: '/papertrades/updateTradeData',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'JSON',
+            data: JSON.stringify(tradeData),
+            success: function (response) {
+                if (response['success'] !== undefined) {
+
+                    toastr.success(response['success']);
+                }
+                else {
+                    toastr.error(response['error']);
+                }
+            }
+        });
+        
     }
 
     // Send the data to the controller
@@ -239,6 +258,7 @@ $(function () {
             $('#reviewTabContent').addClass('d-none');
             $('#tradeDataTabHeaders').addClass('d-none');
             $('#tradeDataTabContent').addClass('d-none');
+            $('#btnEdit').removeClass('d-none');
             $('#btnUpdate').addClass('d-none');
         }
         // Display Review tabs
@@ -250,6 +270,7 @@ $(function () {
             $('#journalTabContent').addClass('d-none');
             $('#tradeDataTabHeaders').addClass('d-none');
             $('#tradeDataTabContent').addClass('d-none');
+            $('#btnEdit').removeClass('d-none');
             $('#btnUpdate').addClass('d-none');
         }
 

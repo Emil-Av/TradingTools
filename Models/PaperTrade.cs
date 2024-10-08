@@ -11,6 +11,5 @@ namespace Models
     public class PaperTrade : Trade
     {
 
-
     }
 }

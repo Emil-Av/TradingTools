@@ -24,3 +24,22 @@ function HideLoadingIndicator() {
     content.removeClass('hideMyContent').addClass('showMyContent');
     loadingIndicator.css('display', 'none');
 }
+
+// Gets the data from the elements which have data-trade-data attribute. Used in multiple views.
+function GetTradeData() {
+    var tradeData = {};
+    $('#cardBody [data-trade-data]').each(function () {
+        var bindProperty = $(this).data('trade-data');
+        tradeData[bindProperty] = $(this).val();
+    });
+
+    const targetsArray = tradeData['TargetsDisplay'].split(',').map(value => value.trim());
+    if (tradeData['TargetsDisplay'].length == 0) {
+        tradeData['TargetsDisplay'] = [];
+    }
+    else {
+        tradeData['TargetsDisplay'] = targetsArray.map(value => parseFloat(value));
+    }
+
+    return tradeData;
+}

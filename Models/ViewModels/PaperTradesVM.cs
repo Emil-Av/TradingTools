@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Models.ViewModels.DisplayClasses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,13 +11,14 @@ namespace Models.ViewModels
     {
         public PaperTradesVM()
         {
-                
+            TradeData = new();
         }
         // The trade being displayed
         public PaperTrade CurrentTrade { get; set; }
 
-        // The journal for the CurrentTrade
+        public TradeDisplay TradeData { get; set; }
 
+        // The journal for the CurrentTrade
         public Journal Journal { get; set; }
 
         public Review Review { get; set; }
