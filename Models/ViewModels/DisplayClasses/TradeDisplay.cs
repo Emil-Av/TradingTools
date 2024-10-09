@@ -26,8 +26,6 @@ namespace Models.ViewModels.DisplayClasses
 
         public string? PnLDisplay { get; set; }
 
-        public bool? IsLossDisplay { get; set; }
-
         public string? FeeDisplay { get; set; }
 
         public Status? StatusDisplay { get; set; }

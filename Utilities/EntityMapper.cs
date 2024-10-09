@@ -33,6 +33,11 @@ namespace Utilities
                         var value = entityProp.GetValue(entity)?.ToString();
                         viewModelProp.SetValue(currentTrade, value);
                     }
+                    else if (entityProp.PropertyType == typeof(double) && viewModelProp.PropertyType == typeof(string))
+                    {
+                        var value = entityProp.GetValue(entity)?.ToString();
+                        viewModelProp.SetValue(currentTrade, value);
+                    }
                     else
                     {
                         viewModelProp.SetValue(currentTrade, entityProp.GetValue(entity));

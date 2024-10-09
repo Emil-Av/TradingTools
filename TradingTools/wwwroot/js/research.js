@@ -329,6 +329,16 @@ $(function () {
         updatedTrade['TradeRatingDisplay'] = parseInt($('#TradeRatingInput').val());
         updatedTrade['IdDisplay'] = trades[index]['IdDisplay'];
         updatedTrade['ScreenshotsUrlsDisplay'] = trades[index]['ScreenshotsUrlsDisplay'];
+
+        $('#cardBody [data-trade-data]').each(function () {
+            var bindProperty = $(this).data('trade-data');
+            updatedTrade[bindProperty] = $(this).val();
+        });
+
+        if (updatedTrade['TargetsDisplay'] === '') {
+            updatedTrade['TargetsDisplay'] = [];
+        }
+
         // make the API call
         $.ajax({
             method: 'POST',

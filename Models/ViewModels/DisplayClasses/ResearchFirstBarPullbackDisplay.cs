@@ -11,19 +11,11 @@ using SharedEnums.Enums;
 
 namespace Models.ViewModels.DisplayClasses
 {
-    public class ResearchFirstBarPullbackDisplay
+    public class ResearchFirstBarPullbackDisplay : TradeDisplay
     {
         /// <summary>
         ///  Class for the ResearchView. Display at the end of the property name indicates that the property should be displayed in the view (some of the        entity properties will not be displayed).
         /// </summary>
-
-        public int IdDisplay { get; set; }
-
-        public List<string>? ScreenshotsUrlsDisplay { get; set; }
-
-        public SideType SideTypeDisplay { get; set; }
-
-        public TradeRating TradeRatingDisplay { get; set; }
 
         /// <summary>
         ///  Risk to reward ratio 1:1.

@@ -188,13 +188,12 @@ namespace TradingTools.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateTrade([FromBody] ResearchFirstBarPullbackDisplay currentTrade)
         {
-            if (currentTrade == null)
-            {
-                return Json(new { error = "CurrentTrade is null." });
-            }
             if (!ModelState.IsValid)
             {
-                return Json(new { error = "Wrong values. Please note the messages" });
+                // Inspect model binding errors here
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                string allErrors = string.Join(", ", errors);
+                return Json(new { error = allErrors });
             }
 
             ResearchFirstBarPullback trade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(currentTrade);
@@ -214,7 +213,7 @@ namespace TradingTools.Controllers
             List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research);
 
             // No researched trades
-            if (sampleSizes.Count == 0)
+            if (!sampleSizes.Any())
             {
                 return View(ResearchVM);
             }

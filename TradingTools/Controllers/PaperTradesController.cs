@@ -207,39 +207,45 @@ namespace TradingTools.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            // Currently no users, so there is only one data record
-            userSettings = (await _unitOfWork.UserSettings.GetAllAsync()).First();
             // Get the latest sample size for the strategy and time frame
-            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.TradeType == TradeType.PaperTrade);
-            if (sampleSizes.Any())
-            {
-                PaperTradesVM.CurrentSampleSize = sampleSizes.Last();
-            }
-            else
+            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.PaperTrade);
+            
+            if (!sampleSizes.Any())
             {
                 return View(PaperTradesVM);
             }
 
+            string errorMsg = await LoadViewModelData(sampleSizes);
+
+            return View(PaperTradesVM);
+        }
+
+        private async Task<string> LoadViewModelData(List<SampleSize> sampleSizes)
+        {
+            string errorMsg = string.Empty;
+            SampleSize lastSampleSize = sampleSizes.Last();
             // Get the last trade of the sample size
-            PaperTradesVM.CurrentTrade = 
-                (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == PaperTradesVM.CurrentSampleSize.Id)).LastOrDefault()!;
+            PaperTradesVM.CurrentTrade =
+                (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == lastSampleSize.Id)).LastOrDefault()!;
             // No trades yet
             if (PaperTradesVM.CurrentTrade == null)
             {
-                return View(PaperTradesVM);
+                return errorMsg = "Error in LoadViewModelData(). SampleSize is empty.";
             }
+            TimeFrame lastSampleSizeTF = lastSampleSize.TimeFrame;
+            Strategy lastSampleSizeStrategy = lastSampleSize.Strategy;
             // Get the number of sample sizes for the time frame and strategy
-            PaperTradesVM.NumberSampleSizes = (await _unitOfWork.SampleSize.GetAllAsync(x => x.TimeFrame == userSettings.PTTimeFrame && x.Strategy == userSettings.PTStrategy && x.TradeType == TradeType.PaperTrade)).Count();
+            PaperTradesVM.NumberSampleSizes = sampleSizes.Where(x => x.Strategy == lastSampleSizeStrategy && x.TimeFrame == lastSampleSizeTF).Count();
             // Get the number of trades for the sample size
-            PaperTradesVM.TradesInSampleSize = 
-                (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == PaperTradesVM.CurrentSampleSize.Id)).Count();
+            PaperTradesVM.TradesInSampleSize =
+                (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == lastSampleSize.Id)).Count();
             PaperTradesVM.Journal = await _unitOfWork.Journal.GetAsync(x => x.Id == PaperTradesVM.CurrentTrade.JournalId);
             SanitizationHelper.SanitizeObject(PaperTradesVM.Journal);
             int? reviewID = (await _unitOfWork.SampleSize.GetAsync(x => x.Id == PaperTradesVM.CurrentTrade!.SampleSizeId)).ReviewId;
             PaperTradesVM.Review = await _unitOfWork.Review.GetAsync(x => x.Id == reviewID);
             SanitizationHelper.SanitizeObject(PaperTradesVM.Review);
 
-            return View(PaperTradesVM);
+            return errorMsg;
         }
 
         /// <summary>
