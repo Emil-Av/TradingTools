@@ -21,6 +21,7 @@ namespace Utilities
             foreach (var entityProp in entityType.GetProperties())
             {
                 var viewModelProp = viewModelPropType.GetProperty(entityProp.Name + "Display");
+
                 if (viewModelProp != null)
                 {
                     if (entityProp.PropertyType == typeof(bool) && viewModelProp.PropertyType == typeof(string))
@@ -33,10 +34,17 @@ namespace Utilities
                         var value = entityProp.GetValue(entity)?.ToString();
                         viewModelProp.SetValue(currentTrade, value);
                     }
-                    else if (entityProp.PropertyType == typeof(double) && viewModelProp.PropertyType == typeof(string))
+                    else if ((entityProp.PropertyType == typeof(double) || entityProp.PropertyType == typeof(double?)) && viewModelProp.PropertyType == typeof(string))
                     {
                         var value = entityProp.GetValue(entity)?.ToString();
                         viewModelProp.SetValue(currentTrade, value);
+                    }
+                    // The Trade class has a List<double> for the target
+                    else if (entityProp.PropertyType == typeof(List<double>) || Nullable.GetUnderlyingType(entityProp.PropertyType) == typeof(List<double>))
+                    {
+                        var value = entityProp.GetValue(entity) as List<double>;
+                        var stringValue = value != null ? string.Join(", ", value) : string.Empty;
+                        viewModelProp.SetValue(currentTrade, stringValue);
                     }
                     else
                     {
@@ -92,6 +100,19 @@ namespace Utilities
                         {
                             entityProp.SetValue(entity, intValue);
                         }
+                    }
+                    else if (viewModelProp.PropertyType == typeof(string) && entityProp.PropertyType == typeof(List<double>) || Nullable.GetUnderlyingType(entityProp.PropertyType) == typeof(List<double>))
+                    {
+                        string[] valueArray = ((string)viewModelProp.GetValue(viewModel)).Split(",");
+                        List<double> doubleList = new List<double>();
+                        foreach (string value in valueArray)
+                        {
+                            if (double.TryParse(value, out double intValue))
+                            {
+                                doubleList.Add(intValue);
+                            }
+                        }
+                        entityProp.SetValue(entity, doubleList);
                     }
                     else
                     {

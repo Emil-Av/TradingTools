@@ -88,32 +88,6 @@ namespace TradingTools.Controllers
                 {
                     // Research other strategies
                 }
-                #region ToDelete
-                //if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
-                //{
-
-                //    if (NewTradeVM.ResearchData is ResearchFirstBarPullbackDisplay researchData)
-                //    {
-                //        ResearchFirstBarPullback newTrade =
-                //            EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(researchData);
-                //        // Check if there is a sample size for the parameters and if it's full.
-                //        var sampleSize = await GetLastSampleSizeData(maxTradesProSampleSize: 100);
-                //        // If the sample size is full or there is no sample size for those paramaters (id == 0), create a new sample size
-                //        if (sampleSize.isFull || sampleSize.id == 0)
-                //        {
-                //            SampleSize newSampleSize =
-                //                new SampleSize { Strategy = NewTradeVM.Strategy, TimeFrame = NewTradeVM.TimeFrame, TradeType = NewTradeVM.Type };
-                //            _unitOfWork.SampleSize.Add(newSampleSize);
-                //            await _unitOfWork.SaveAsync();
-                //            sampleSize.id = newSampleSize.Id;
-                //        }
-                //        newTrade.SampleSizeId = sampleSize.id;
-                //        await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newTrade, files);
-                //        _unitOfWork.ResearchFirstBarPullback.Add(newTrade);
-                //        await _unitOfWork.SaveAsync();
-                //    }
-                //}
-                #endregion
             }
             // Trades or PaperTrades
             else

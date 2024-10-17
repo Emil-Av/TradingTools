@@ -8,15 +8,17 @@ $(function () {
     */
 
     // menuClicked, clickedMenuValue: When a new trade has to be loaded, one of the buttons has to be clicked (either TimeFrame, Strategy..). In case no trade exists for the selection, set the last value. Used in LoadTradeAsync()
-    var menuClicked;
-    var clickedMenuValue;
-    var showLastTrade;
-    var sampleSizeChanged;
+    let menuClicked;
+    let clickedMenuValue;
+    let showLastTrade;
+    let sampleSizeChanged;
     // The model
-    var paperTradesVM;
-    var currentTab = '#pre'; // Always the start value
-    var isEditorShown = false;
-    var currentCardMenu = 'Trade Data';
+    let paperTradesVM;
+    let currentTab = '#pre'; // Always the start value
+    let isEditorShown = false;
+    const tradingData = 'itemTradingData';
+    const journal = 'itemJournal';
+    let currentCardMenu = 'itemTradingData';
 
     /**
     * ******************************
@@ -43,14 +45,18 @@ $(function () {
             CurrentTrade: {
                 SampleSizeId: $('#spanSampleSizeIdInput').val()
             },
-            Review: {
-                First: $('#first').html(),
-                Second: $('#second').html(),
-                Third: $('#third').html(),
-                Forth: $('#forth').html(),
-                summary: $('#summary').html()
+            CurrentSampleSize:
+            {
+                Review: {
+                    First: $('#first').html(),
+                    Second: $('#second').html(),
+                    Third: $('#third').html(),
+                    Forth: $('#forth').html(),
+                    summary: $('#summary').html()
+                }
             }
         };
+        let xx = "";
         $.ajax({
             method: 'POST',
             url: '/papertrades/updatereview',
@@ -71,7 +77,7 @@ $(function () {
 
     function updateTradeData() {
 
-        var tradeData = GetTradeData();
+        let tradeData = GetTradeData();
 
         $.ajax({
             method: 'POST',
@@ -89,7 +95,7 @@ $(function () {
                 }
             }
         });
-        
+
     }
 
     // Send the data to the controller
@@ -97,15 +103,17 @@ $(function () {
         let dataToSend =
         {
             CurrentTrade: {
-                Id: $('#spanTradeIdInput').val()
-            },
-            Journal: {
-                Pre: $('#pre').html(),
-                During: $('#during').html(),
-                Exit: $('#exit').html(),
-                Post: $('#post').html()
+                Id: $('#spanTradeIdInput').val(),
+                JournalId: $('#spanJournalIdInput').val(),
+                Journal: {
+                    Pre: $('#pre').html(),
+                    During: $('#during').html(),
+                    Exit: $('#exit').html(),
+                    Post: $('#post').html()
+                }
             }
         };
+
         $.ajax({
             method: 'POST',
             url: '/papertrades/updatejournal',
@@ -150,11 +158,15 @@ $(function () {
 
     // Save the journal changes
     $('#btnSave').on('click', function () {
-        saveEditorText();
+        if (currentCardMenu === 'itemTradeData') {
+            updateTradeData();
+        }
+        else {
+            saveEditorText();
+        }
     });
 
     // Close the editor and show 'Edit' button
-    // TODO: Changes are saved in the contentPage when they shouldn't. (Changes aren't save in the DB as expected)
     $('#btnCancel').on('click', function () {
         $('#summernote').summernote('destroy');
         $(currentTab).removeClass('d-none');
@@ -192,10 +204,7 @@ $(function () {
         toggleFooterButtons();
         // If a change has been made, save it
         if (editorText !== oldTabContent) {
-            if (currentCardMenu == 'Trade Data') {
-                updateTradeData();
-            }
-            else if (currentCardMenu === 'Journal') {
+            if (currentCardMenu === 'itemJournal') {
                 updateJournal();
             }
             else {
@@ -233,6 +242,7 @@ $(function () {
      * ***************************
      */
 
+    // Event fired when an item from the dropdown menu in the card header is clicked
     $('#headerMenu').on('click', '.dropdown-item', function () {
         if (isEditorShown) {
             saveEditorText();
@@ -240,17 +250,18 @@ $(function () {
 
         currentCardMenu = $(this).attr('id');
 
-        if (currentCardMenu == 'itemTradingData') {
+        if (currentCardMenu == tradingData) {
             $('#tradeDataTabHeaders').removeClass('d-none');
             $('#tradeDataTabContent').removeClass('d-none');
             $('#journalTabHeaders').addClass('d-none');
             $('#journalTabContent').addClass('d-none');
             $('#reviewTabHeaders').addClass('d-none');
             $('#reviewTabContent').addClass('d-none');
+            $('#btnEdit').addClass('d-none');
             $('#btnUpdate').removeClass('d-none');
         }
         // Display Journal tabs
-        else if (currentCardMenu == 'itemJournal') {
+        else if (currentCardMenu == journal) {
             currentTab = '#pre';
             $('#journalTabHeaders').removeClass('d-none');
             $('#journalTabContent').removeClass('d-none');
@@ -323,7 +334,7 @@ $(function () {
     // Attach a click event for each <a> element of each menu.
     for (var key in menuButtons) {
         (function (key) {
-            SetSelectedItemClass(key);
+            setSelectedItemClass(key);
             // Change the value of the span in the button
             $(key).on('click', '.dropdown-item', function () {
                 // Save the old value. If there is no trade in the DB for the selected trade, the menu's old value should be displayed.
@@ -347,18 +358,18 @@ $(function () {
                 // Set the new value
                 var value = $(this).text();
                 $(menuButtons[key]).text(value);
-                LoadTradeAsync( $('#spanTimeFrame').text(),
-                                $('#spanStrategy').text(),
-                                $('#spanSampleSize').text(),
-                                $('#spanTrade').text(),
-                                showLastTrade,
-                                sampleSizeChanged);
+                loadTrade($('#spanTimeFrame').text(),
+                    $('#spanStrategy').text(),
+                    $('#spanSampleSize').text(),
+                    $('#spanTrade').text(),
+                    showLastTrade,
+                    sampleSizeChanged);
             });
         })(key);
     }
 
     // Mark the selected drop down item of the buttons on the top
-    function SetSelectedItemClass() {
+    function setSelectedItemClass() {
         // Set the "selected item" color
         for (var key in menuButtons) {
             $(key + ' a').each(function () {
@@ -372,7 +383,7 @@ $(function () {
         }
     }
     // API call to load the selected trade
-    function LoadTradeAsync(timeFrame, strategy, sampleSize, trade, showLastTrade, sampleSizeChanged) {
+    function loadTrade(timeFrame, strategy, sampleSize, trade, showLastTrade, sampleSizeChanged) {
         $.ajax({
             method: 'POST',
             url: '/papertrades/loadtrade',
@@ -403,46 +414,47 @@ $(function () {
                 // Set the new trade id
                 $("#spanTradeIdInput").val(response['paperTradesVM']['currentTrade']['id']);
                 // Set the sample size id
-                $("#spanSampleSizeIdInput").val(response['paperTradesVM']['currentTrade']['samplesizeid']);
-                SetMenuValues(trade);
-                SetSelectedItemClass();
-                LoadImages();
-                LoadReview();
-                LoadJournal();
+                $("#spanSampleSizeIdInput").val(response['paperTradesVM']['currentTrade']['sampleSizeId']);
+                $('#spanJournalIdInput').val(response['paperTradesVM']['currentTrade']['journalId']);
+                setMenuValues(trade);
+                setSelectedItemClass();
+                loadImages();
+                loadReview();
+                loadJournal();
             }
         });
     }
 
     // Loads the review of the sample size
-    function LoadReview() {
+    function loadReview() {
         // Activate the 'First' tab
         $('#first-tab').trigger('click');
         // Set the values
-        $('#first').html(paperTradesVM['paperTradesVM']['review']['first']);
-        $('#second').html(paperTradesVM['paperTradesVM']['review']['second']);
-        $('#third').html(paperTradesVM['paperTradesVM']['review']['third']);
-        $('#forth').html(paperTradesVM['paperTradesVM']['review']['forth']);
-        $('#summary').html(paperTradesVM['paperTradesVM']['review']['summary']);
+        $('#first').html(paperTradesVM['paperTradesVM']['currentSampleSize']['review']['first']);
+        $('#second').html(paperTradesVM['paperTradesVM']['currentSampleSize']['review']['second']);
+        $('#third').html(paperTradesVM['paperTradesVM']['currentSampleSize']['review']['third']);
+        $('#forth').html(paperTradesVM['paperTradesVM']['currentSampleSize']['review']['forth']);
+        $('#summary').html(paperTradesVM['paperTradesVM']['currentSampleSize']['review']['summary']);
     }
 
     // Loads the journal of the trade
-    function LoadJournal() {
+    function loadJournal() {
         // Activate the 'Pre' tab
         $('#pre-tab').trigger('click');
         // Set the values
-        $('#pre').html(paperTradesVM['paperTradesVM']['journal']['pre']);
-        $('#during').html(paperTradesVM['paperTradesVM']['journal']['during']);
-        $('#exit').html(paperTradesVM['paperTradesVM']['journal']['exit']);
-        $('#post').html(paperTradesVM['paperTradesVM']['journal']['post']);
+        $('#pre').html(paperTradesVM['paperTradesVM']['currentTrade']['journal']['pre']);
+        $('#during').html(paperTradesVM['paperTradesVM']['currentTrade']['journal']['during']);
+        $('#exit').html(paperTradesVM['paperTradesVM']['currentTrade']['journal']['exit']);
+        $('#post').html(paperTradesVM['paperTradesVM']['currentTrade']['journal']['post']);
     }
 
     // Populate the drop down items after a new trade has been selected and set the values in the spans.
-    function SetMenuValues(displayedTrade) {
+    function setMenuValues(displayedTrade) {
         // Menu Buttons
         var numberSampleSizes = paperTradesVM['paperTradesVM']['numberSampleSizes'];
         var tradesInSampleSize = paperTradesVM['paperTradesVM']['tradesInSampleSize'];
         // Set the SampleSize menu
-        $('#spanSampleSize').text(paperTradesVM['paperTradesVM']['currentSampleSize']);
+        $('#spanSampleSize').text(paperTradesVM['paperTradesVM']['currentSampleSizeNumber']);
         $('#dropdownBtnSampleSize').empty();
         var sampleSizes = '';
         for (var i = numberSampleSizes; i > 0; i--) {
@@ -466,12 +478,12 @@ $(function () {
         $('#dropdownBtnTrade').html(trades);
 
         // Menu card header
-        currentCardMenu = 'Journal';
+        currentCardMenu = journal;
         $('#cardMenuTradeData').trigger('click');
     }
 
     // Load the images into the carousel
-    function LoadImages() {
+    function loadImages() {
         $('#imageContainer').empty();
         var screenshots = paperTradesVM['paperTradesVM']['currentTrade']['screenshotsUrls'];
 

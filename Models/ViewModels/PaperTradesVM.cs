@@ -28,11 +28,6 @@ namespace Models.ViewModels
 
         public TradeDisplay TradeData { get; set; }
 
-        // The journal for the CurrentTrade
-        public Journal Journal { get; set; }
-
-        public Review Review { get; set; }
-
         public SampleSize CurrentSampleSize { get; set; }
 
         // The current number of trades for the latest sample size

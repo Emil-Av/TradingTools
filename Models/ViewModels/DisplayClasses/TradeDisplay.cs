@@ -11,7 +11,7 @@ namespace Models.ViewModels.DisplayClasses
 {
     public class TradeDisplay
     {
-        public int? IdDisplay { get; set; }
+        public string IdDisplay { get; set; }
         public string? SymbolDisplay { get; set; }
 
         public string? TriggerPriceDisplay { get; set; }
@@ -22,7 +22,7 @@ namespace Models.ViewModels.DisplayClasses
 
         public string? ExitPriceDisplay { get; set; }
 
-        public List<double>? TargetsDisplay { get; set; }
+        public string? TargetsDisplay { get; set; }
 
         public string? PnLDisplay { get; set; }
 

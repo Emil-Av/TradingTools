@@ -455,7 +455,7 @@ namespace TradingTools.Controllers
             // Get all researched trades from the DB and project the instances into ResearchFirstBarPullbackDisplay
             ResearchVM.AllTrades = (await _unitOfWork.ResearchFirstBarPullback
                                     .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId))
-                                    .Select(x => EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(x))
+                                    .Select(EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>)
                                     .ToList();
             ResearchVM.AllTrades.ForEach(x => SanitizationHelper.SanitizeObject(x));
 
