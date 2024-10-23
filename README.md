@@ -4,4 +4,4 @@ Tech Stack:
 
 Front End: HTML, Bootstrap, Java Script;
 Back End: ASP.NET;
-Database: Entity Framework (EF).
+Data access: Entity Framework (EF).
