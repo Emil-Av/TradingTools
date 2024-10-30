@@ -181,7 +181,7 @@
 
         formData.append('researchData', JSON.stringify(researchData));
 
-        var tradeData = GetTradeData();
+        var tradeData = getTradeData();
 
         formData.append('tradeData', JSON.stringify(tradeData));
 

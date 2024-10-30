@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241030092656_AddDecimalToTriggerPrice2")]
+    partial class AddDecimalToTriggerPrice2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,7 +67,7 @@ namespace DataAccess.Migrations
                     b.Property<double?>("Fee")
                         .HasColumnType("float");
 
-                    b.Property<bool>("IsLoss")
+                    b.Property<bool?>("IsLoss")
                         .HasColumnType("bit");
 
                     b.Property<int?>("JournalId")
@@ -106,8 +109,8 @@ namespace DataAccess.Migrations
                     b.Property<int>("TradeRating")
                         .HasColumnType("int");
 
-                    b.Property<double?>("TriggerPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal?>("TriggerPrice")
+                        .HasColumnType("decimal(10, 2)");
 
                     b.HasKey("Id");
 
@@ -189,7 +192,7 @@ namespace DataAccess.Migrations
                     b.Property<bool>("IsFullATROneToThreeHit")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsLoss")
+                    b.Property<bool?>("IsLoss")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsMomentumTrade")
@@ -261,8 +264,8 @@ namespace DataAccess.Migrations
                     b.Property<int>("TradeRating")
                         .HasColumnType("int");
 
-                    b.Property<double?>("TriggerPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal?>("TriggerPrice")
+                        .HasColumnType("decimal(10, 2)");
 
                     b.HasKey("Id");
 

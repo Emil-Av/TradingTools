@@ -196,7 +196,7 @@ namespace TradingTools.Controllers
                 return Json(new { error = allErrors });
             }
 
-            ResearchFirstBarPullback trade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(currentTrade);
+            ResearchFirstBarPullback trade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(currentTrade, existingEntity: null);
             // The Id of a trade is in the currentTrade paramater. The id is passed to the trade object in ResearchMapper.ViewModelToEntity().
             // The Update() method, queries the database for a trade based on the Id.
             SanitizationHelper.SanitizeObject(trade);

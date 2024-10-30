@@ -14,6 +14,12 @@
 <div class="row justify-content-center align-items-top">
     <div class="col-10 text-center">
         <h2>
+            @if (!string.IsNullOrEmpty(Model.ErrorMsg))
+            {
+                <script src="~/vendor/jquery/jquery.min.js"></script>
+                <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+                <script type="text/javascript">toastr.error('@Model.ErrorMsg');</script>
+            }
             @(Model.CurrentTrade != null ? "Paper Trades" : "No Paper Trades Yet")
         </h2>
         @if (Model.CurrentTrade != null)

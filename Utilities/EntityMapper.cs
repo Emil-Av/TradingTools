@@ -29,7 +29,7 @@ namespace Utilities
                         var value = (bool)entityProp.GetValue(entity);
                         viewModelProp.SetValue(currentTrade, value ? "1" : "0");
                     }
-                    else if (entityProp.PropertyType == typeof(int) && viewModelProp.PropertyType == typeof(string))
+                    else if (entityProp.PropertyType == typeof(int) && viewModelProp.PropertyType == typeof(string) || Nullable.GetUnderlyingType(entityProp.PropertyType) == typeof(int))
                     {
                         var value = entityProp.GetValue(entity)?.ToString();
                         viewModelProp.SetValue(currentTrade, value);
@@ -43,7 +43,7 @@ namespace Utilities
                     else if (entityProp.PropertyType == typeof(List<double>) || Nullable.GetUnderlyingType(entityProp.PropertyType) == typeof(List<double>))
                     {
                         var value = entityProp.GetValue(entity) as List<double>;
-                        var stringValue = value != null ? string.Join(", ", value) : string.Empty;
+                        var stringValue = value != null ? string.Join("; ", value) : string.Empty;
                         viewModelProp.SetValue(currentTrade, stringValue);
                     }
                     else
@@ -63,14 +63,20 @@ namespace Utilities
         /// <typeparam name="TViewModelProperty"></typeparam>
         /// <param name="viewModel"></param>
         /// <returns></returns>
-        public static TEntity ViewModelToEntity<TEntity, TViewModelProperty>(TViewModelProperty viewModel) where TEntity : new()
+        public static TEntity ViewModelToEntity<TEntity, TViewModelProperty>(TViewModelProperty viewModel, TEntity existingEntity) where TEntity : new()
         {
-            var entity = new TEntity();
+            var entity = existingEntity ?? new TEntity();
             var entityType = typeof(TEntity);
             var viewModelPropType = typeof(TViewModelProperty);
 
             foreach (var viewModelProp in viewModelPropType.GetProperties())
             {
+                // Don't set values which are null. Example: UpdateTradeData() - the user updates some of the properties.
+                if (viewModelProp.GetValue(viewModel) == null)
+                {
+                    continue;
+                }
+
                 string VMPropName = viewModelProp.Name.Replace("Display", "");
                 var entityProp = entityType.GetProperty(VMPropName);
                 if (entityProp != null)
@@ -86,24 +92,31 @@ namespace Utilities
                         {
                             entityProp.SetValue(entity, intValue);
                         }
+                        else
+                        {
+                            // Set default values. The value from the view maybe empty string (e.g. UpdateTradeData() - some of the properties are being changed by the user)
+                            entityProp.SetValue(entity, default);
+                        }
                     }
-                    else if (viewModelProp.PropertyType == typeof(string) && entityProp.PropertyType == typeof(double))
+                    else if (viewModelProp.PropertyType == typeof(string) && entityProp.PropertyType == typeof(double) || viewModelProp.PropertyType == typeof(string) && entityProp.PropertyType == typeof(double?))
                     {
                         if (double.TryParse((string)viewModelProp.GetValue(viewModel), out double intValue))
                         {
                             entityProp.SetValue(entity, intValue);
                         }
-                    }
-                    else if (viewModelProp.PropertyType == typeof(string) && entityProp.PropertyType == typeof(double?))
-                    {
-                        if (double.TryParse((string)viewModelProp.GetValue(viewModel), out double intValue))
+                        else
                         {
-                            entityProp.SetValue(entity, intValue);
+                            entityProp.SetValue(entity, default);
                         }
-                    }
+                    } 
                     else if (viewModelProp.PropertyType == typeof(string) && entityProp.PropertyType == typeof(List<double>) || Nullable.GetUnderlyingType(entityProp.PropertyType) == typeof(List<double>))
                     {
-                        string[] valueArray = ((string)viewModelProp.GetValue(viewModel)).Split(",");
+                        // A lot of properties can be null. Not all properties have values, especially when creating a new trade.
+                        if (viewModelProp.GetValue(viewModel) == null)
+                        {
+                            continue;
+                        }
+                        string[] valueArray = ((string)viewModelProp.GetValue(viewModel)).Split("; ");
                         List<double> doubleList = new List<double>();
                         foreach (string value in valueArray)
                         {
@@ -116,6 +129,7 @@ namespace Utilities
                     }
                     else
                     {
+                        var xx = viewModelProp.GetValue(viewModel);
                         entityProp.SetValue(entity, viewModelProp.GetValue(viewModel));
                     }
                 }

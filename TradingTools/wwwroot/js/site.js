@@ -15,18 +15,18 @@ $(document).on('click', function (event) {
 // Toggles the visibility of the loading indicator and the main content of a page
 var loadingIndicator = $('#loadingIndicator');
 var content = $('#myContent');
-function ShowLoadingIndicator() {
+function showLoadingIndicator() {
     content.removeClass('showMyContent').addClass('hideMyContent');
     loadingIndicator.css('display', 'block');
 }
 
-function HideLoadingIndicator() {
+function hideLoadingIndicator() {
     content.removeClass('hideMyContent').addClass('showMyContent');
     loadingIndicator.css('display', 'none');
 }
 
 // Gets the data from the elements which have data-trade-data attribute. Used in multiple views.
-function GetTradeData() {
+function getTradeData() {
     var tradeData = {};
     $('#cardBody [data-trade-data]').each(function () {
         var bindProperty = $(this).data('trade-data');

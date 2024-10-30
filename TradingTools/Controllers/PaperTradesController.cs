@@ -43,7 +43,6 @@ namespace TradingTools.Controllers
         #region Methods
 
         [HttpPost]
-
         public async Task<IActionResult> UpdateTradeData([FromBody] TradeDisplay tradeData)
         {
             if (!ModelState.IsValid)
@@ -51,14 +50,20 @@ namespace TradingTools.Controllers
                 // Inspect model binding errors here
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 string allErrors = string.Join(", ", errors);
-                return Json(new { error = allErrors }); 
+                return Json(new { error = allErrors });
             }
 
-            PaperTrade trade = await _unitOfWork.PaperTrade.GetAsync(x => x.Id == int.Parse(tradeData.IdDisplay));
-            trade = EntityMapper.ViewModelToEntity<PaperTrade, TradeDisplay>(tradeData);
-            await _unitOfWork.PaperTrade.UpdateAsync(trade);
-            await _unitOfWork.SaveAsync();
-
+            try
+            {
+                PaperTrade trade = await _unitOfWork.PaperTrade.GetAsync(x => x.Id == int.Parse(tradeData.IdDisplay));
+                trade = EntityMapper.ViewModelToEntity(tradeData, trade);
+                await _unitOfWork.PaperTrade.UpdateAsync(trade);
+                await _unitOfWork.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = $"An error occured while updating the trade: {ex.Message}" });
+            }
 
             return Json(new { success = "Trade updated" });
         }
@@ -78,7 +83,7 @@ namespace TradingTools.Controllers
             {
                 return Json(new { error = errorMsg });
             }
-           
+
 
             SanitizationHelper.SanitizeObject(data.CurrentSampleSize.Review);
             Review review = await _unitOfWork.Review.GetAsync(x => x.Id == data.CurrentTrade.JournalId);
@@ -241,13 +246,17 @@ namespace TradingTools.Controllers
         {
             // Get the latest sample size for the strategy and time frame
             List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.PaperTrade);
-            
+
             if (!sampleSizes.Any())
             {
                 return View(PaperTradesVM);
             }
 
             string errorMsg = await LoadViewModelData(sampleSizes);
+            if (!string.IsNullOrEmpty(errorMsg))
+            {
+                PaperTradesVM.ErrorMsg = errorMsg;
+            }
 
             return View(PaperTradesVM);
         }
@@ -262,7 +271,7 @@ namespace TradingTools.Controllers
             // No trades yet
             if (PaperTradesVM.CurrentTrade == null)
             {
-                return errorMsg = "Error in LoadViewModelData(). SampleSize is empty.";
+                return string.Empty;
             }
 
             // Get the number of sample sizes for the time frame and strategy

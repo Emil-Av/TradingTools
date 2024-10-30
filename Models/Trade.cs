@@ -1,6 +1,7 @@
 ﻿using Shared.Enums;
 using SharedEnums.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.CompilerServices;
 
 namespace Models
 {
@@ -9,13 +10,13 @@ namespace Models
         public int Id { get; set; }
         public string? Symbol { get; set; }
 
-        public double TriggerPrice { get; set; }
+        public double? TriggerPrice { get; set; }
 
-        public double EntryPrice { get; set; }
+        public double? EntryPrice { get; set; }
 
-        public double StopPrice { get; set; }
+        public double? StopPrice { get; set; }
 
-        public double ExitPrice { get; set; }
+        public double? ExitPrice { get; set; }
 
         public List<double>? Targets { get; set; }
 
@@ -23,7 +24,7 @@ namespace Models
 
         public bool IsLoss { get; set; }
 
-        public double Fee { get; set; }
+        public double? Fee { get; set; }
 
         public Status Status { get; set; }
 
@@ -35,7 +36,7 @@ namespace Models
 
         public List<string>? ScreenshotsUrls { get; set; }
 
-        public int TradeDurationInCandles { get; set; }
+        public int? TradeDurationInCandles { get; set; }
         
         /// <summary>
         ///  Based on the trade type, the research type can be determined.

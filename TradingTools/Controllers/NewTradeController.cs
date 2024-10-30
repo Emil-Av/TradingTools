@@ -76,7 +76,7 @@ namespace TradingTools.Controllers
                 {
                     ResearchFirstBarPullbackDisplay viewData = NewTradeVM.ResearchData as ResearchFirstBarPullbackDisplay;
                     // Save the values from the view and return a DB entity. The entity contains the SampleSizeId.
-                    ResearchFirstBarPullback researchTrade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(viewData);
+                    ResearchFirstBarPullback researchTrade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(viewData, existingEntity: null);
                     var sampleSizeData = await ProcessSampleSize(maxTradesProSampleSize: 100);
                     researchTrade.SampleSizeId = sampleSizeData.id;
                     await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, researchTrade, files);
@@ -92,42 +92,35 @@ namespace TradingTools.Controllers
             // Trades or PaperTrades
             else
             {
-                try
+                if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
                 {
-                    if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
-                    {
-                        ResearchFirstBarPullbackDisplay viewData = NewTradeVM.ResearchData as ResearchFirstBarPullbackDisplay;
-                        // Save the values from the view and return a DB entity.
-                        ResearchFirstBarPullback researchData = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(viewData);
-                        var sampleSizeData = await ProcessSampleSize(maxTradesProSampleSize: 20);
-                        researchData.SampleSizeId = sampleSizeData.id;
-                        _unitOfWork.ResearchFirstBarPullback.Add(researchData);
-                        await _unitOfWork.SaveAsync();
+                    ResearchFirstBarPullbackDisplay viewData = NewTradeVM.ResearchData as ResearchFirstBarPullbackDisplay;
+                    // Save the values from the view and return a DB entity.
+                    ResearchFirstBarPullback researchData = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(viewData, existingEntity: null);
+                    var sampleSizeData = await ProcessSampleSize(maxTradesProSampleSize: 20);
+                    researchData.SampleSizeId = sampleSizeData.id;
+                    _unitOfWork.ResearchFirstBarPullback.Add(researchData);
+                    await _unitOfWork.SaveAsync();
 
-                        // Save the values from the view and return a DB entity.
-                        PaperTrade newTrade = EntityMapper.ViewModelToEntity<PaperTrade, TradeDisplay>(NewTradeVM.TradeDisplay);
-                        await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newTrade, files);
-                        newTrade.ResearchId = researchData.Id;
-                        newTrade.SampleSizeId = sampleSizeData.id;
+                    // Save the values from the view and return a DB entity.
+                    PaperTrade newTrade = EntityMapper.ViewModelToEntity<PaperTrade, TradeDisplay>(NewTradeVM.TradeDisplay, existingEntity: null);
+                    await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newTrade, files);
+                    newTrade.ResearchId = researchData.Id;
+                    newTrade.SampleSizeId = sampleSizeData.id;
 
-                        // Set the new Journal reference
-                        Journal journal = new();
-                        _unitOfWork.Journal.Add(journal);
-                        await _unitOfWork.SaveAsync();
-                        newTrade.JournalId = journal.Id;
+                    // Set the new Journal reference
+                    Journal journal = new();
+                    _unitOfWork.Journal.Add(journal);
+                    await _unitOfWork.SaveAsync();
+                    newTrade.JournalId = journal.Id;
 
-                        // Save the new trade
-                        _unitOfWork.PaperTrade.Add(newTrade);
-                        await _unitOfWork.SaveAsync();
-                    }
-                    else if (NewTradeVM.Strategy == Strategy.Cradle)
-                    {
-
-                    }
+                    // Save the new trade
+                    _unitOfWork.PaperTrade.Add(newTrade);
+                    await _unitOfWork.SaveAsync();
                 }
-                catch (Exception ex)
+                else if (NewTradeVM.Strategy == Strategy.Cradle)
                 {
-                    Debug.Write($"Error occured in SaveTrade(): {ex.Message}");
+
                 }
             }
         }

@@ -23,6 +23,8 @@ namespace Models.ViewModels
 
         public int CurrentSampleSizeNumber { get; set; }
 
+        public string ErrorMsg { get; set; }
+
         // The trade being displayed
         public PaperTrade CurrentTrade { get; set; }
 

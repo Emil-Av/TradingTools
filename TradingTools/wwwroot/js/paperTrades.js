@@ -56,7 +56,7 @@ $(function () {
                 }
             }
         };
-        let xx = "";
+
         $.ajax({
             method: 'POST',
             url: '/papertrades/updatereview',
@@ -77,7 +77,7 @@ $(function () {
 
     function updateTradeData() {
 
-        let tradeData = GetTradeData();
+        let tradeData = getTradeData();
 
         $.ajax({
             method: 'POST',
@@ -191,9 +191,9 @@ $(function () {
         $('#cardBody').addClass('card-body');
         isEditorShown = false;
         // Save the text from the editor
-        var editorText = $($('#summernote').summernote('code')).text().trim();
+        let editorText = $($('#summernote').summernote('code')).text().trim();
         // Save the text from the tab
-        var oldTabContent = $(currentTab).text().trim();
+        let oldTabContent = $(currentTab).text().trim();
         // Set the content of the tab to the value of the editor
         $(currentTab).html($('#summernote').summernote('code'));
         // Show the tab content
@@ -287,7 +287,7 @@ $(function () {
 
         // Set the text of the card menu
         if (currentCardMenu !== $('#currentMenu').text()) {
-            var menuText = '';
+            let menuText = '';
             if (currentCardMenu == 'itemTradingData') {
                 menuText = 'Trade Data';
             }
@@ -323,7 +323,7 @@ $(function () {
     * ***************************
     */
     // Create key, value array: key is the button menu, value is the span element. The span element is the selected value from the dropdown menu.
-    var menuButtons =
+    let menuButtons =
     {
         '#dropdownBtnTimeFrame': '#spanTimeFrame',
         '#dropdownBtnStrategy': '#spanStrategy',
@@ -332,7 +332,7 @@ $(function () {
     };
 
     // Attach a click event for each <a> element of each menu.
-    for (var key in menuButtons) {
+    for (let key in menuButtons) {
         (function (key) {
             setSelectedItemClass(key);
             // Change the value of the span in the button
@@ -356,7 +356,7 @@ $(function () {
                 }
 
                 // Set the new value
-                var value = $(this).text();
+                let value = $(this).text();
                 $(menuButtons[key]).text(value);
                 loadTrade($('#spanTimeFrame').text(),
                     $('#spanStrategy').text(),
@@ -371,7 +371,7 @@ $(function () {
     // Mark the selected drop down item of the buttons on the top
     function setSelectedItemClass() {
         // Set the "selected item" color
-        for (var key in menuButtons) {
+        for (let key in menuButtons) {
             $(key + ' a').each(function () {
                 if ($(this).text() === $(menuButtons[key]).text()) {
                     $(this).addClass('bg-gray-400');
@@ -451,13 +451,13 @@ $(function () {
     // Populate the drop down items after a new trade has been selected and set the values in the spans.
     function setMenuValues(displayedTrade) {
         // Menu Buttons
-        var numberSampleSizes = paperTradesVM['paperTradesVM']['numberSampleSizes'];
-        var tradesInSampleSize = paperTradesVM['paperTradesVM']['tradesInSampleSize'];
+        let numberSampleSizes = paperTradesVM['paperTradesVM']['numberSampleSizes'];
+        let tradesInSampleSize = paperTradesVM['paperTradesVM']['tradesInSampleSize'];
         // Set the SampleSize menu
         $('#spanSampleSize').text(paperTradesVM['paperTradesVM']['currentSampleSizeNumber']);
         $('#dropdownBtnSampleSize').empty();
-        var sampleSizes = '';
-        for (var i = numberSampleSizes; i > 0; i--) {
+        let sampleSizes = '';
+        for (let i = numberSampleSizes; i > 0; i--) {
             sampleSizes += '<a class="dropdown-item" role="button">' + i + '</a>';
         }
 
@@ -471,8 +471,8 @@ $(function () {
         }
 
         $('#dropdownBtnTrade').empty();
-        var trades = '';
-        for (var i = tradesInSampleSize; i > 0; i--) {
+        let trades = '';
+        for (let i = tradesInSampleSize; i > 0; i--) {
             trades += '<a class="dropdown-item" role="button">' + i + '</a>'
         }
         $('#dropdownBtnTrade').html(trades);
@@ -485,11 +485,11 @@ $(function () {
     // Load the images into the carousel
     function loadImages() {
         $('#imageContainer').empty();
-        var screenshots = paperTradesVM['paperTradesVM']['currentTrade']['screenshotsUrls'];
+        let screenshots = paperTradesVM['paperTradesVM']['currentTrade']['screenshotsUrls'];
 
-        var newCarouselHtml = '<ol class="carousel-indicators">';
-        for (var i = 0; i < screenshots.length; i++) {
-            var url = screenshots[i];
+        let newCarouselHtml = '<ol class="carousel-indicators">';
+        for (let i = 0; i < screenshots.length; i++) {
+            let url = screenshots[i];
             if (i == 0) {
                 newCarouselHtml += '<li data-bs-target="#carouselTrades" data-slide-to="' + i + '" class="active"></li >';
             }
@@ -500,8 +500,8 @@ $(function () {
         newCarouselHtml += '</ol>';
 
         newCarouselHtml += '<div class="carousel-inner">';
-        for (var i = 0; i < screenshots.length; i++) {
-            var url = screenshots[i];
+        for (let i = 0; i < screenshots.length; i++) {
+            let url = screenshots[i];
             if (i == 0) {
                 newCarouselHtml += '<div class="carousel-item active"><img src="' + url + '" class="d-block w-100" alt = "..." ></div>';
             }
