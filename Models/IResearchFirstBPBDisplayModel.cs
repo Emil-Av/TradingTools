@@ -12,7 +12,7 @@ namespace Models
     {
         ResearchFirstBarPullbackDisplay ResearchFirstBarPullbackDisplay { get; set; }
 
-        TradeDisplay TradeDisplay { get; set; }
+        TradeDisplay TradeData { get; set; }
 
         List<SelectListItem> YesNoOptions { get; set; }
 

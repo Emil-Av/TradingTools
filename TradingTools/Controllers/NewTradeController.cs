@@ -103,7 +103,7 @@ namespace TradingTools.Controllers
                     await _unitOfWork.SaveAsync();
 
                     // Save the values from the view and return a DB entity.
-                    PaperTrade newTrade = EntityMapper.ViewModelToEntity<PaperTrade, TradeDisplay>(NewTradeVM.TradeDisplay, existingEntity: null);
+                    PaperTrade newTrade = EntityMapper.ViewModelToEntity<PaperTrade, TradeDisplay>(NewTradeVM.TradeData, existingEntity: null);
                     await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newTrade, files);
                     newTrade.ResearchId = researchData.Id;
                     newTrade.SampleSizeId = sampleSizeData.id;

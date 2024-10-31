@@ -148,7 +148,9 @@ $(function () {
     });
 
     $('#btnUpdate').on('click', function () {
-        updateTradeData();
+        if (validateNumberInputs()) {
+            updateTradeData();
+        }
     });
 
     // Open editor and show the buttons
@@ -158,12 +160,7 @@ $(function () {
 
     // Save the journal changes
     $('#btnSave').on('click', function () {
-        if (currentCardMenu === 'itemTradeData') {
-            updateTradeData();
-        }
-        else {
-            saveEditorText();
-        }
+        saveEditorText();
     });
 
     // Close the editor and show 'Edit' button

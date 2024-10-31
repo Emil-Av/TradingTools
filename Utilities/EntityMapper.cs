@@ -39,7 +39,7 @@ namespace Utilities
                         var value = entityProp.GetValue(entity)?.ToString();
                         viewModelProp.SetValue(currentTrade, value);
                     }
-                    // The Trade class has a List<double> for the target
+                    // The Trade class has a List<double> for the targets
                     else if (entityProp.PropertyType == typeof(List<double>) || Nullable.GetUnderlyingType(entityProp.PropertyType) == typeof(List<double>))
                     {
                         var value = entityProp.GetValue(entity) as List<double>;
@@ -111,11 +111,11 @@ namespace Utilities
                     } 
                     else if (viewModelProp.PropertyType == typeof(string) && entityProp.PropertyType == typeof(List<double>) || Nullable.GetUnderlyingType(entityProp.PropertyType) == typeof(List<double>))
                     {
-                        // A lot of properties can be null. Not all properties have values, especially when creating a new trade.
-                        if (viewModelProp.GetValue(viewModel) == null)
-                        {
-                            continue;
-                        }
+                        //// A lot of properties can be null. Not all properties have values, especially when creating a new trade.
+                        //if (viewModelProp.GetValue(viewModel) == null)
+                        //{
+                        //    continue;
+                        //}
                         string[] valueArray = ((string)viewModelProp.GetValue(viewModel)).Split("; ");
                         List<double> doubleList = new List<double>();
                         foreach (string value in valueArray)
@@ -129,7 +129,6 @@ namespace Utilities
                     }
                     else
                     {
-                        var xx = viewModelProp.GetValue(viewModel);
                         entityProp.SetValue(entity, viewModelProp.GetValue(viewModel));
                     }
                 }

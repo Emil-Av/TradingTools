@@ -104,7 +104,9 @@
     });
 
     $('#btnSave').on('click', function () {
-        saveTrade();
+        if (validateNumberInputs()) {
+            saveTrade();
+        }
     });
 
     $('#btnClear').on('click', function () {

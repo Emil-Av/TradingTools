@@ -473,7 +473,7 @@ namespace TradingTools.Controllers
             // Set the NumberSampleSizes for the button menu
             ResearchVM.NumberSampleSizes = sampleSizes.Count(x => x.TimeFrame == ResearchVM.CurrentTimeFrame);
             ResearchVM.TradesInSampleSize = ResearchVM.AllTrades.Count;
-            ResearchVM.TradeDisplay = new();
+            ResearchVM.TradeData = new();
 
             return errorMsg;
         }

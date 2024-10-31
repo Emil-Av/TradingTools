@@ -33,7 +33,7 @@ namespace Models.ViewModels
 
             ResearchData = new();
             ResearchFirstBarPullbackDisplay = new();
-            TradeDisplay = new();
+            TradeData = new();
         }
 
         #region Properties
@@ -52,7 +52,7 @@ namespace Models.ViewModels
 
         public ResearchFirstBarPullbackDisplay ResearchFirstBarPullbackDisplay { get; set; }
 
-        public TradeDisplay TradeDisplay { get; set; }
+        public TradeDisplay TradeData { get; set; }
 
         public List<SelectListItem> YesNoOptions { get; set; }
 
@@ -122,7 +122,7 @@ namespace Models.ViewModels
                     // ResearchData is of type object because it can contain research data for different strategies. See NewTradeController -> SaveTrade()
                     ResearchData = JsonConvert.DeserializeObject<ResearchFirstBarPullbackDisplay>(researchData);
                 }
-                TradeDisplay = JsonConvert.DeserializeObject<TradeDisplay>(tradeData);
+                TradeData = JsonConvert.DeserializeObject<TradeDisplay>(tradeData);
                 // Helper method to avoid duplicating code
                 void ValidateResult<T>(Result<T> result, string tradeParam)
                 {

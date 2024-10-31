@@ -27,21 +27,60 @@ function hideLoadingIndicator() {
 
 // Gets the data from the elements which have data-trade-data attribute. Used in multiple views.
 function getTradeData() {
-    var tradeData = {};
-    $('#cardBody [data-trade-data]').each(function () {
-        var bindProperty = $(this).data('trade-data');
-        tradeData[bindProperty] = $(this).val();
-    });
 
-    tradeData['IdDisplay'] = $('#spanTradeIdInput').val();
 
-    //const targetsArray = tradeData['TargetsDisplay'].split(',').map(value => value.trim());
-    //if (tradeData['TargetsDisplay'].length == 0) {
-    //    tradeData['TargetsDisplay'] = '';
-    //}
-    //else {
-    //    tradeData['TargetsDisplay'] = targetsArray.map(value => parseFloat(value));
-    //}
+        var tradeData = {};
+        $('#cardBody [data-trade-data]').each(function () {
+            var bindProperty = $(this).data('trade-data');
+            tradeData[bindProperty] = $(this).val();
+        });
 
-    return tradeData;
+        tradeData['IdDisplay'] = $('#spanTradeIdInput').val();
+
+        //const targetsArray = tradeData['TargetsDisplay'].split(',').map(value => value.trim());
+        //if (tradeData['TargetsDisplay'].length == 0) {
+        //    tradeData['TargetsDisplay'] = '';
+        //}
+        //else {
+        //    tradeData['TargetsDisplay'] = targetsArray.map(value => parseFloat(value));
+        //}
+
+        return tradeData;
+
+    return null;
+}
+
+function validateNumberInputs() {
+
+    let isValid = true;
+    $(".number-input").each(function () {
+        const value = $(this).val();
+
+        if (value !== "" && !isNumeric(value)) {
+            $(this).addClass("is-invalid");
+            isValid = false;
+        }
+        else if ($(this).hasClass("is-invalid")) {
+            $(this).removeClass("is-invalid");
+        }
+    })
+
+    if (!isValid) {
+        toastr.error("The marked fields must be either empty or contain a number.<br>For decimal separator use comma.");
+    }
+
+    return isValid;
+}
+
+/**
+ * Explanation of the Regular Expression
+    ^: Asserts the start of the string.
+    -?: Allows an optional negative sign.
+    \d+: Matches one or more digits.
+    (\,\d+)?: Matches an optional decimal point followed by one or more digits.
+    $: Asserts the end of the string.
+ */
+function isNumeric(value) {
+    const regex = /^-?\d+(\,\d+)?$/;
+    return regex.test(value);
 }

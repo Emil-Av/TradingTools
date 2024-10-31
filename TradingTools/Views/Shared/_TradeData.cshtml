@@ -1,0 +1,34 @@
+﻿<div class="d-flex flex-wrap" id="tradeDataContainer">
+    <div class="form-group col-12 col-md-6 col-lg">
+        <label class="d-block text-nowrap min-width-60" for="SymbolInput">Symbol</label>
+        <input class="text-center form-control" id="SymbolInput" data-trade-data="SymbolDisplay" value="@Model.TradeData.SymbolDisplay" />
+    </div>
+    <div class="form-group col-12 col-md-6 col-lg">
+        <label class="d-block text-nowrap min-width-60" for="TriggerPriceInput">Trigger Price</label>
+        <input class="text-center form-control number-input" id="TriggerPriceInput" data-trade-data="TriggerPriceDisplay" value="@Model.TradeData.TriggerPriceDisplay" />
+    </div>
+    <div class="form-group col-12 col-md-6 col-lg">
+        <label class="d-block text-nowrap min-width-60" for="EntryPriceInput">Entry Price</label>
+        <input class="text-center form-control number-input" id="EntryPriceInput" data-trade-data="EntryPriceDisplay" value="@Model.TradeData.EntryPriceDisplay" />
+    </div>
+    <div class="form-group col-12 col-md-6 col-lg">
+        <label class="d-block text-nowrap min-width-60" for="StopPriceInput">Stop Price</label>
+        <input class="text-center form-control number-input" id="StopPriceInput" data-trade-data="StopPriceDisplay" value="@Model.TradeData.StopPriceDisplay" />
+    </div>
+    <div class="form-group col-12 col-md-6 col-lg">
+        <label class="d-block text-nowrap min-width-60" for="ExitPriceInput">Exit Price</label>
+        <input class="text-center form-control number-input" id="ExitPriceInput" data-trade-data="ExitPriceDisplay" value="@Model.TradeData.ExitPriceDisplay" />
+    </div>
+    <div class="form-group col-12 col-md-6 col-lg">
+        <label class="d-block text-nowrap min-width-60" for="TargetsInput">Targets</label>
+        <input class="text-center form-control" id="TargetsInput" data-trade-data="TargetsDisplay" value="@Model.TradeData.TargetsDisplay" />
+    </div>
+    <div class="form-group col-12 col-md-6 col-lg">
+        <label class="d-block text-nowrap min-width-60" for="PnLInput">PnL</label>
+        <input class="text-center form-control number-input" id="PnLInput" data-trade-data="PnLDisplay" value="@Model.TradeData.PnLDisplay" />
+    </div>
+    <div class="form-group col-12 col-md-6 col-lg">
+        <label class="d-block text-nowrap min-width-60" for="FeeInput">Fee</label>
+        <input class="text-center form-control number-input" id="FeeInput" data-trade-data="FeeDisplay" value="@Model.TradeData.FeeDisplay" />
+    </div>
+</div>
