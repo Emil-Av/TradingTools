@@ -110,7 +110,7 @@ namespace Models.ViewModels
                 TradeType = typeResult.Value;
                 SideType = sideResult.Value;
 
-                // Status and OrderType are not required for a Trade or PaperTrade, only for Research
+                // Status and OrderType are not required for Research
                 if (TradeType != TradeType.Research)
                 {
                     Status = statusResult!.Value;
@@ -123,6 +123,7 @@ namespace Models.ViewModels
                     ResearchData = JsonConvert.DeserializeObject<ResearchFirstBarPullbackDisplay>(researchData);
                 }
                 TradeData = JsonConvert.DeserializeObject<TradeDisplay>(tradeData);
+
                 // Helper method to avoid duplicating code
                 void ValidateResult<T>(Result<T> result, string tradeParam)
                 {

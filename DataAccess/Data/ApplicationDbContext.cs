@@ -25,7 +25,85 @@ namespace DataAccess.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //    new PaperTrade { Id=1, Symbol="BTCUSD", TimeFrame = TimeFrame.M10, Strategy = Strategy.FirstBarBelowAbove, ScreenshotsUrls = new List<string>() { "~/img/myimg/1.png", "~/img/myimg/2.png", "~/img/myimg/3.png" } });
+            modelBuilder.Entity<PaperTrade>()
+                .Property(e => e.TradeDurationInCandles)
+                .HasDefaultValueSql("0");
+
+            modelBuilder.Entity<PaperTrade>()
+                .Property(e => e.TriggerPrice)
+                .HasDefaultValueSql("0");
+
+            modelBuilder.Entity<PaperTrade>()
+                .Property(e => e.EntryPrice)
+                .HasDefaultValueSql("0");
+
+            modelBuilder.Entity<PaperTrade>()
+                .Property(e => e.StopPrice)
+                .HasDefaultValueSql("0");
+
+            modelBuilder.Entity<PaperTrade>()
+                .Property(e => e.ExitPrice)
+                .HasDefaultValueSql("0");
+
+            modelBuilder.Entity<PaperTrade>()
+                .Property(e => e.PnL)
+                .HasDefaultValueSql("0");
+
+            modelBuilder.Entity<PaperTrade>()
+                .Property(e => e.ExitPrice)
+                .HasDefaultValueSql("0");
+
+            modelBuilder.Entity<PaperTrade>()
+                .Property(e => e.Fee)
+                .HasDefaultValueSql("0");
+
+
+
+
+            modelBuilder.Entity<ResearchFirstBarPullback>()
+                .Property(e => e.TradeDurationInCandles)
+                .HasDefaultValueSql("0");
+
+            modelBuilder.Entity<ResearchFirstBarPullback>()
+                .Property(e => e.TriggerPrice)
+                .HasDefaultValueSql("0");
+
+            modelBuilder.Entity<ResearchFirstBarPullback>()
+                .Property(e => e.EntryPrice)
+                .HasDefaultValueSql("0");
+
+            modelBuilder.Entity<ResearchFirstBarPullback>()
+                .Property(e => e.StopPrice)
+                .HasDefaultValueSql("0");
+
+            modelBuilder.Entity<ResearchFirstBarPullback>()
+                .Property(e => e.ExitPrice)
+                .HasDefaultValueSql("0");
+
+            modelBuilder.Entity<ResearchFirstBarPullback>()
+                .Property(e => e.PnL)
+                .HasDefaultValueSql("0");
+
+            modelBuilder.Entity<ResearchFirstBarPullback>()
+                .Property(e => e.ExitPrice)
+                .HasDefaultValueSql("0");
+
+            modelBuilder.Entity<ResearchFirstBarPullback>()
+                .Property(e => e.Fee)
+                .HasDefaultValueSql("0");
+
+
+
+
+
+
+            modelBuilder.Entity<PaperTrade>()
+                .Property(e => e.CreatedAt)
+                .HasDefaultValueSql("GETDATE()");
+
+            modelBuilder.Entity<ResearchFirstBarPullback>()
+               .Property(e => e.CreatedAt)
+               .HasDefaultValueSql("GETDATE()");
         }
     }
 }

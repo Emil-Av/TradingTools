@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241105090624_Set0AsDefaultValues")]
+    partial class Set0AsDefaultValues
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,26 +58,14 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CreatedAt")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
-                        .HasDefaultValueSql("GETDATE()");
-
                     b.Property<double?>("EntryPrice")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
+                        .HasColumnType("float");
 
                     b.Property<double?>("ExitPrice")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
+                        .HasColumnType("float");
 
                     b.Property<double?>("Fee")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
+                        .HasColumnType("float");
 
                     b.Property<bool>("IsLoss")
                         .HasColumnType("bit");
@@ -86,9 +77,7 @@ namespace DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<double?>("PnL")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
+                        .HasColumnType("float");
 
                     b.Property<int?>("ResearchId")
                         .HasColumnType("int");
@@ -106,9 +95,7 @@ namespace DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<double?>("StopPrice")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
+                        .HasColumnType("float");
 
                     b.Property<string>("Symbol")
                         .HasColumnType("nvarchar(max)");
@@ -117,9 +104,7 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("TradeDurationInCandles")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValueSql("0");
+                        .HasColumnType("int");
 
                     b.Property<int>("TradeRating")
                         .HasColumnType("int");
@@ -128,9 +113,7 @@ namespace DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<double?>("TriggerPrice")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -152,26 +135,14 @@ namespace DataAccess.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedAt")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
-                        .HasDefaultValueSql("GETDATE()");
-
                     b.Property<double?>("EntryPrice")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
+                        .HasColumnType("float");
 
                     b.Property<double?>("ExitPrice")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
+                        .HasColumnType("float");
 
                     b.Property<double?>("Fee")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
+                        .HasColumnType("float");
 
                     b.Property<bool>("FullATRMarketGaveSmth")
                         .HasColumnType("bit");
@@ -264,9 +235,7 @@ namespace DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<double?>("PnL")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
+                        .HasColumnType("float");
 
                     b.Property<int?>("ResearchId")
                         .HasColumnType("int");
@@ -284,9 +253,7 @@ namespace DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<double?>("StopPrice")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
+                        .HasColumnType("float");
 
                     b.Property<string>("Symbol")
                         .HasColumnType("nvarchar(max)");
@@ -295,9 +262,7 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("TradeDurationInCandles")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValueSql("0");
+                        .HasColumnType("int");
 
                     b.Property<int>("TradeRating")
                         .HasColumnType("int");
@@ -306,9 +271,7 @@ namespace DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<double?>("TriggerPrice")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 

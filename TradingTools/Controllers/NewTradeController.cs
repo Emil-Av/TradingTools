@@ -76,12 +76,12 @@ namespace TradingTools.Controllers
                 {
                     ResearchFirstBarPullbackDisplay viewData = NewTradeVM.ResearchData as ResearchFirstBarPullbackDisplay;
                     // Save the values from the view and return a DB entity. The entity contains the SampleSizeId.
-                    ResearchFirstBarPullback researchTrade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(viewData, existingEntity: null);
+                    ResearchFirstBarPullback newResearchTrade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(viewData, existingEntity: null);
                     var sampleSizeData = await ProcessSampleSize(maxTradesProSampleSize: 100);
-                    researchTrade.SampleSizeId = sampleSizeData.id;
-                    await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, researchTrade, files);
+                    newResearchTrade.SampleSizeId = sampleSizeData.id;
+                    await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newResearchTrade, files);
 
-                    _unitOfWork.ResearchFirstBarPullback.Add(researchTrade);
+                    _unitOfWork.ResearchFirstBarPullback.Add(newResearchTrade);
                     await _unitOfWork.SaveAsync();
                 }
                 else
@@ -107,6 +107,7 @@ namespace TradingTools.Controllers
                     await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newTrade, files);
                     newTrade.ResearchId = researchData.Id;
                     newTrade.SampleSizeId = sampleSizeData.id;
+                    SetTradeParams(newTrade);
 
                     // Set the new Journal reference
                     Journal journal = new();
@@ -122,6 +123,13 @@ namespace TradingTools.Controllers
                 {
 
                 }
+            }
+            // The other TradeParams (timeframe, strategy etc) are determined using the SampleSize data
+            void SetTradeParams(PaperTrade newTrade)
+            {
+                newTrade.Status = NewTradeVM.Status;
+                newTrade.SideType = NewTradeVM.SideType;
+                newTrade.OrderType = NewTradeVM.OrderType;
             }
         }
 
@@ -177,20 +185,39 @@ namespace TradingTools.Controllers
             var sampleSizeData = await CheckLastSampleSize(maxTradesProSampleSize);
             if (sampleSizeData.isFull || sampleSizeData.id == 0)
             {
-                SampleSize newSampleSize = new() { Strategy = NewTradeVM.Strategy, TimeFrame = NewTradeVM.TimeFrame, TradeType = NewTradeVM.TradeType };
-                _unitOfWork.SampleSize.Add(newSampleSize);
-                await _unitOfWork.SaveAsync();
-                sampleSizeData.id = newSampleSize.Id;
 
+                Review review = null;
                 // Create a new review for the new sample size
                 if (NewTradeVM.TradeType != TradeType.Research)
                 {
-                    Review review = new();
+                    review = new();
                     _unitOfWork.Review.Add(review);
-                    await _unitOfWork.SaveAsync();
-                    newSampleSize.ReviewId = review.Id;
-                    await _unitOfWork.SampleSize.UpdateAsync(newSampleSize);
+                    try
+                    {
+                        await _unitOfWork.SaveAsync();
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+
+                    //await _unitOfWork.SampleSize.UpdateAsync(newSampleSize);
                 }
+                SampleSize newSampleSize = new() { Strategy = NewTradeVM.Strategy, TimeFrame = NewTradeVM.TimeFrame, TradeType = NewTradeVM.TradeType };
+                if (review != null)
+                {
+                    newSampleSize.ReviewId = review.Id;
+                }
+                _unitOfWork.SampleSize.Add(newSampleSize);
+                try
+                {
+                    await _unitOfWork.SaveAsync();
+                }
+                catch (Exception ex)
+                {
+
+                }
+                sampleSizeData.id = newSampleSize.Id;
             }
 
             return sampleSizeData;

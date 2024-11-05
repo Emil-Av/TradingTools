@@ -12,13 +12,13 @@ $(function () {
     let clickedMenuValue;
     let showLastTrade;
     let sampleSizeChanged;
-    // The model
     let paperTradesVM;
     let currentTab = '#pre'; // Always the start value
     let isEditorShown = false;
+    let currentCardMenu = 'itemTradingData';
+
     const tradingData = 'itemTradingData';
     const journal = 'itemJournal';
-    let currentCardMenu = 'itemTradingData';
 
     /**
     * ******************************
@@ -43,17 +43,19 @@ $(function () {
         let dataToSend =
         {
             CurrentTrade: {
-                SampleSizeId: $('#spanSampleSizeIdInput').val()
+                Id: $('#spanTradeIdInput').val()
             },
             CurrentSampleSize:
             {
                 Review: {
+                    Id: $('#spanReviewIdInput').val(),
                     First: $('#first').html(),
                     Second: $('#second').html(),
                     Third: $('#third').html(),
                     Forth: $('#forth').html(),
                     summary: $('#summary').html()
-                }
+                },
+                Id: $('#spanSampleSizeIdInput').val(),
             }
         };
 
@@ -322,8 +324,12 @@ $(function () {
     // Create key, value array: key is the button menu, value is the span element. The span element is the selected value from the dropdown menu.
     let menuButtons =
     {
+        '#dropdownBtnStatus': '#spanStatus',
         '#dropdownBtnTimeFrame': '#spanTimeFrame',
         '#dropdownBtnStrategy': '#spanStrategy',
+        '#dropdownBtnTradeType': '#spanTradeType',
+        '#dropdownBtnTradeSide': '#spanTradeSide',
+        '#dropdownBtnOrderType': '#spanOrderType',
         '#dropdownBtnSampleSize': '#spanSampleSize',
         '#dropdownBtnTrade': '#spanTrade'
     };
@@ -355,8 +361,13 @@ $(function () {
                 // Set the new value
                 let value = $(this).text();
                 $(menuButtons[key]).text(value);
-                loadTrade($('#spanTimeFrame').text(),
+                loadTrade(
+                    $('#spanStatus').text(),
+                    $('#spanTimeFrame').text(),
                     $('#spanStrategy').text(),
+                    $('#spanTradeType').text(),
+                    $('#spanTradeSide').text(),
+                    $('#spanOrderType').text(),
                     $('#spanSampleSize').text(),
                     $('#spanTrade').text(),
                     showLastTrade,
@@ -380,19 +391,24 @@ $(function () {
         }
     }
     // API call to load the selected trade
-    function loadTrade(timeFrame, strategy, sampleSize, trade, showLastTrade, sampleSizeChanged) {
+    function loadTrade(status, timeFrame, strategy, tradeType, tradeSide, orderType, sampleSize, trade, showLastTrade, sampleSizeChanged) {
         $.ajax({
             method: 'POST',
             url: '/papertrades/loadtrade',
             dataType: 'JSON',
             data: {
-                timeFrame: timeFrame,
-                strategy: strategy,
-                sampleSize: sampleSize,
-                trade: trade,
-                showLastTrade: showLastTrade,
-                sampleSizeChanged: sampleSizeChanged
-
+                tradeParams: {
+                    StatusFromView: status,
+                    TimeFrameFromView: timeFrame,
+                    StrategyFromView: strategy,
+                    TradeTypeFromView: tradeType,
+                    SideTypeFromView: tradeSide,
+                    OrderTypeFromView: orderType,
+                    SampleSizeNumberFromView: sampleSize,
+                    TradeNumberFromView: trade,
+                    ShowLastTradeFromView: showLastTrade,
+                    SampleSizeChangedFromView: sampleSizeChanged
+                }
             },
             success: function (response) {
                 if (response['error'] !== undefined) {

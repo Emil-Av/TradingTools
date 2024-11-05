@@ -5,6 +5,9 @@ namespace Models
 {
     public class SampleSize
     {
+        public SampleSize()
+        {
+        }
         public int Id { get; set; }
 
         public Strategy Strategy { get; set; }
@@ -13,9 +16,12 @@ namespace Models
 
         public TradeType TradeType { get; set; }
 
+        /// <summary>
+        ///  ReviewId is null for research trades.
+        /// </summary>
         public int? ReviewId { get; set; }
 
         [ForeignKey(nameof(ReviewId))]
-        public Review Review { get; set; }
+        public Review? Review { get; set; }
     }
 }

@@ -1,17 +1,12 @@
 ﻿using Shared.Enums;
 using SharedEnums.Enums;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Models.ViewModels.DisplayClasses
 {
     public class TradeDisplay
     {
-        public string IdDisplay { get; set; }
+        public string? IdDisplay { get; set; }
         public string? SymbolDisplay { get; set; }
 
         public string? TriggerPriceDisplay { get; set; }
