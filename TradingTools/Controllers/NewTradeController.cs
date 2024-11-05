@@ -74,19 +74,11 @@ namespace TradingTools.Controllers
             {
                 if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
                 {
-                    ResearchFirstBarPullbackDisplay viewData = NewTradeVM.ResearchData as ResearchFirstBarPullbackDisplay;
-                    // Save the values from the view and return a DB entity. The entity contains the SampleSizeId.
-                    ResearchFirstBarPullback newResearchTrade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(viewData, existingEntity: null);
-                    var sampleSizeData = await ProcessSampleSize(maxTradesProSampleSize: 100);
-                    newResearchTrade.SampleSizeId = sampleSizeData.id;
-                    await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newResearchTrade, files);
-
-                    _unitOfWork.ResearchFirstBarPullback.Add(newResearchTrade);
-                    await _unitOfWork.SaveAsync();
+                    await SaveResearchData(maxTradesProSampleSize: 100);
                 }
-                else
+                else if (NewTradeVM.Strategy == Strategy.Cradle)
                 {
-                    // Research other strategies
+
                 }
             }
             // Trades or PaperTrades
@@ -94,21 +86,9 @@ namespace TradingTools.Controllers
             {
                 if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
                 {
-                    ResearchFirstBarPullbackDisplay viewData = NewTradeVM.ResearchData as ResearchFirstBarPullbackDisplay;
-                    // Save the values from the view and return a DB entity.
-                    ResearchFirstBarPullback researchData = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(viewData, existingEntity: null);
-                    var sampleSizeData = await ProcessSampleSize(maxTradesProSampleSize: 20);
-                    researchData.SampleSizeId = sampleSizeData.id;
-                    _unitOfWork.ResearchFirstBarPullback.Add(researchData);
-                    await _unitOfWork.SaveAsync();
-
-                    // Save the values from the view and return a DB entity.
-                    PaperTrade newTrade = EntityMapper.ViewModelToEntity<PaperTrade, TradeDisplay>(NewTradeVM.TradeData, existingEntity: null);
-                    await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newTrade, files);
-                    newTrade.ResearchId = researchData.Id;
-                    newTrade.SampleSizeId = sampleSizeData.id;
-                    SetTradeParams(newTrade);
-
+                    ResearchFirstBarPullback researchData = await SaveResearchData(maxTradesProSampleSize: 20);
+                    PaperTrade newTrade = await SetNewTradeData(researchData);
+                   
                     // Set the new Journal reference
                     Journal journal = new();
                     _unitOfWork.Journal.Add(journal);
@@ -124,13 +104,40 @@ namespace TradingTools.Controllers
 
                 }
             }
-            // The other TradeParams (timeframe, strategy etc) are determined using the SampleSize data
-            void SetTradeParams(PaperTrade newTrade)
+
+            #region Helper Methods
+
+            async Task<PaperTrade> SetNewTradeData(ResearchFirstBarPullback researchData)
             {
+                PaperTrade newTrade = EntityMapper.ViewModelToEntity<PaperTrade, TradeDisplay>(NewTradeVM.TradeData, existingEntity: null);
+                await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newTrade, files);
+                newTrade.ResearchId = researchData.Id;
+                newTrade.SampleSizeId = researchData.SampleSizeId;
                 newTrade.Status = NewTradeVM.Status;
                 newTrade.SideType = NewTradeVM.SideType;
                 newTrade.OrderType = NewTradeVM.OrderType;
+
+                return newTrade;
             }
+
+            async Task<ResearchFirstBarPullback> SaveResearchData(int maxTradesProSampleSize)
+            {
+                ResearchFirstBarPullbackDisplay viewData = NewTradeVM.ResearchData as ResearchFirstBarPullbackDisplay;
+                // Convert the ViewData into DB entity
+                ResearchFirstBarPullback researchData = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(viewData, existingEntity: null);
+                researchData.SampleSizeId = (await ProcessSampleSize(maxTradesProSampleSize: maxTradesProSampleSize)).id;
+                // Called for a research trade
+                if (maxTradesProSampleSize == 100)
+                {
+                    await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, researchData, files);
+                }
+                _unitOfWork.ResearchFirstBarPullback.Add(researchData);
+                await _unitOfWork.SaveAsync();
+
+                return researchData;
+            }
+
+            #endregion
         }
 
         /// <summary>

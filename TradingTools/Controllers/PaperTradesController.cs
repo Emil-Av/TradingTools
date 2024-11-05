@@ -89,11 +89,7 @@ namespace TradingTools.Controllers
             Review review = await _unitOfWork.Review.GetAsync(x => x.Id == data.CurrentSampleSize.Review.Id);
             if (review != null)
             {
-                review.First = data.CurrentSampleSize.Review.First;
-                review.Second = data.CurrentSampleSize.Review.Second;
-                review.Third = data.CurrentSampleSize.Review.Third;
-                review.Forth = data.CurrentSampleSize.Review.Forth;
-                review.Summary = data.CurrentSampleSize.Review.Summary;
+                SetReviewValues();
                 await _unitOfWork.Review.UpdateAsync(review);
                 await _unitOfWork.SaveAsync();
 
@@ -104,6 +100,16 @@ namespace TradingTools.Controllers
                 return Json(new { error = $"The review for sample size with ID {data.CurrentTrade.SampleSizeId} wasn't found in the data base." });
             }
 
+            #region Helper Methods
+
+            void SetReviewValues()
+            {
+                review.First = data.CurrentSampleSize.Review.First;
+                review.Second = data.CurrentSampleSize.Review.Second;
+                review.Third = data.CurrentSampleSize.Review.Third;
+                review.Forth = data.CurrentSampleSize.Review.Forth;
+                review.Summary = data.CurrentSampleSize.Review.Summary;
+            }
 
             bool CanUpdateReview(out string errorMsg)
             {
@@ -131,6 +137,8 @@ namespace TradingTools.Controllers
 
                 return true;
             }
+
+            #endregion
         }
 
         [HttpPost]
@@ -147,14 +155,23 @@ namespace TradingTools.Controllers
             Journal journal = await _unitOfWork.Journal.GetAsync(x => x.Id == data.CurrentTrade.JournalId);
             if (journal != null)
             {
-                journal.Pre = data.CurrentTrade.Journal.Pre;
-                journal.During = data.CurrentTrade.Journal.During;
-                journal.Exit = data.CurrentTrade.Journal.Exit;
-                journal.Post = data.CurrentTrade.Journal.Post;
+                SetJournalValues();
                 await _unitOfWork.Journal.UpdateAsync(journal);
                 await _unitOfWork.SaveAsync();
             }
             return Json(new { success = "Journal updated." });
+
+            #region Helper Methods
+
+            void SetJournalValues()
+            {
+                journal.Pre = data.CurrentTrade.Journal.Pre;
+                journal.During = data.CurrentTrade.Journal.During;
+                journal.Exit = data.CurrentTrade.Journal.Exit;
+                journal.Post = data.CurrentTrade.Journal.Post;
+            }
+
+            #endregion
         }
 
         public async Task<IActionResult> LoadTrade(LoadTradeParams tradeParams)
@@ -170,7 +187,7 @@ namespace TradingTools.Controllers
 
 
             List<SampleSize> listSampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.Strategy == tradeParams.Strategy && x.TimeFrame == tradeParams.TimeFrame && x.TradeType == tradeParams.TradeType);
-            // If no sample size is found for the strategy and time frame, then there are no trades for them
+            // If no sample size is found for the strategy and time frame, there are no trades for this params
             if (listSampleSizes.Count == 0)
             {
                 return Json(new { info = $"No trades for the selected trade paramaters." });
@@ -184,6 +201,7 @@ namespace TradingTools.Controllers
             {
                 return Json(new { info = $"No trades for the selected trade paramaters." });
             }
+
             SetAjaxResponseValues();
 
             // Send the response
@@ -246,7 +264,7 @@ namespace TradingTools.Controllers
                 return View(PaperTradesVM);
             }
 
-            string errorMsg = await LoadViewModelData(sampleSizes);
+            string errorMsg = await SetViewModelData(sampleSizes);
             if (!string.IsNullOrEmpty(errorMsg))
             {
                 PaperTradesVM.ErrorMsg = errorMsg;
@@ -255,7 +273,7 @@ namespace TradingTools.Controllers
             return View(PaperTradesVM);
         }
 
-        private async Task<string> LoadViewModelData(List<SampleSize> sampleSizes)
+        private async Task<string> SetViewModelData(List<SampleSize> sampleSizes)
         {
             string errorMsg = string.Empty;
             PaperTradesVM.CurrentSampleSize = sampleSizes.Last();
@@ -280,25 +298,34 @@ namespace TradingTools.Controllers
             SanitizationHelper.SanitizeObject(PaperTradesVM.CurrentSampleSize.Review);
             PaperTradesVM.TradeData = EntityMapper.EntityToViewModel<Trade, TradeDisplay>(PaperTradesVM.CurrentTrade);
 
-            // Set Available TimeFrames and Strategies
-            foreach (SampleSize sampleSize in sampleSizes)
-            {
-                if (!PaperTradesVM.AvailableTimeframes.Contains(sampleSize.TimeFrame))
-                {
-                    PaperTradesVM.AvailableTimeframes.Add(sampleSize.TimeFrame);
-                }
-                // Set the time frames in ascending order
-                PaperTradesVM.AvailableTimeframes.Sort();
-
-                if (!PaperTradesVM.AvailableStrategies.Contains(sampleSize.Strategy))
-                {
-                    PaperTradesVM.AvailableStrategies.Add(sampleSize.Strategy);
-                }
-                // Sort the strategies in ascending order
-                PaperTradesVM.AvailableStrategies.Sort();
-            }
+            SetAvailableMenus();
 
             return errorMsg;
+
+            #region Helper Methods
+
+            void SetAvailableMenus()
+            {
+                // Set Available TimeFrames and Strategies
+                foreach (SampleSize sampleSize in sampleSizes)
+                {
+                    if (!PaperTradesVM.AvailableTimeframes.Contains(sampleSize.TimeFrame))
+                    {
+                        PaperTradesVM.AvailableTimeframes.Add(sampleSize.TimeFrame);
+                    }
+                    // Set the time frames in ascending order
+                    PaperTradesVM.AvailableTimeframes.Sort();
+
+                    if (!PaperTradesVM.AvailableStrategies.Contains(sampleSize.Strategy))
+                    {
+                        PaperTradesVM.AvailableStrategies.Add(sampleSize.Strategy);
+                    }
+                    // Sort the strategies in ascending order
+                    PaperTradesVM.AvailableStrategies.Sort();
+                }
+            }
+
+            #endregion
         }
 
         /// <summary>
