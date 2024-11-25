@@ -40,7 +40,8 @@ namespace Shared
             {
                 { "Pending", Status.Pending },
                 { "Opened", Status.Opened },
-                { "Closed", Status.Closed }
+                { "Closed", Status.Closed },
+                { "All", Status.All }
             };
 
             try
@@ -76,7 +77,7 @@ namespace Shared
             Dictionary<string, TradeType> tradeTypes = new Dictionary<string, TradeType>()
             {
                 { "Trade", TradeType.Trade },
-                { "PaperTrade" , TradeType.PaperTrade },
+                { "Paper Trade" , TradeType.PaperTrade },
                 { "Research", TradeType.Research },
             };
 
@@ -95,7 +96,7 @@ namespace Shared
             Dictionary<TradeType, string> tradeTypes = new Dictionary<TradeType, string>()
             {
                 { TradeType.Trade , "Trade"},
-                { TradeType.PaperTrade, "PaperTrade" },
+                { TradeType.PaperTrade, "Paper Trade" },
                 { TradeType.Research, "Research" },
             };
 

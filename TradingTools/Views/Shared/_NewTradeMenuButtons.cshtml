@@ -10,6 +10,10 @@
         <div class="dropdown-menu animated--fade-in" id="dropdownBtnStatus" aria-labelledby="dropdownMenuButton">
             @foreach (Status status in Enum.GetValues(typeof(Status)))
             {
+                if (status == Status.All)
+                {
+                    continue;
+                }
                 <a class="dropdown-item" role="button">@status.ToString()</a>
             }
         </div>
@@ -53,7 +57,7 @@
         <div class="dropdown-menu animated--fade-in" id="dropdownBtnTradeType" aria-labelledby="dropdownMenuButton">
             @foreach (TradeType tradeType in Enum.GetValues(typeof(TradeType)))
             {
-                <a class="dropdown-item" role="button">@tradeType.ToString()</a>
+                <a class="dropdown-item" role="button">@MyEnumConverter.TradeTypeFromEnum(tradeType)</a>
             }
         </div>
     </div>

@@ -11,6 +11,7 @@ using Shared;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Linq;
 using Models.ViewModels.DisplayClasses;
+using NuGet.ProjectModel;
 
 
 namespace TradingTools.Controllers
@@ -32,6 +33,7 @@ namespace TradingTools.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private UserSettings? userSettings;
+        private const TradeType _defaultTradeType = TradeType.PaperTrade;
 
         #endregion
 
@@ -178,33 +180,52 @@ namespace TradingTools.Controllers
         {
             if (tradeParams != null)
             {
-                tradeParams.ConvertValuesFromView();
+                tradeParams.ConvertParamsFromView();
             }
             else
             {
                 return Json(new { error = "tradeParams was null." });
             }
 
+            List<SampleSize> sampleSizes = await GetSampleSizesForTradeParams(tradeParams);
 
-            List<SampleSize> listSampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.Strategy == tradeParams.Strategy && x.TimeFrame == tradeParams.TimeFrame && x.TradeType == tradeParams.TradeType);
-            // If no sample size is found for the strategy and time frame, there are no trades for this params
-            if (listSampleSizes.Count == 0)
+            if (sampleSizes.Count == 0)
             {
                 return Json(new { info = $"No trades for the selected trade paramaters." });
             }
             int sampleSizeId = GetCurrentSampleSizeId();
+            List<PaperTrade> listTrades;
 
-            List<PaperTrade> sampleSizeTrades = await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == sampleSizeId);
-            
+            if (tradeParams.Status == Status.All)
+            {
+                // Working on changing the status of a trade. All trades with this status must be shown and the trade menus bust be set properly
+                listTrades = (await _unitOfWork.PaperTrade
+                            .GetAllAsync(x => x.TradeType == tradeParams.TradeType && x.SampleSizeId == sampleSizeId))
+                            .Where(trade => tradeParams.Status == Status.All || trade.Status == tradeParams.Status)
+                            .ToList();
+            }
+            else
+            {
+                listTrades = (await _unitOfWork.PaperTrade
+                                                .GetAllAsync(x => x.SampleSize.Strategy == tradeParams.Strategy && 
+                                                                  x.TradeType == tradeParams.TradeType && 
+                                                                  x.SampleSize.TimeFrame == tradeParams.TimeFrame));
+            }
+
             SetCurrentTrade();
             if (PaperTradesVM.CurrentTrade == null)
             {
                 return Json(new { info = $"No trades for the selected trade paramaters." });
             }
+            if (tradeParams.Status == Status.All)
+            {
+                await SetViewDataStatusAll(sampleSizes);
+            }
+            else
+            {
+                await SetViewDataStatusNotAll(sampleSizes);
+            }
 
-            SetAjaxResponseValues();
-
-            // Send the response
             return Json(new { paperTradesVM = PaperTradesVM });
 
             #region Helper Methods
@@ -214,37 +235,104 @@ namespace TradingTools.Controllers
                 // If different paramaters were selected
                 if (tradeParams.ShowLastTrade)
                 {
-                    PaperTradesVM.CurrentTrade = sampleSizeTrades.LastOrDefault(x => x.Status == tradeParams.Status && x.TradeType == tradeParams.TradeType && x.SideType == tradeParams.SideType && x.OrderType == tradeParams.OrderType);
+                    PaperTradesVM.CurrentTrade = listTrades.LastOrDefault();
+                }
+                else if (listTrades.Count == 1)
+                {
+                    PaperTradesVM.CurrentTrade = listTrades.FirstOrDefault();
                 }
                 // Same sample size, same paramaters, just another trade number
                 else
                 {
-                    PaperTradesVM.CurrentTrade = sampleSizeTrades[tradeParams.TradeNumber - 1];
+                    PaperTradesVM.CurrentTrade = listTrades[tradeParams.TradeNumber - 1];
                 }
             }
 
             int GetCurrentSampleSizeId()
             {
-                int sampleSizeId;
-                PaperTradesVM.CurrentSampleSize = listSampleSizes[tradeParams.SampleSizeNumber - 1];
-                if (tradeParams.SampleSizeChanged || !tradeParams.ShowLastTrade)
+                List<SampleSize> tempSampleSizes = FilterSampleSizes();
+                SetCurrentSampleSize();
+                int id = SetCurrentSampleSizeNumberAndId();
+
+                return id;
+
+                #region Helpers
+
+                int SetCurrentSampleSizeNumberAndId()
                 {
-                    sampleSizeId = listSampleSizes[tradeParams.SampleSizeNumber - 1].Id;
-                    PaperTradesVM.CurrentSampleSizeNumber = tradeParams.SampleSizeNumber;
-                }
-                else
-                {
-                    sampleSizeId = listSampleSizes.LastOrDefault().Id;
-                    PaperTradesVM.CurrentSampleSizeNumber = listSampleSizes.Count;
+                    if (tradeParams.SampleSizeChanged || !tradeParams.ShowLastTrade)
+                    {
+                        id = tempSampleSizes[tradeParams.SampleSizeNumber - 1].Id;
+                        PaperTradesVM.CurrentSampleSizeNumber = tradeParams.SampleSizeNumber;
+                    }
+                    else
+                    {
+                        id = tempSampleSizes.LastOrDefault()!.Id;
+                        PaperTradesVM.CurrentSampleSizeNumber = tempSampleSizes.Count;
+                    }
+
+                    return id;
                 }
 
-                return sampleSizeId;
+                void SetCurrentSampleSize()
+                {
+                    if (tradeParams.SampleSizeNumber - 1 <= tempSampleSizes.Count)
+                    {
+                        PaperTradesVM.CurrentSampleSize = tempSampleSizes[tradeParams.SampleSizeNumber - 1];
+                    }
+                    else
+                    {
+                        PaperTradesVM.CurrentSampleSize = tempSampleSizes.LastOrDefault()!;
+                    }
+                }
+
+                List<SampleSize> FilterSampleSizes()
+                {
+                    List<SampleSize> temp;
+                    if (tradeParams.Status == Status.All)
+                    {
+                        temp = sampleSizes.Where(sampleSize => sampleSize.TimeFrame == tradeParams.TimeFrame).ToList();
+                    }
+                    else
+                    {
+                        temp = sampleSizes;
+                    }
+
+                    return temp;
+                }
+
+                #endregion
+
             }
 
-            async void SetAjaxResponseValues()
+            async Task SetViewDataStatusNotAll(List<SampleSize> sampleSizes)
             {
-                PaperTradesVM.NumberSampleSizes = listSampleSizes.Count();
-                PaperTradesVM.TradesInSampleSize = (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == sampleSizeId)).Count();
+                PaperTradesVM.NumberSampleSizes = -1;
+                PaperTradesVM.TradesInTimeFrame =
+                                                (await _unitOfWork.PaperTrade.GetAllAsync(x =>
+                                                x.TradeType == tradeParams.TradeType &&
+                                                x.SampleSize!.TimeFrame == tradeParams.TimeFrame))
+                                                .Count();
+                await SetJournalAndReviewData();
+                SetAvailableMenus(sampleSizes);
+            }
+
+            async Task SetViewDataStatusAll(List<SampleSize> sampleSizes)
+            {
+                PaperTradesVM.NumberSampleSizes = sampleSizes.Count();
+                PaperTradesVM.TradesInSampleSize =
+                                                (await _unitOfWork.PaperTrade.GetAllAsync(x =>
+                                                x.TradeType == tradeParams.TradeType &&
+                                                x.SampleSizeId == sampleSizeId &&
+                                                (tradeParams.Status == Status.All || x.Status == tradeParams.Status)))
+                                                .Count();
+
+                await SetJournalAndReviewData();
+                SetAvailableMenus(sampleSizes);
+            }
+
+            async Task SetJournalAndReviewData()
+            {
                 PaperTradesVM.CurrentTrade.Journal = await _unitOfWork.Journal.GetAsync(x => x.Id == PaperTradesVM.CurrentTrade!.JournalId);
                 SanitizationHelper.SanitizeObject(PaperTradesVM.CurrentTrade.Journal);
                 int? reviewID = (await _unitOfWork.SampleSize.GetAsync(x => x.Id == PaperTradesVM.CurrentTrade!.SampleSizeId)).ReviewId;
@@ -256,73 +344,133 @@ namespace TradingTools.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            // Get the latest sample size for the strategy and time frame
-            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.PaperTrade);
+            List<SampleSize> sampleSizes = await GetSampleSizesForTradeParams();
 
             if (!sampleSizes.Any())
             {
                 return View(PaperTradesVM);
             }
 
-            string errorMsg = await SetViewModelData(sampleSizes);
-            if (!string.IsNullOrEmpty(errorMsg))
+            bool hasCurrentTrade = await SetViewModelData(sampleSizes);
+            if (!hasCurrentTrade)
             {
-                PaperTradesVM.ErrorMsg = errorMsg;
+                PaperTradesVM.ErrorMsg = "No trade for the selected paramaters.";
             }
 
             return View(PaperTradesVM);
         }
 
-        private async Task<string> SetViewModelData(List<SampleSize> sampleSizes)
+        private void SetAvailableMenus(List<SampleSize> sampleSizes)
         {
-            string errorMsg = string.Empty;
-            PaperTradesVM.CurrentSampleSize = sampleSizes.Last();
-            // Get the last trade of the sample size
-            PaperTradesVM.CurrentTrade =
-                (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == PaperTradesVM.CurrentSampleSize.Id)).LastOrDefault()!;
-            // No trades yet
-            if (PaperTradesVM.CurrentTrade == null)
+            // Set Available TimeFrames and Strategies
+            foreach (SampleSize sampleSize in sampleSizes)
             {
-                return string.Empty;
+                if (!PaperTradesVM.AvailableTimeframes.Contains(sampleSize.TimeFrame))
+                {
+                    PaperTradesVM.AvailableTimeframes.Add(sampleSize.TimeFrame);
+                }
+                // Set the time frames in ascending order
+                PaperTradesVM.AvailableTimeframes.Sort();
+
+                if (!PaperTradesVM.AvailableStrategies.Contains(sampleSize.Strategy))
+                {
+                    PaperTradesVM.AvailableStrategies.Add(sampleSize.Strategy);
+                }
+                // Sort the strategies in ascending order
+                PaperTradesVM.AvailableStrategies.Sort();
+            }
+        }
+
+        private async Task<List<SampleSize>> GetSampleSizesForTradeParams(LoadTradeParams tradeParams = null)
+        {
+            Status tradeStatus;
+            if (tradeParams == null)
+            {
+                tradeStatus = PaperTradesVM.DefaultTradeStatus;
+            }
+            else
+            {
+                tradeStatus = tradeParams.Status;
             }
 
-            // Get the number of sample sizes for the time frame and strategy
-            PaperTradesVM.NumberSampleSizes = sampleSizes.Where(x => x.Strategy == PaperTradesVM.CurrentSampleSize.Strategy && x.TimeFrame == PaperTradesVM.CurrentSampleSize.TimeFrame).Count();
-            // Get the number of trades for the sample size
-            PaperTradesVM.TradesInSampleSize =
-                (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == PaperTradesVM.CurrentSampleSize.Id)).Count();
-            PaperTradesVM.CurrentTrade.Journal = await _unitOfWork.Journal.GetAsync(x => x.Id == PaperTradesVM.CurrentTrade.JournalId);
-            SanitizationHelper.SanitizeObject(PaperTradesVM.CurrentTrade.Journal);
-            int? reviewID = (await _unitOfWork.SampleSize.GetAsync(x => x.Id == PaperTradesVM.CurrentTrade!.SampleSizeId)).ReviewId;
-            PaperTradesVM.CurrentSampleSize.Review = await _unitOfWork.Review.GetAsync(x => x.Id == reviewID);
-            SanitizationHelper.SanitizeObject(PaperTradesVM.CurrentSampleSize.Review);
-            PaperTradesVM.TradeData = EntityMapper.EntityToViewModel<Trade, TradeDisplay>(PaperTradesVM.CurrentTrade);
+            List<int> sampleSizeIds = (await _unitOfWork.PaperTrade
+                                            .GetAllAsync(trade =>
+                                            tradeStatus == Status.All || trade.Status == tradeStatus))
+                                            .Select(trade => trade.SampleSizeId)
+                                            .Distinct()
+                                            .ToList();
+            if (sampleSizeIds.Count == 0 && tradeParams == null)
+            {
+                sampleSizeIds = await GetSampleSizeIdsForAnyTrade();
+            }
+            List<SampleSize> listSampleSizes = new List<SampleSize>();
+            foreach (int id in sampleSizeIds)
+            {
+                SampleSize sampleSize = await _unitOfWork.SampleSize.GetAsync(sampleSize => sampleSize.Id == id);
+                listSampleSizes.Add(sampleSize);
+            }
 
-            SetAvailableMenus();
-
-            return errorMsg;
+            return listSampleSizes;
 
             #region Helper Methods
 
-            void SetAvailableMenus()
+            async Task<List<int>> GetSampleSizeIdsForAnyTrade()
             {
-                // Set Available TimeFrames and Strategies
-                foreach (SampleSize sampleSize in sampleSizes)
-                {
-                    if (!PaperTradesVM.AvailableTimeframes.Contains(sampleSize.TimeFrame))
-                    {
-                        PaperTradesVM.AvailableTimeframes.Add(sampleSize.TimeFrame);
-                    }
-                    // Set the time frames in ascending order
-                    PaperTradesVM.AvailableTimeframes.Sort();
+                return (await _unitOfWork.PaperTrade.GetAllAsync())
+                                                        .Select(trade => trade.SampleSizeId)
+                                                        .Distinct()
+                                                        .ToList();
+            }
 
-                    if (!PaperTradesVM.AvailableStrategies.Contains(sampleSize.Strategy))
-                    {
-                        PaperTradesVM.AvailableStrategies.Add(sampleSize.Strategy);
-                    }
-                    // Sort the strategies in ascending order
-                    PaperTradesVM.AvailableStrategies.Sort();
+            #region
+        }
+
+        private async Task<bool> SetViewModelData(List<SampleSize> sampleSizes)
+        {
+            PaperTradesVM.CurrentSampleSize = sampleSizes.Last();
+
+            bool hasCurrentTrade = await SetCurrentTradeValues();
+            if (!hasCurrentTrade)
+            {
+                return false;
+            }
+
+            await SetSampleSizeValues();
+            PaperTradesVM.TradeData = EntityMapper.EntityToViewModel<Trade, TradeDisplay>(PaperTradesVM.CurrentTrade);
+            SetAvailableMenus(sampleSizes);
+
+            return hasCurrentTrade;
+
+            #region Helper Methods
+
+            async Task SetSampleSizeValues()
+            {
+                PaperTradesVM.NumberSampleSizes =
+                    sampleSizes.Where(x => x.Strategy == PaperTradesVM.CurrentSampleSize.Strategy && x.TimeFrame == PaperTradesVM.CurrentSampleSize.TimeFrame)
+                               .Count();
+                // Get the number of trades for the sample size
+                PaperTradesVM.TradesInSampleSize =
+                    (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == PaperTradesVM.CurrentSampleSize.Id)).Count();
+
+                int? reviewID = (await _unitOfWork.SampleSize.GetAsync(x => x.Id == PaperTradesVM.CurrentTrade!.SampleSizeId)).ReviewId;
+                PaperTradesVM.CurrentSampleSize.Review = await _unitOfWork.Review.GetAsync(x => x.Id == reviewID);
+                SanitizationHelper.SanitizeObject(PaperTradesVM.CurrentSampleSize.Review);
+            }
+
+            async Task<bool> SetCurrentTradeValues()
+            {
+                PaperTradesVM.CurrentTrade =
+                (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == PaperTradesVM.CurrentSampleSize.Id)).LastOrDefault();
+
+                if (PaperTradesVM.CurrentTrade == null)
+                {
+                    return false;
                 }
+                PaperTradesVM.CurrentTrade.Journal = await _unitOfWork.Journal.GetAsync(x => x.Id == PaperTradesVM.CurrentTrade.JournalId);
+                SanitizationHelper.SanitizeObject(PaperTradesVM.CurrentTrade.Journal);
+                PaperTradesVM.CurrentTrade.TradeType = _defaultTradeType;
+
+                return true;
             }
 
             #endregion
@@ -518,9 +666,9 @@ namespace TradingTools.Controllers
                 }
             }
         }
+        #endregion
     }
 
     #endregion
-
 }
-
+#endregion

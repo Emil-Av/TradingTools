@@ -18,6 +18,11 @@ namespace Models.ViewModels
         }
         public int TradesInSampleSize { get; set; }
 
+        /// <summary>
+        ///  Relevant when Status != All
+        /// </summary>
+        public int TradesInTimeFrame { get; set; }
+
         // The number of sample sizes for a strategy and time frame
         public int NumberSampleSizes { get; set; }
 
@@ -36,5 +41,10 @@ namespace Models.ViewModels
         public List<Strategy> AvailableStrategies { get; set; }
 
         public List<TimeFrame> AvailableTimeframes { get; set; }
+
+        public Status DefaultTradeStatus { get; set; } = Status.All;
+
+        public TimeFrame DefaultTimeFrame { get; set; } = TimeFrame.M10;
+
     }
 }

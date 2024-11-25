@@ -328,8 +328,6 @@ $(function () {
         '#dropdownBtnTimeFrame': '#spanTimeFrame',
         '#dropdownBtnStrategy': '#spanStrategy',
         '#dropdownBtnTradeType': '#spanTradeType',
-        '#dropdownBtnTradeSide': '#spanTradeSide',
-        '#dropdownBtnOrderType': '#spanOrderType',
         '#dropdownBtnSampleSize': '#spanSampleSize',
         '#dropdownBtnTrade': '#spanTrade'
     };
@@ -366,8 +364,6 @@ $(function () {
                     $('#spanTimeFrame').text(),
                     $('#spanStrategy').text(),
                     $('#spanTradeType').text(),
-                    $('#spanTradeSide').text(),
-                    $('#spanOrderType').text(),
                     $('#spanSampleSize').text(),
                     $('#spanTrade').text(),
                     showLastTrade,
@@ -378,7 +374,6 @@ $(function () {
 
     // Mark the selected drop down item of the buttons on the top
     function setSelectedItemClass() {
-        // Set the "selected item" color
         for (let key in menuButtons) {
             $(key + ' a').each(function () {
                 if ($(this).text() === $(menuButtons[key]).text()) {
@@ -390,8 +385,7 @@ $(function () {
             })
         }
     }
-    // API call to load the selected trade
-    function loadTrade(status, timeFrame, strategy, tradeType, tradeSide, orderType, sampleSize, trade, showLastTrade, sampleSizeChanged) {
+    function loadTrade(status, timeFrame, strategy, tradeType, sampleSize, trade, showLastTrade, sampleSizeChanged) {
         $.ajax({
             method: 'POST',
             url: '/papertrades/loadtrade',
@@ -402,8 +396,6 @@ $(function () {
                     TimeFrameFromView: timeFrame,
                     StrategyFromView: strategy,
                     TradeTypeFromView: tradeType,
-                    SideTypeFromView: tradeSide,
-                    OrderTypeFromView: orderType,
                     SampleSizeNumberFromView: sampleSize,
                     TradeNumberFromView: trade,
                     ShowLastTradeFromView: showLastTrade,
@@ -425,10 +417,10 @@ $(function () {
                 }
                 paperTradesVM = response;
                 // Set the new trade id
-                $("#spanTradeIdInput").val(response['paperTradesVM']['currentTrade']['id']);
+                $("#spanTradeIdInput").val(paperTradesVM['paperTradesVM']['currentTrade']['id']);
                 // Set the sample size id
-                $("#spanSampleSizeIdInput").val(response['paperTradesVM']['currentTrade']['sampleSizeId']);
-                $('#spanJournalIdInput').val(response['paperTradesVM']['currentTrade']['journalId']);
+                $("#spanSampleSizeIdInput").val(paperTradesVM['paperTradesVM']['currentTrade']['sampleSizeId']);
+                $('#spanJournalIdInput').val(paperTradesVM['paperTradesVM']['currentTrade']['journalId']);
                 setMenuValues(trade);
                 setSelectedItemClass();
                 loadImages();
@@ -490,9 +482,34 @@ $(function () {
         }
         $('#dropdownBtnTrade').html(trades);
 
+        setTimeFrameMenu(paperTradesVM['paperTradesVM']['availableTimeframes']);
+
         // Menu card header
         currentCardMenu = journal;
         $('#cardMenuTradeData').trigger('click');
+    }
+
+    function setTimeFrameMenu(timeframes) {
+
+        const timeFrameMapping = {
+            0: "5M",
+            1: "10M",
+            2: "15M",
+            3: "30M",
+            4: "1H",
+            5: "2H",
+            6: "4H",
+            7: "D"
+        }
+
+        $('#dropdownBtnTimeFrame').empty();
+        let availableTimeFrames = '';
+        let j = 0;
+        for (let i = timeframes.length - 1; i >= 0; i--) {
+            availableTimeFrames += '<a class="dropdown-item" role="button">' + timeFrameMapping[timeframes[j]] + '</a>';
+            j++;
+        }
+        $('#dropdownBtnTimeFrame').html(availableTimeFrames);
     }
 
     // Load the images into the carousel

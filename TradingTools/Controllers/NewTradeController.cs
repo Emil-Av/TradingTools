@@ -44,7 +44,7 @@ namespace TradingTools.Controllers
             {
                 return Json(new { error = "Trade values are empty." });
             }
-            // Set the values of NewTradeVM properties
+
             string errorMsg = NewTradeVM.SetValues(tradeParams, researchData, tradeData);
             if (!string.IsNullOrEmpty(errorMsg))
             {
@@ -81,21 +81,16 @@ namespace TradingTools.Controllers
 
                 }
             }
-            // Trades or PaperTrades
+            // Trades or Paper Trades
             else
             {
                 if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
                 {
                     ResearchFirstBarPullback researchData = await SaveResearchData(maxTradesProSampleSize: 20);
                     PaperTrade newTrade = await SetNewTradeData(researchData);
-                   
-                    // Set the new Journal reference
-                    Journal journal = new();
-                    _unitOfWork.Journal.Add(journal);
-                    await _unitOfWork.SaveAsync();
-                    newTrade.JournalId = journal.Id;
 
-                    // Save the new trade
+                    await CreateJournal(newTrade);
+
                     _unitOfWork.PaperTrade.Add(newTrade);
                     await _unitOfWork.SaveAsync();
                 }
@@ -106,6 +101,14 @@ namespace TradingTools.Controllers
             }
 
             #region Helper Methods
+
+            async Task CreateJournal(PaperTrade newTrade)
+            {
+                Journal journal = new();
+                _unitOfWork.Journal.Add(journal);
+                await _unitOfWork.SaveAsync();
+                newTrade.JournalId = journal.Id;
+            }
 
             async Task<PaperTrade> SetNewTradeData(ResearchFirstBarPullback researchData)
             {

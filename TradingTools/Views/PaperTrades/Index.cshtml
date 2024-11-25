@@ -29,12 +29,40 @@
             <div class="container mb-4">
                 <div class="row justify-content-center">
                     <div class="col-12 col-md-auto d-flex align-items-center flex-wrap justify-content-center">
+                        <!-- Menu Strategy -->
+                        <div class="col-auto p-2">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Strategy: <span id="spanStrategy">@MyEnumConverter.StrategyFromEnum(Model.CurrentSampleSize.Strategy)</span>
+                                </button>
+                                <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
+                                    @foreach (Strategy strategy in Model.AvailableStrategies)
+                                    {
+                                        <a class="dropdown-item" role="button">@MyEnumConverter.StrategyFromEnum(strategy)</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Menu Trade Type -->
+                        <div class="col-auto p-2">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Type: <span id="spanTradeType">@MyEnumConverter.TradeTypeFromEnum(Model.CurrentTrade.TradeType)</span>
+                                </button>
+                                <div class="dropdown-menu animated--fade-in" id="dropdownBtnTradeType" aria-labelledby="dropdownMenuButton">
+                                    @foreach (TradeType tradeType in Enum.GetValues(typeof(TradeType)))
+                                    {
+                                        <a class="dropdown-item" role="button">@MyEnumConverter.TradeTypeFromEnum(tradeType)</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
                         <!-- Menu Status -->
                         <div class="col-auto p-2">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Status: <span id="spanStatus">@Model.CurrentTrade.Status</span>
+                                    Status: <span id="spanStatus">@Model.DefaultTradeStatus</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="dropdownBtnStatus" aria-labelledby="dropdownMenuButton">
                                     @foreach (Status status in Enum.GetValues(typeof(Status)))
@@ -59,62 +87,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Menu Strategy -->
-                        <div class="col-auto p-2">
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Strategy: <span id="spanStrategy">@MyEnumConverter.StrategyFromEnum(Model.CurrentSampleSize.Strategy)</span>
-                                </button>
-                                <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
-                                    @foreach (Strategy strategy in Model.AvailableStrategies)
-                                    {
-                                        <a class="dropdown-item" role="button">@MyEnumConverter.StrategyFromEnum(strategy)</a>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Menu Trade Type -->
-                        <div class="col-auto p-2">
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Type: <span id="spanTradeType">@Model.CurrentTrade.TradeType</span>
-                                </button>
-                                <div class="dropdown-menu animated--fade-in" id="dropdownBtnTradeType" aria-labelledby="dropdownMenuButton">
-                                    @foreach (TradeType tradeType in Enum.GetValues(typeof(TradeType)))
-                                    {
-                                        <a class="dropdown-item" role="button">@tradeType.ToString()</a>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Menu Trade Side -->
-                        <div class="col-auto p-2">
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Side: <span id="spanTradeSide">@Model.CurrentTrade.SideType</span>
-                                </button>
-                                <div class="dropdown-menu animated--fade-in" id="dropdownBtnTradeSide" aria-labelledby="dropdownMenuButton">
-                                    @foreach (SideType sideType in Enum.GetValues(typeof(SideType)))
-                                    {
-                                        <a class="dropdown-item" role="button">@sideType.ToString()</a>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Menu Order Type -->
-                        <div class="col-auto p-2">
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Order Type: <span id="spanOrderType">@Model.CurrentTrade.OrderType</span>
-                                </button>
-                                <div class="dropdown-menu animated--fade-in" id="dropdownBtnOrderType" aria-labelledby="dropdownMenuButton">
-                                    @foreach (OrderType orderType in Enum.GetValues(typeof(OrderType)))
-                                    {
-                                        <a class="dropdown-item" role="button">@MyEnumConverter.OrderTypeFromEnum(orderType)</a>
-                                    }
-                                </div>
-                            </div>
-                        </div>
+                        
                         <!-- Menu Sample Size -->
                         <div class="col-auto p-2">
                             <div class="dropdown">

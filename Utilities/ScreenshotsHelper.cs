@@ -57,14 +57,15 @@ namespace Utilities
                     }
                 }
 
-                // /Screenshots/Research/(typeResearch/)Sample Size 1(e.g.)
+                CreateTimeFrameFolder();
+
+                // /Screenshots/Research/(typeResearch/)TimeFrame/Sample Size 1(e.g.)
                 string[] sampleSizeFolders = Directory.GetDirectories(pathToSaveFiles);
                 if (sampleSizeFolders.Length > 0)
                 {
                     string lastSampleSizeFolder = sampleSizeFolders.Last();
-                    // Trade directories in the sample size e.g. Screenshots/Research/FirstBarPullback/Sample Size 1/Trade 2
+                    // Trade directories in the sample size e.g. Screenshots/Research/FirstBarPullback/10M/Sample Size 1/Trade 2
                     string[] tradesFolderInLastSampleSize = Directory.GetDirectories(lastSampleSizeFolder);
-                    //string[] tradesFolders = Directory.GetDirectories(tradesFolderInLastSampleSize[0]);
                     // Check the number of trades of the last sample size
                     if (tradesFolderInLastSampleSize.Length < 100)
                     {
@@ -129,6 +130,16 @@ namespace Utilities
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"Error in saving uploaded files: {ex.Message}");
+                }
+
+                void CreateTimeFrameFolder()
+                {
+                    string timeFrame = MyEnumConverter.TimeFrameFromEnum(viewModel.TimeFrame);
+                    pathToSaveFiles = Path.Combine(pathToSaveFiles, timeFrame);
+                    if (!Directory.Exists(pathToSaveFiles))
+                    {
+                        Directory.CreateDirectory(pathToSaveFiles);
+                    }
                 }
             }
             return screenshotsPaths;

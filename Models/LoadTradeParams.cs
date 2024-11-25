@@ -11,14 +11,12 @@ namespace Models
 {
     public class LoadTradeParams
     {
-        public void ConvertValuesFromView()
+        public void ConvertParamsFromView()
         {
             Result<Status> resultStatus = MyEnumConverter.StatusFromString(StatusFromView);
             Result<TimeFrame> resultTimeFrame = MyEnumConverter.TimeFrameFromString(TimeFrameFromView);
             Result<Strategy> resultStrategy = MyEnumConverter.StrategyFromString(StrategyFromView);
             Result<TradeType> resultTradeType = MyEnumConverter.TradeTypeFromString(TradeTypeFromView);
-            Result<SideType> resultSideType = MyEnumConverter.SideTypeFromString(TradeTypeFromView);
-            Result<OrderType> resultOrderType = MyEnumConverter.OrderTypeFromString(OrderTypeFromView);
 
             if (resultStatus.Success)
             {
@@ -36,14 +34,6 @@ namespace Models
             {
                 TradeType = resultTradeType.Value;
             }
-            if (resultSideType.Success)
-            {
-                SideType = resultSideType.Value;
-            }
-            if (resultOrderType.Success)
-            {
-                OrderType = resultOrderType.Value;
-            }
 
             SampleSizeNumber = int.Parse(SampleSizeNumberFromView);
             TradeNumber = int.Parse(TradeNumberFromView);
@@ -59,10 +49,6 @@ namespace Models
         public string StrategyFromView { get; set; }
 
         public string TradeTypeFromView { get; set; }
-
-        public string SideTypeFromView { get; set; }
-
-        public string OrderTypeFromView { get; set; }
 
         public string SampleSizeNumberFromView { get; set; }
 
@@ -91,10 +77,6 @@ namespace Models
         public Strategy Strategy { get; set; }
 
         public TradeType TradeType { get; set; }
-
-        public SideType SideType { get; set; }
-
-        public OrderType OrderType { get; set; }
 
         #endregion
     }
