@@ -341,8 +341,8 @@ $(function () {
                 // Save the old value. If there is no trade in the DB for the selected trade, the menu's old value should be displayed.
                 menuClicked = $(menuButtons[key]);
                 clickedMenuValue = $(menuButtons[key]).text();
-                // If the time frame,the strategy or the sample size has changed, then the latest trade must always be displayed. Used in SetMenuValues()
-                if (key != '#dropdownBtnTrade') {
+                // Status == 'All': if the time frame,the strategy or the sample size has changed, then the latest trade must always be displayed. Used in SetMenuValues()
+                if (key != '#dropdownBtnTrade' && $('#spanStatus') === 'All') {
                     showLastTrade = true;
                 }
                 else {
@@ -456,8 +456,8 @@ $(function () {
     // Populate the drop down items after a new trade has been selected and set the values in the spans.
     function setMenuValues(displayedTrade) {
         // Menu Buttons
-        let numberSampleSizes = paperTradesVM['paperTradesVM']['numberSampleSizes'];
-        let tradesInSampleSize = paperTradesVM['paperTradesVM']['tradesInSampleSize'];
+        let numberSampleSizes = paperTradesVM['paperTradesVM']['numberSampleSizes'] !== -1 ? paperTradesVM['paperTradesVM']['numberSampleSizes'] : '-';
+        let numberTrades = paperTradesVM['paperTradesVM']['tradesInSampleSize'] !== 0 ? paperTradesVM['paperTradesVM']['tradesInSampleSize'] : paperTradesVM['paperTradesVM']['tradesInTimeFrame'];
         // Set the SampleSize menu
         $('#spanSampleSize').text(paperTradesVM['paperTradesVM']['currentSampleSizeNumber']);
         $('#dropdownBtnSampleSize').empty();
@@ -469,7 +469,10 @@ $(function () {
         $('#dropdownBtnSampleSize').html(sampleSizes);
         // Set the Trades menu
         if (showLastTrade === true) {
-            $('#spanTrade').text(tradesInSampleSize);
+            $('#spanTrade').text(numberTrades);
+        }
+        else if (numberTrades < displayedTrade) {
+            $('#spanTrade').text(numberTrades);
         }
         else {
             $('#spanTrade').text(displayedTrade);
@@ -477,7 +480,7 @@ $(function () {
 
         $('#dropdownBtnTrade').empty();
         let trades = '';
-        for (let i = tradesInSampleSize; i > 0; i--) {
+        for (let i = numberTrades; i > 0; i--) {
             trades += '<a class="dropdown-item" role="button">' + i + '</a>'
         }
         $('#dropdownBtnTrade').html(trades);

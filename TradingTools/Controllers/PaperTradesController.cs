@@ -190,7 +190,7 @@ namespace TradingTools.Controllers
 
             List<SampleSize> sampleSizes = await GetSampleSizesForTradeParams(tradeParams);
 
-            if (sampleSizes.Count == 0)
+            if (!sampleSizes.Any())
             {
                 return Json(new { info = $"No trades for the selected trade paramaters." });
             }
@@ -229,10 +229,11 @@ namespace TradingTools.Controllers
                 }
                 else
                 {
-                    list = (await _unitOfWork.PaperTrade
+                    list = await _unitOfWork.PaperTrade
                                                     .GetAllAsync(x => x.SampleSize.Strategy == tradeParams.Strategy &&
                                                                       x.TradeType == tradeParams.TradeType &&
-                                                                      x.SampleSize.TimeFrame == tradeParams.TimeFrame));
+                                                                      x.SampleSize.TimeFrame == tradeParams.TimeFrame &&
+                                                                      x.Status == tradeParams.Status);
                 }
 
                 return list;
@@ -249,6 +250,18 @@ namespace TradingTools.Controllers
                 {
                     PaperTradesVM.CurrentTrade = listTrades.FirstOrDefault();
                 }
+                else if (tradeParams.Status != Status.All)
+                {
+                    if (tradeParams.TradeNumber > listTrades.Where(trade => trade.Status == tradeParams.Status).ToList().Count)
+                    {
+                        PaperTradesVM.CurrentTrade = listTrades.Where(trade => trade.Status == tradeParams.Status).ToList().LastOrDefault();
+                    }
+                    else
+                    {
+                        PaperTradesVM.CurrentTrade = listTrades.Where(trade => trade.Status == tradeParams.Status).ToList()[tradeParams.TradeNumber - 1];
+                    }
+                    
+                }
                 // Same sample size, same paramaters, just another trade number
                 else
                 {
@@ -258,7 +271,6 @@ namespace TradingTools.Controllers
 
             int GetCurrentSampleSizeId()
             {
-                //List<SampleSize> tempSampleSizes = FilterSampleSizes();
                 SetCurrentSampleSize();
                 int id = SetCurrentSampleSizeNumberAndId();
 
@@ -307,7 +319,8 @@ namespace TradingTools.Controllers
                 PaperTradesVM.TradesInTimeFrame =
                                                 (await _unitOfWork.PaperTrade.GetAllAsync(x =>
                                                 x.TradeType == tradeParams.TradeType &&
-                                                x.SampleSize!.TimeFrame == tradeParams.TimeFrame))
+                                                x.SampleSize!.TimeFrame == tradeParams.TimeFrame &&
+                                                x.Status == tradeParams.Status))
                                                 .Count();
                 await SetJournalAndReviewData();
                 SetAvailableMenus(sampleSizes);
@@ -405,28 +418,10 @@ namespace TradingTools.Controllers
                 SampleSize sampleSize = await _unitOfWork.SampleSize.GetAsync(sampleSize => sampleSize.Id == id);
                 listSampleSizes.Add(sampleSize);
             }
-            FilterSampleSizes();
 
             return listSampleSizes;
 
             #region Helper Methods
-
-            void FilterSampleSizes()
-            {
-                if (tradeParams != null && tradeParams.Status != Status.All)
-                {
-                    listSampleSizes = listSampleSizes.Where(sampleSize => sampleSize.TimeFrame == tradeParams.TimeFrame).ToList();
-                }
-
-                //if (tradeParams?.Status == Status.All)
-                //{
-                //    temp = listSampleSizes.Where(sampleSize => sampleSize.TimeFrame == tradeParams.TimeFrame).ToList();
-                //}
-                //else
-                //{
-                //    temp = listSampleSizes;
-                //}
-            }
 
             async Task<List<int>> GetSampleSizeIdsForAnyTrade()
             {
