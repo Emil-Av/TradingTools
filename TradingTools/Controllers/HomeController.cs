@@ -14,6 +14,12 @@ namespace TradingTools.Controllers
         {
             _unitOfWork = unitOfWork;
         }
+
+        public void CreateBackup()
+        {
+
+        }
+
         public async Task<IActionResult> Index()
         {
             await CheckOrCreateUserSettings();

@@ -40,9 +40,12 @@ namespace TradingTools.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveNewTrade([FromForm] IFormFile[] files, [FromForm] string tradeParams, [FromForm] string researchData, string tradeData)
         {
-            if (tradeParams == null || researchData == null || tradeData == null)
+            if (!ModelState.IsValid)
             {
-                return Json(new { error = "Trade values are empty." });
+                // Inspect model binding errors here
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                string allErrors = string.Join(", ", errors);
+                return Json(new { error = allErrors });
             }
 
             string errorMsg = NewTradeVM.SetValues(tradeParams, researchData, tradeData);
@@ -119,6 +122,7 @@ namespace TradingTools.Controllers
                 newTrade.Status = NewTradeVM.Status;
                 newTrade.SideType = NewTradeVM.SideType;
                 newTrade.OrderType = NewTradeVM.OrderType;
+                newTrade.TradeType = NewTradeVM.TradeType;
 
                 return newTrade;
             }
