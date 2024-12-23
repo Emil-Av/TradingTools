@@ -8,11 +8,9 @@ using Utilities;
 using Models.ViewModels;
 using SharedEnums.Enums;
 using Shared;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Linq;
 using Models.ViewModels.DisplayClasses;
 using NuGet.ProjectModel;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Text.RegularExpressions;
 
 
 namespace TradingTools.Controllers
@@ -35,6 +33,7 @@ namespace TradingTools.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private UserSettings? userSettings;
         private const TradeType _defaultTradeType = TradeType.PaperTrade;
+        private int _tradeNumberForReviewParsing = 0;
 
         #endregion
 
@@ -399,8 +398,8 @@ namespace TradingTools.Controllers
             Status tradeStatus = tradeParams == null ? PaperTradesVM.DefaultTradeStatus : tradeParams.Status;
 
             List<int> sampleSizeIds = (await _unitOfWork.PaperTrade
-                                            .GetAllAsync(trade =>
-                                            tradeStatus == Status.All || trade.Status == tradeStatus))
+                                            .GetAllAsync(
+                                                trade => tradeStatus == Status.All || trade.Status == tradeParams.Status))
                                             .Select(trade => trade.SampleSizeId)
                                             .Distinct()
                                             .ToList();
@@ -546,6 +545,7 @@ namespace TradingTools.Controllers
                         PaperTrade? trade = null;
                         Journal? journal = null;
                         SampleSize? sampleSize = null;
+                        Review review = null;
                         List<ZipArchiveEntry> sortedEntries = [.. archive.Entries.OrderBy(e => e.FullName, new NaturalStringComparer())];
                         foreach (var entry in sortedEntries)
                         {
@@ -558,14 +558,13 @@ namespace TradingTools.Controllers
                                     // Loop is running > 1 time (first time trade is null)
                                     if (trade != null)
                                     {
-                                        _unitOfWork.PaperTrade.Add(trade);
+                                        _unitOfWork.Journal.Add(journal);
                                         await _unitOfWork.SaveAsync();
                                         trade.JournalId = journal.Id;
-                                        _unitOfWork.Journal.Add(journal);
-                                        _unitOfWork.SaveAsync();
                                     }
                                     journal = new Journal();
                                     trade = new PaperTrade();
+                                    trade.TradeType = TradeType.PaperTrade;
                                 }
                                 canCreateNewTrade = false;
                                 continue;
@@ -574,9 +573,7 @@ namespace TradingTools.Controllers
                             else
                             {
                                 string[] tradeInfo = entry.FullName.Split('/');
-                                trade.SampleSizeId = currentSampleSizeId;
-
-
+                                //trade.SampleSizeId = currentSampleSizeId;
                                 string currentSampleSize = tradeInfo[3];
                                 string currentTimeFrame = tradeInfo[2];
                                 // First sample size of the loop or a new one
@@ -584,14 +581,16 @@ namespace TradingTools.Controllers
                                 {
                                     lastTimeFrame = currentTimeFrame;
                                     lastSampleSize = currentSampleSize;
-                                    sampleSize = new SampleSize();
-                                    //sampleSize.Strategy = (Strategy)trade.Strategy;
-                                    //sampleSize.TimeFrame = (TimeFrame)trade.TimeFrame;
-                                    _unitOfWork.SampleSize.Add(sampleSize);
+                                    sampleSize = new();
+                                    await ProcessSampleSize(sampleSize, tradeInfo);
+                                    trade.SampleSizeId = sampleSize.Id;
+                                    _unitOfWork.PaperTrade.Add(trade);
+                                    await _unitOfWork.SaveAsync();
 
                                     // Each sample size has it's own review
-                                    Review review = new Review();
+                                    review = new Review();
                                     _unitOfWork.Review.Add(review);
+                                    await _unitOfWork.SaveAsync();
                                     sampleSize.ReviewId = review.Id;
                                     await _unitOfWork.SaveAsync();
                                 }
@@ -609,12 +608,19 @@ namespace TradingTools.Controllers
                                         entry.ExtractToFile(Path.Combine(currentFolder, entry.Name));
                                         string screenshotName = entry.FullName.Split('/').Last();
                                         string screenshotPath = currentFolder.Replace(wwwRootPath, "").Replace("\\", "/");
+                                        if (trade.ScreenshotsUrls == null)
+                                        {
+                                            trade.ScreenshotsUrls = new();
+                                        }
                                         trade.ScreenshotsUrls.Add(Path.Combine(screenshotPath, screenshotName));
                                     }
-                                    else if (!entry.FullName.Contains("Reviews"))
+                                    else if (entry.FullName.Contains("Reviews"))
+                                    {
+                                        await ParseODTReviewsFile(entry, review);
+                                    }
+                                    else
                                     {
                                         ParseODTJournalFile(entry, journal);
-
                                     }
                                 }
                                 catch
@@ -641,6 +647,97 @@ namespace TradingTools.Controllers
             }
 
             return RedirectToAction("Index");
+
+            async Task ProcessSampleSize(SampleSize sampleSize, string[] tradeInfo)
+            {
+                Strategy strategy = MyEnumConverter.StrategyFromString(tradeInfo[1]).Value;
+                TimeFrame timeFrame = MyEnumConverter.TimeFrameFromString(tradeInfo[2]).Value;
+                sampleSize.Strategy = strategy;
+                sampleSize.TimeFrame = timeFrame;
+                sampleSize.TradeType = TradeType.PaperTrade;
+                _unitOfWork.SampleSize.Add(sampleSize);
+                await _unitOfWork.SaveAsync();
+            }
+        }
+
+        private async Task ParseODTReviewsFile(ZipArchiveEntry entry, Review review)
+        {
+            using (Stream stream = entry.Open())
+            {
+                using (ZipArchive archive = new ZipArchive(stream))
+                {
+                    ZipArchiveEntry contentEntry = archive.GetEntry("content.xml");
+                    if (contentEntry != null)
+                    {
+                        using (StreamReader reader = new StreamReader(contentEntry.Open()))
+                        {
+                            string xmlContent = reader.ReadToEnd();
+                            XDocument xmlDoc = XDocument.Parse(xmlContent);
+                            List<XElement> nodes = [.. xmlDoc.Descendants().Where(e => e.Name.LocalName == "p")];
+                            string lastReview = string.Empty;
+                            int tradeNumber = 0;
+                            foreach (XElement node in nodes)
+                            {
+                                XElement element = XElement.Parse(node.ToString());
+                                await SaveReview(review, element.Value);
+                            }
+                        }
+                    }
+                }
+            }
+
+            async Task SaveReview(Review review, string reviewEntry)
+            {
+                if (string.IsNullOrEmpty(reviewEntry))
+                {
+                    return;
+                }
+
+                if (reviewEntry.StartsWith("[Trade"))
+                {
+                    _tradeNumberForReviewParsing = GetTradeNumber(reviewEntry);
+                }
+                else if (reviewEntry.Contains("Summary"))
+                {
+                    _tradeNumberForReviewParsing = 21;
+                }
+
+                if (_tradeNumberForReviewParsing <= 5)
+                {
+                    review.First += reviewEntry + Environment.NewLine;
+                }
+                else if (_tradeNumberForReviewParsing <= 10)
+                {
+                    review.Second += reviewEntry + Environment.NewLine;
+                }
+                else if (_tradeNumberForReviewParsing <= 15)
+                {
+                    review.Third += reviewEntry + Environment.NewLine;
+                }
+                else if (_tradeNumberForReviewParsing <= 20)
+                {
+                    review.Forth += reviewEntry + Environment.NewLine;
+                }
+                else
+                {
+                    review.Summary += reviewEntry + Environment.NewLine;
+                }
+                await _unitOfWork.SaveAsync();
+            }
+
+            int GetTradeNumber(string reviewEntry)
+            {
+                // Regular expression to match [Trade X] where X is a number
+                Regex regex = new Regex(@"\[Trade (\d+)\]");
+                Match match = regex.Match(reviewEntry);
+
+                if (match.Success && int.TryParse(match.Groups[1].Value, out int number))
+                {
+                    return number;
+                }
+
+                throw new FormatException("Input does not match the expected format [Trade X]");
+            }
         }
 
         void ParseODTJournalFile(ZipArchiveEntry entry, Journal journal)
