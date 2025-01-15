@@ -272,37 +272,32 @@ namespace TradingTools.Controllers
             int GetCurrentSampleSizeId()
             {
                 SetCurrentSampleSize();
-                int id = SetCurrentSampleSizeNumberAndId();
+                SetCurrentSampleSizeNumberAndId();
 
-                return id;
+                return PaperTradesVM.CurrentSampleSize.Id;
 
                 #region Helpers
 
-                int SetCurrentSampleSizeNumberAndId()
+                void SetCurrentSampleSizeNumberAndId()
                 {
-                    List<SampleSize> temp = sampleSizes.Where(sampleSize => sampleSize.TimeFrame == tradeParams.TimeFrame).ToList();
+                    List<SampleSize> temp = sampleSizes.Where(sampleSize => sampleSize.TimeFrame == tradeParams.TimeFrame && sampleSize.Strategy == tradeParams.Strategy).ToList();
                     if (tradeParams.SampleSizeChanged || !tradeParams.ShowLastTrade)
                     {
-                        id = temp[tradeParams.SampleSizeNumber - 1].Id;
                         PaperTradesVM.CurrentSampleSizeNumber = tradeParams.SampleSizeNumber;
                     }
                     else if (!temp.Any())
                     {
-                        id = sampleSizes.LastOrDefault()!.Id;
                         PaperTradesVM.CurrentSampleSizeNumber = sampleSizes.Count;
                     }
                     else
                     {
-                        id = temp.LastOrDefault()!.Id;
                         PaperTradesVM.CurrentSampleSizeNumber = temp.Count;
                     }
-
-                    return id;
                 }
 
                 void SetCurrentSampleSize()
                 {
-                    List<SampleSize> filteredSampleSizes = sampleSizes.Where(sampleSize => sampleSize.TimeFrame == tradeParams.TimeFrame).ToList();
+                    List<SampleSize> filteredSampleSizes = sampleSizes.Where(sampleSize => sampleSize.TimeFrame == tradeParams.TimeFrame && sampleSize.Strategy == tradeParams.Strategy).ToList();
                     if (filteredSampleSizes.Any())
                     {
                         PaperTradesVM.CurrentSampleSize = filteredSampleSizes[tradeParams.SampleSizeNumber - 1];
@@ -547,12 +542,15 @@ namespace TradingTools.Controllers
                         SampleSize? sampleSize = null;
                         Review review = null;
                         List<ZipArchiveEntry> sortedEntries = [.. archive.Entries.OrderBy(e => e.FullName, new NaturalStringComparer())];
+                        int count = sortedEntries.Count;
+                        int currentIndex = 0;
                         foreach (var entry in sortedEntries)
                         {
+                            bool isLastEntry = currentIndex == count - 1;
                             // Entry is a folder
-                            if (entry.FullName.EndsWith('/') || entry.FullName.EndsWith("\\"))
+                            if (entry.FullName.EndsWith('/') || entry.FullName.EndsWith("\\") || isLastEntry)
                             {
-                                if (canCreateNewTrade)
+                                if (canCreateNewTrade || isLastEntry)
                                 {
                                     int lastTradeId = 0;
                                     // Loop is running > 1 time (first time trade is null)
@@ -561,14 +559,19 @@ namespace TradingTools.Controllers
                                         _unitOfWork.Journal.Add(journal);
                                         await _unitOfWork.SaveAsync();
                                         trade.JournalId = journal.Id;
+                                        trade.SampleSizeId = sampleSize.Id;
+                                        _unitOfWork.PaperTrade.Add(trade);
+                                        await _unitOfWork.SaveAsync();
                                     }
                                     journal = new Journal();
                                     trade = new PaperTrade();
                                     trade.TradeType = TradeType.PaperTrade;
                                 }
                                 canCreateNewTrade = false;
+                                currentIndex++;
                                 continue;
                             }
+                            
                             // Entry is either a screenshot or a .odt file
                             else
                             {
@@ -582,18 +585,13 @@ namespace TradingTools.Controllers
                                     lastTimeFrame = currentTimeFrame;
                                     lastSampleSize = currentSampleSize;
                                     sampleSize = new();
-                                    await ProcessSampleSize(sampleSize, tradeInfo);
-                                    trade.SampleSizeId = sampleSize.Id;
-                                    _unitOfWork.PaperTrade.Add(trade);
-                                    await _unitOfWork.SaveAsync();
-
-                                    // Each sample size has it's own review
+                                    await SetSampleSizeValues(sampleSize, tradeInfo);
                                     review = new Review();
                                     _unitOfWork.Review.Add(review);
                                     await _unitOfWork.SaveAsync();
                                     sampleSize.ReviewId = review.Id;
                                     await _unitOfWork.SaveAsync();
-                                }
+                                }            
 
                                 if (!canCreateNewTrade)
                                 {
@@ -623,7 +621,7 @@ namespace TradingTools.Controllers
                                         ParseODTJournalFile(entry, journal);
                                     }
                                 }
-                                catch
+                                catch (Exception ex)
                                 {
                                     // Display error message
                                 }
@@ -633,6 +631,7 @@ namespace TradingTools.Controllers
                                     canCreateNewTrade = true;
                                 }
                             }
+                            currentIndex++;
                         }
                     }
                 }
@@ -641,14 +640,13 @@ namespace TradingTools.Controllers
             {
                 Debug.WriteLine($"Error in parsing the .zip file: {ex.Message}");
             }
-            finally
-            {
-
-            }
 
             return RedirectToAction("Index");
 
-            async Task ProcessSampleSize(SampleSize sampleSize, string[] tradeInfo)
+
+            #region Helper Methods
+
+            async Task SetSampleSizeValues(SampleSize sampleSize, string[] tradeInfo)
             {
                 Strategy strategy = MyEnumConverter.StrategyFromString(tradeInfo[1]).Value;
                 TimeFrame timeFrame = MyEnumConverter.TimeFrameFromString(tradeInfo[2]).Value;
@@ -658,6 +656,8 @@ namespace TradingTools.Controllers
                 _unitOfWork.SampleSize.Add(sampleSize);
                 await _unitOfWork.SaveAsync();
             }
+
+            #endregion
         }
 
         private async Task ParseODTReviewsFile(ZipArchiveEntry entry, Review review)
@@ -728,15 +728,24 @@ namespace TradingTools.Controllers
             int GetTradeNumber(string reviewEntry)
             {
                 // Regular expression to match [Trade X] where X is a number
-                Regex regex = new Regex(@"\[Trade (\d+)\]");
+                /*
+                   - \[Trade: Matches the literal text [Trade.
+                   - \s?: Matches zero or one whitespace character, allowing for either [TradeX] or [Trade X].
+                   - \d+: Matches one or more digits (X being the integer).
+                   - (\d+): Wraps the digits in parentheses to define a capturing group. This capturing group will store the value of X.
+                   - \]: Matches the closing bracket ].
+                 */
+                Regex regex = new Regex(@"\[Trade\s?(\d+)\]");
                 Match match = regex.Match(reviewEntry);
 
                 if (match.Success && int.TryParse(match.Groups[1].Value, out int number))
                 {
                     return number;
                 }
-
-                throw new FormatException("Input does not match the expected format [Trade X]");
+                else
+                {
+                    throw new FormatException("Input does not match the expected format [Trade X]");
+                }
             }
         }
 
@@ -746,7 +755,7 @@ namespace TradingTools.Controllers
             {
                 using (ZipArchive archive = new ZipArchive(stream))
                 {
-                    ZipArchiveEntry contentEntry = archive.GetEntry("content.xml");
+                    ZipArchiveEntry? contentEntry = archive.GetEntry("content.xml");
                     if (contentEntry != null)
                     {
                         using (StreamReader reader = new StreamReader(contentEntry.Open()))
