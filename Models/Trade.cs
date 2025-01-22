@@ -8,6 +8,10 @@ namespace Models
 {
     public class Trade
     {
+        public Trade()
+        {
+            CreatedAt = DateTime.Now;
+        }
         public int Id { get; set; }
         public string? Symbol { get; set; }
 
@@ -65,7 +69,8 @@ namespace Models
         [ForeignKey(nameof(JournalId))]
         public Journal? Journal { get; set; }
 
-        public string CreatedAt { get; set; }
+
+        public DateTime CreatedAt { get; set; }
 
     }
 }

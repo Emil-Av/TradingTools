@@ -335,10 +335,6 @@ $(function () {
             updatedTrade[bindProperty] = $(this).val();
         });
 
-        if (updatedTrade['TargetsDisplay'] === '') {
-            updatedTrade['TargetsDisplay'] = [];
-        }
-
         // make the API call
         $.ajax({
             method: 'POST',

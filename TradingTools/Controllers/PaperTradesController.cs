@@ -34,6 +34,7 @@ namespace TradingTools.Controllers
         private UserSettings? userSettings;
         private const TradeType _defaultTradeType = TradeType.PaperTrade;
         private int _tradeNumberForReviewParsing = 0;
+        private List<SampleSize> _allAvailableSampleSizes;
 
         #endregion
 
@@ -272,39 +273,22 @@ namespace TradingTools.Controllers
             int GetCurrentSampleSizeId()
             {
                 SetCurrentSampleSize();
-                SetCurrentSampleSizeNumberAndId();
 
                 return PaperTradesVM.CurrentSampleSize.Id;
 
                 #region Helpers
 
-                void SetCurrentSampleSizeNumberAndId()
+                void SetCurrentSampleSize()
                 {
-                    List<SampleSize> temp = sampleSizes.Where(sampleSize => sampleSize.TimeFrame == tradeParams.TimeFrame && sampleSize.Strategy == tradeParams.Strategy).ToList();
-                    if (tradeParams.SampleSizeChanged || !tradeParams.ShowLastTrade)
+                    if (tradeParams.LoadLastSampleSize)
                     {
-                        PaperTradesVM.CurrentSampleSizeNumber = tradeParams.SampleSizeNumber;
-                    }
-                    else if (!temp.Any())
-                    {
+                        PaperTradesVM.CurrentSampleSize = sampleSizes.LastOrDefault();
                         PaperTradesVM.CurrentSampleSizeNumber = sampleSizes.Count;
                     }
                     else
                     {
-                        PaperTradesVM.CurrentSampleSizeNumber = temp.Count;
-                    }
-                }
-
-                void SetCurrentSampleSize()
-                {
-                    List<SampleSize> filteredSampleSizes = sampleSizes.Where(sampleSize => sampleSize.TimeFrame == tradeParams.TimeFrame && sampleSize.Strategy == tradeParams.Strategy).ToList();
-                    if (filteredSampleSizes.Any())
-                    {
-                        PaperTradesVM.CurrentSampleSize = filteredSampleSizes[tradeParams.SampleSizeNumber - 1];
-                    }
-                    else
-                    {
-                        PaperTradesVM.CurrentSampleSize = sampleSizes.LastOrDefault()!;
+                        PaperTradesVM.CurrentSampleSize = sampleSizes[tradeParams.SampleSizeNumber - 1];
+                        PaperTradesVM.CurrentSampleSizeNumber = tradeParams.SampleSizeNumber;
                     }
                 }
 
@@ -322,7 +306,7 @@ namespace TradingTools.Controllers
                                                 x.Status == tradeParams.Status))
                                                 .Count();
                 await SetJournalAndReviewData();
-                SetAvailableMenus(sampleSizes);
+                SetAvailableMenus();
             }
 
             async Task SetViewDataStatusAll(List<SampleSize> sampleSizes)
@@ -336,7 +320,7 @@ namespace TradingTools.Controllers
                                                 .Count();
 
                 await SetJournalAndReviewData();
-                SetAvailableMenus(sampleSizes);
+                SetAvailableMenus();
             }
 
             async Task SetJournalAndReviewData()
@@ -352,14 +336,14 @@ namespace TradingTools.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            List<SampleSize> sampleSizes = await GetSampleSizesForTradeParams();
+            _allAvailableSampleSizes = await GetAllSampleSizes();
 
-            if (!sampleSizes.Any())
+            if (!_allAvailableSampleSizes.Any())
             {
                 return View(PaperTradesVM);
             }
 
-            bool hasCurrentTrade = await SetViewModelData(sampleSizes);
+            bool hasCurrentTrade = await SetViewModelData();
             if (!hasCurrentTrade)
             {
                 PaperTradesVM.ErrorMsg = "No trade for the selected paramaters.";
@@ -368,67 +352,61 @@ namespace TradingTools.Controllers
             return View(PaperTradesVM);
         }
 
-        private void SetAvailableMenus(List<SampleSize> sampleSizes)
+        private async Task<List<SampleSize>> GetAllSampleSizes()
         {
-            foreach (SampleSize sampleSize in sampleSizes)
+            List<int> sampleSizeIds = (await _unitOfWork.PaperTrade
+                                        .GetAllAsync())
+                                        .Select(trade => trade.SampleSizeId)
+                                        .Distinct()
+                                        .ToList();
+
+            return await GetSampleSizes(sampleSizeIds);
+        }
+
+        private async void SetAvailableMenus()
+        {
+            if (_allAvailableSampleSizes == null)
+            {
+                _allAvailableSampleSizes = await _unitOfWork.SampleSize.GetAllAsync();
+            }
+            foreach (SampleSize sampleSize in _allAvailableSampleSizes)
             {
                 if (!PaperTradesVM.AvailableTimeframes.Contains(sampleSize.TimeFrame))
                 {
                     PaperTradesVM.AvailableTimeframes.Add(sampleSize.TimeFrame);
                 }
-                // Set the time frames in ascending order
-                PaperTradesVM.AvailableTimeframes.Sort();
-
                 if (!PaperTradesVM.AvailableStrategies.Contains(sampleSize.Strategy))
                 {
                     PaperTradesVM.AvailableStrategies.Add(sampleSize.Strategy);
                 }
-                // Sort the strategies in ascending order
-                PaperTradesVM.AvailableStrategies.Sort();
             }
+            PaperTradesVM.AvailableTimeframes.Sort();
+            PaperTradesVM.AvailableStrategies.Sort();
         }
 
-        private async Task<List<SampleSize>> GetSampleSizesForTradeParams(LoadTradeParams tradeParams = null)
+        private async Task<List<SampleSize>> GetSampleSizesForTradeParams(LoadTradeParams tradeParams)
         {
-            Status tradeStatus = tradeParams == null ? PaperTradesVM.DefaultTradeStatus : tradeParams.Status;
 
             List<int> sampleSizeIds = (await _unitOfWork.PaperTrade
-                                            .GetAllAsync(
-                                                trade => tradeStatus == Status.All || trade.Status == tradeParams.Status))
-                                            .Select(trade => trade.SampleSizeId)
-                                            .Distinct()
-                                            .ToList();
-            if (sampleSizeIds.Count == 0 && tradeParams == null)
-            {
-                sampleSizeIds = await GetSampleSizeIdsForAnyTrade();
-            }
-            List<SampleSize> listSampleSizes = await GetSampleSizes();
+                                        .GetAllAsync(trade =>
+                                                        trade.SampleSize.Strategy == tradeParams.Strategy &&
+                                                        trade.TradeType == tradeParams.TradeType &&
+                                                        (tradeParams.Status == Status.All || trade.Status == tradeParams.Status) &&
+                                                        trade.SampleSize.TimeFrame == tradeParams.TimeFrame))
+                                                        .Select(trade => trade.SampleSizeId)
+                                                        .Distinct()
+                                                        .ToList();
 
-            if (CalledFromLoadTrade())
-            {
-                CheckIfTradeParamTimeframeExistsInSampleSizes();
-            }
+            //if (sampleSizeIds.Count == 0 && tradeParams == null)
+            //{
+            //    sampleSizeIds = await GetSampleSizeIdsForAnyTrade();
+            //}
+            List<SampleSize> listSampleSizes = await GetSampleSizes(sampleSizeIds);
+            CheckIfTradeParamTimeframeExistsInSampleSizes();
 
             return listSampleSizes;
 
             #region Helper Methods
-
-            async Task<List<SampleSize>> GetSampleSizes()
-            {
-                List<SampleSize> list = new List<SampleSize>();
-                foreach (int id in sampleSizeIds)
-                {
-                    SampleSize sampleSize = await _unitOfWork.SampleSize.GetAsync(sampleSize => sampleSize.Id == id);
-                    list.Add(sampleSize);
-                }
-
-                return list;
-            }
-
-            bool CalledFromLoadTrade()
-            {
-                return tradeParams != null;
-            }
 
             void CheckIfTradeParamTimeframeExistsInSampleSizes()
             {
@@ -457,9 +435,21 @@ namespace TradingTools.Controllers
             #region
         }
 
-        private async Task<bool> SetViewModelData(List<SampleSize> sampleSizes)
+        private async Task<List<SampleSize>> GetSampleSizes(List<int> sampleSizeIds)
         {
-            PaperTradesVM.CurrentSampleSize = sampleSizes.Last();
+            List<SampleSize> list = new List<SampleSize>();
+            foreach (int id in sampleSizeIds)
+            {
+                SampleSize sampleSize = await _unitOfWork.SampleSize.GetAsync(sampleSize => sampleSize.Id == id);
+                list.Add(sampleSize);
+            }
+
+            return list;
+        }
+
+        private async Task<bool> SetViewModelData()
+        {
+            PaperTradesVM.CurrentSampleSize = _allAvailableSampleSizes.Last();
 
             bool hasCurrentTrade = await SetCurrentTradeValues();
             if (!hasCurrentTrade)
@@ -467,19 +457,20 @@ namespace TradingTools.Controllers
                 return false;
             }
 
-            await SetSampleSizeValues();
+            await SetMenuSampleSizeValues();
             PaperTradesVM.TradeData = EntityMapper.EntityToViewModel<Trade, TradeDisplay>(PaperTradesVM.CurrentTrade);
-            SetAvailableMenus(sampleSizes);
+            SetAvailableMenus();
 
             return hasCurrentTrade;
 
             #region Helper Methods
 
-            async Task SetSampleSizeValues()
+            async Task SetMenuSampleSizeValues()
             {
                 PaperTradesVM.NumberSampleSizes =
-                    sampleSizes.Where(x => x.Strategy == PaperTradesVM.CurrentSampleSize.Strategy && x.TimeFrame == PaperTradesVM.CurrentSampleSize.TimeFrame)
-                               .Count();
+                    _allAvailableSampleSizes.Where(x => x.Strategy == PaperTradesVM.CurrentSampleSize.Strategy && 
+                                                   x.TimeFrame == PaperTradesVM.CurrentSampleSize.TimeFrame)
+                                                   .Count();
                 // Get the number of trades for the sample size
                 PaperTradesVM.TradesInSampleSize =
                     (await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == PaperTradesVM.CurrentSampleSize.Id)).Count();
@@ -571,7 +562,7 @@ namespace TradingTools.Controllers
                                 currentIndex++;
                                 continue;
                             }
-                            
+
                             // Entry is either a screenshot or a .odt file
                             else
                             {
@@ -591,7 +582,7 @@ namespace TradingTools.Controllers
                                     await _unitOfWork.SaveAsync();
                                     sampleSize.ReviewId = review.Id;
                                     await _unitOfWork.SaveAsync();
-                                }            
+                                }
 
                                 if (!canCreateNewTrade)
                                 {

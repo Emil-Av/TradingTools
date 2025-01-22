@@ -38,7 +38,7 @@ namespace Models
             SampleSizeNumber = int.Parse(SampleSizeNumberFromView);
             TradeNumber = int.Parse(TradeNumberFromView);
             ShowLastTrade = bool.Parse(ShowLastTradeFromView);
-            SampleSizeChanged = bool.Parse(SampleSizeChangedFromView);
+            LoadLastSampleSize = bool.Parse(LoadLastSampleSizeFromView);
         }
 
         #region Values from the view
@@ -56,13 +56,13 @@ namespace Models
 
         public string ShowLastTradeFromView { get; set; }
 
-        public string SampleSizeChangedFromView { get; set; }
+        public string LoadLastSampleSizeFromView { get; set; }
 
         #endregion
 
         #region Properties for after conversion
 
-        public bool SampleSizeChanged { get; set; }
+        public bool LoadLastSampleSize { get; set; }
 
         public bool ShowLastTrade { get; set; }
 

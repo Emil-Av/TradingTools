@@ -1,8 +1,5 @@
 ﻿using DataAccess.Repository.IRepository;
-using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Models;
 using Models.ViewModels;
 using Models.ViewModels.DisplayClasses;
@@ -10,16 +7,9 @@ using Newtonsoft.Json;
 using System.Data;
 using System.Diagnostics;
 using System.IO.Compression;
-using System.Reflection.Metadata.Ecma335;
 using Utilities;
 using SharedEnums.Enums;
 using Shared;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Newtonsoft.Json.Linq;
-using System.Globalization;
-using Newtonsoft.Json.Serialization;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
-using System.Collections.Generic;
 
 namespace TradingTools.Controllers
 {
@@ -201,8 +191,14 @@ namespace TradingTools.Controllers
             // The Update() method, queries the database for a trade based on the Id.
             SanitizationHelper.SanitizeObject(trade);
             await _unitOfWork.ResearchFirstBarPullback.UpdateAsync(trade);
-            await _unitOfWork.SaveAsync();
-
+            try
+            {
+                await _unitOfWork.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = $"Error saving the data: {ex.Message}" });
+            }
             return Json(new { success = "Trade was successfully updated" });
         }
 
@@ -271,7 +267,7 @@ namespace TradingTools.Controllers
                     using (var archive = new ZipArchive(zipStream))
                     {
                         // Sort the entries to have the folders in ascending order (Trade 1, Trade 2..)
-                        List<ZipArchiveEntry> sortedEntries = [..archive.Entries.OrderBy(e => e.FullName, new NaturalStringComparer())];
+                        List<ZipArchiveEntry> sortedEntries = [.. archive.Entries.OrderBy(e => e.FullName, new NaturalStringComparer())];
                         List<ResearchFirstBarPullback> researchTrades = new List<ResearchFirstBarPullback>();
 
                         TimeFrame researchedTF;
