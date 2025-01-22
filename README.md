@@ -2,6 +2,6 @@ Trading Tools is a personal web application for managing my trading activities. 
 
 Tech Stack:
 
-Front End: HTML, Bootstrap, Java Script;
+Front End: HTML, Bootstrap, Java Script, jQuery;
 Back End: ASP.NET;
 Data access: Entity Framework (EF).
