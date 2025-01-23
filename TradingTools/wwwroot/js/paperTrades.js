@@ -11,7 +11,8 @@ $(function () {
     let menuClicked;
     let clickedMenuValue;
     let showLastTrade;
-    let loadLastSampleSize;
+    let loadLastSampleSize = false;
+    let statusChanged = false;
     let paperTradesVM;
     let currentTab = '#pre'; // Always the start value
     let isEditorShown = false;
@@ -352,8 +353,13 @@ $(function () {
                 if (key == '#dropdownBtnTimeFrame') {
                     loadLastSampleSize = true;
                 }
+                else if (key == '#dropdownBtnStatus')
+                {
+                    statusChanged = true;
+                }
                 else {
                     loadLastSampleSize = false;
+                    statusChanged = false;
                 }
 
                 // Set the new value
@@ -367,7 +373,8 @@ $(function () {
                     $('#spanSampleSize').text(),
                     $('#spanTrade').text(),
                     showLastTrade,
-                    loadLastSampleSize);
+                    loadLastSampleSize,
+                    statusChanged);
             });
         })(key);
     }
@@ -385,7 +392,7 @@ $(function () {
             })
         }
     }
-    function loadTrade(status, timeFrame, strategy, tradeType, sampleSize, trade, showLastTrade, loadLastSampleSize) {
+    function loadTrade(status, timeFrame, strategy, tradeType, sampleSize, trade, showLastTrade, loadLastSampleSize, statusChanged) {
         $.ajax({
             method: 'POST',
             url: '/papertrades/loadtrade',
@@ -399,7 +406,8 @@ $(function () {
                     SampleSizeNumberFromView: sampleSize,
                     TradeNumberFromView: trade,
                     ShowLastTradeFromView: showLastTrade,
-                    LoadLastSampleSizeFromView: loadLastSampleSize
+                    LoadLastSampleSizeFromView: loadLastSampleSize,
+                    StatusChangedFromView: statusChanged
                 }
             },
             success: function (response) {
