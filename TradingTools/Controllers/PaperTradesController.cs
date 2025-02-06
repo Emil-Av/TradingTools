@@ -201,7 +201,7 @@ namespace TradingTools.Controllers
             List<PaperTrade> listTrades = await GetAllTrades();
             SetCurrentTrade();
 
-            await SetViewData(sampleSizes, listTrades.Count);
+            await SetViewData(sampleSizes, listTrades.Count, tradeParams.Status);
 
             return Json(new { paperTradesVM = PaperTradesVM });
 
@@ -229,7 +229,7 @@ namespace TradingTools.Controllers
                 }
             }
 
-            async Task SetViewData(List<SampleSize> sampleSizes, int tradesInSampleSize)
+            async Task SetViewData(List<SampleSize> sampleSizes, int tradesInSampleSize, Status status)
             {
                 if (tradeParams.Status == Status.All)
                 {
@@ -240,7 +240,7 @@ namespace TradingTools.Controllers
                     await SetViewDataStatusNotAll(sampleSizes, tradesInSampleSize);
                 }
                 await SetJournalAndReviewData();
-                SetAvailableMenus();
+                SetAvailableMenus(sampleSizes, status);
             }
 
             async Task<List<PaperTrade>> GetAllTrades()
@@ -347,25 +347,53 @@ namespace TradingTools.Controllers
             return await GetSampleSizes(sampleSizeIds);
         }
 
-        private async void SetAvailableMenus()
+        private async void SetAvailableMenus(List<SampleSize> sampleSizes = null, Status? status = null)
         {
-            if (_allAvailableSampleSizes == null)
+            if (CalledForStatuNotAll())
+            {
+                _allAvailableSampleSizes = sampleSizes;
+            }
+            else if (CalledFromIndex())
             {
                 _allAvailableSampleSizes = await _unitOfWork.SampleSize.GetAllAsync();
             }
-            foreach (SampleSize sampleSize in _allAvailableSampleSizes)
+            SetTimeframesAndStrategies();
+            SortThem();
+            
+            #region Helper Methods
+
+            void SortThem()
             {
-                if (!PaperTradesVM.AvailableTimeframes.Contains(sampleSize.TimeFrame))
+                PaperTradesVM.AvailableTimeframes.Sort();
+                PaperTradesVM.AvailableStrategies.Sort();
+            }
+
+            void SetTimeframesAndStrategies()
+            {
+                foreach (SampleSize sampleSize in _allAvailableSampleSizes)
                 {
-                    PaperTradesVM.AvailableTimeframes.Add(sampleSize.TimeFrame);
-                }
-                if (!PaperTradesVM.AvailableStrategies.Contains(sampleSize.Strategy))
-                {
-                    PaperTradesVM.AvailableStrategies.Add(sampleSize.Strategy);
+                    if (!PaperTradesVM.AvailableTimeframes.Contains(sampleSize.TimeFrame))
+                    {
+                        PaperTradesVM.AvailableTimeframes.Add(sampleSize.TimeFrame);
+                    }
+                    if (!PaperTradesVM.AvailableStrategies.Contains(sampleSize.Strategy))
+                    {
+                        PaperTradesVM.AvailableStrategies.Add(sampleSize.Strategy);
+                    }
                 }
             }
-            PaperTradesVM.AvailableTimeframes.Sort();
-            PaperTradesVM.AvailableStrategies.Sort();
+
+            bool CalledFromIndex()
+            {
+                return _allAvailableSampleSizes == null;
+            }
+
+            bool CalledForStatuNotAll()
+            {
+                return status != null && status != Status.All;
+            }
+
+            #endregion
         }
 
         private async Task<List<SampleSize>> GetSampleSizesForTradeParams(LoadTradeParams tradeParams)

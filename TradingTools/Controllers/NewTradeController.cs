@@ -77,7 +77,7 @@ namespace TradingTools.Controllers
             {
                 if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
                 {
-                    await SaveResearchData(maxTradesProSampleSize: 100);
+                    await SaveResearchDataFirstbarPullback(maxTradesProSampleSize: 100);
                 }
                 else if (NewTradeVM.Strategy == Strategy.Cradle)
                 {
@@ -89,7 +89,7 @@ namespace TradingTools.Controllers
             {
                 if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
                 {
-                    ResearchFirstBarPullback researchData = await SaveResearchData(maxTradesProSampleSize: 20);
+                    ResearchFirstBarPullback researchData = await SaveResearchDataFirstbarPullback(maxTradesProSampleSize: 20);
                     PaperTrade newTrade = await SetNewTradeData(researchData);
 
                     await CreateJournal(newTrade);
@@ -127,7 +127,7 @@ namespace TradingTools.Controllers
                 return newTrade;
             }
 
-            async Task<ResearchFirstBarPullback> SaveResearchData(int maxTradesProSampleSize)
+            async Task<ResearchFirstBarPullback> SaveResearchDataFirstbarPullback(int maxTradesProSampleSize)
             {
                 ResearchFirstBarPullbackDisplay viewData = NewTradeVM.ResearchData as ResearchFirstBarPullbackDisplay;
                 // Convert the ViewData into DB entity

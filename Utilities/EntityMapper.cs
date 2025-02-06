@@ -112,10 +112,6 @@ namespace Utilities
                     else if (viewModelProp.PropertyType == typeof(string) && entityProp.PropertyType == typeof(List<double>) || Nullable.GetUnderlyingType(entityProp.PropertyType) == typeof(List<double>))
                     {
                         //// A lot of properties can be null. Not all properties have values, especially when creating a new trade.
-                        //if (viewModelProp.GetValue(viewModel) == null)
-                        //{
-                        //    continue;
-                        //}
                         string[] valueArray = ((string)viewModelProp.GetValue(viewModel)).Split("; ");
                         List<double> doubleList = new List<double>();
                         foreach (string value in valueArray)

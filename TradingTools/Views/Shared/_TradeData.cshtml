@@ -4,6 +4,15 @@
         <input class="text-center form-control" id="SymbolInput" data-trade-data="SymbolDisplay" value="@Model.TradeData.SymbolDisplay" />
     </div>
     <div class="form-group col-12 col-md-6 col-lg">
+        <label class="d-block text-nowrap min-width-60" for="StatusInput">Status</label>
+        <select class="text-center form-control" id="StatusInput" data-trade-data="StatusDisplay" value="@Model.TradeData.StatusDisplay">
+            @foreach (Status status in Enum.GetValues(typeof(Status)))
+            {
+                <option value="@status" selected="@(status == Model.CurrentTrade.Status ? "selected" : null)">@status</option>
+            }
+        </select>
+    </div>
+    <div class="form-group col-12 col-md-6 col-lg">
         <label class="d-block text-nowrap min-width-60" for="TriggerPriceInput">Trigger Price</label>
         <input class="text-center form-control number-input" id="TriggerPriceInput" data-trade-data="TriggerPriceDisplay" value="@Model.TradeData.TriggerPriceDisplay" />
     </div>

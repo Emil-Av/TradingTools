@@ -434,8 +434,13 @@ $(function () {
                 loadImages();
                 loadReview();
                 loadJournal();
+                loadTradeData();
             }
         });
+    }
+
+    function loadTradeData() {
+        $('#StatusInput').val(paperTradesVM['paperTradesVM']['currentTrade']['status']).change();
     }
 
     // Loads the review of the sample size
