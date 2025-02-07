@@ -16,7 +16,7 @@ using System.Collections.Generic;
 
 namespace TradingTools.Controllers
 {
-    public class PaperTradesController : Controller
+    public class PaperTradesController : BaseController
     {
         #region Constructor
         public PaperTradesController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
@@ -49,12 +49,10 @@ namespace TradingTools.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateTradeData([FromBody] TradeDisplay tradeData)
         {
-            if (!ModelState.IsValid)
+            JsonResult validationResult = ValidateModelState();
+            if (validationResult != null)
             {
-                // Inspect model binding errors here
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                string allErrors = string.Join(", ", errors);
-                return Json(new { error = allErrors });
+                return validationResult;
             }
 
             try
@@ -76,13 +74,12 @@ namespace TradingTools.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateReview([FromBody] PaperTradesVM data)
         {
-            if (!ModelState.IsValid)
+            JsonResult validationResult = ValidateModelState();
+            if (validationResult != null)
             {
-                // Inspect model binding errors here
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                string allErrors = string.Join(", ", errors);
-                return Json(new { error = allErrors });
+                return validationResult;
             }
+
             if (!CanUpdateReview(out string errorMsg))
             {
                 return Json(new { error = errorMsg });
@@ -180,12 +177,10 @@ namespace TradingTools.Controllers
 
         public async Task<IActionResult> LoadTrade(LoadTradeParams tradeParams)
         {
-            if (!ModelState.IsValid)
+            JsonResult validationResult = ValidateModelState();
+            if (validationResult != null)
             {
-                // Inspect model binding errors here
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                string allErrors = string.Join(", ", errors);
-                return Json(new { error = allErrors });
+                return validationResult;
             }
 
             tradeParams.ConvertParamsFromView();
@@ -240,7 +235,7 @@ namespace TradingTools.Controllers
                     await SetViewDataStatusNotAll(sampleSizes, tradesInSampleSize);
                 }
                 await SetJournalAndReviewData();
-                SetAvailableMenus(sampleSizes, status);
+                await SetAvailableMenus(sampleSizes, status);
             }
 
             async Task<List<PaperTrade>> GetAllTrades()
@@ -347,13 +342,13 @@ namespace TradingTools.Controllers
             return await GetSampleSizes(sampleSizeIds);
         }
 
-        private async void SetAvailableMenus(List<SampleSize> sampleSizes = null, Status? status = null)
+        private async Task SetAvailableMenus(List<SampleSize> sampleSizes = null, Status? status = null)
         {
-            if (CalledForStatuNotAll())
+            if (CalledForStatusNotAll())
             {
                 _allAvailableSampleSizes = sampleSizes;
             }
-            else if (CalledFromIndex())
+            else if (_allAvailableSampleSizes == null)
             {
                 _allAvailableSampleSizes = await _unitOfWork.SampleSize.GetAllAsync();
             }
@@ -383,12 +378,7 @@ namespace TradingTools.Controllers
                 }
             }
 
-            bool CalledFromIndex()
-            {
-                return _allAvailableSampleSizes == null;
-            }
-
-            bool CalledForStatuNotAll()
+            bool CalledForStatusNotAll()
             {
                 return status != null && status != Status.All;
             }
@@ -476,7 +466,7 @@ namespace TradingTools.Controllers
 
             await SetMenuSampleSizeValues();
             PaperTradesVM.TradeData = EntityMapper.EntityToViewModel<Trade, TradeDisplay>(PaperTradesVM.CurrentTrade);
-            SetAvailableMenus();
+            await SetAvailableMenus();
 
             return hasCurrentTrade;
 

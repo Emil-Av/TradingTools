@@ -9,7 +9,7 @@ using Utilities;
 
 namespace TradingTools.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         public HomeController(IUnitOfWork unitOfWork, ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
         {

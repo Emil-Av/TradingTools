@@ -1,6 +1,7 @@
 ﻿using Shared.Enums;
 using SharedEnums.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Models.ViewModels.DisplayClasses
 {
@@ -23,7 +24,8 @@ namespace Models.ViewModels.DisplayClasses
 
         public string? FeeDisplay { get; set; }
 
-        public Status? StatusDisplay { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public Status StatusDisplay { get; set; }
 
         public SideType? SideTypeDisplay { get; set; }
 

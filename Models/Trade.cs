@@ -1,4 +1,5 @@
-﻿using Shared.Enums;
+﻿using System.Text.Json;
+using Shared.Enums;
 using SharedEnums.Enums;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -27,7 +28,8 @@ namespace Models
         [DefaultValue(0)]
         public double? ExitPrice { get; set; }
 
-        public List<double>? Targets { get; set; }
+        [Column(TypeName = "NVARCHAR(MAX)")]
+        public string Targets { get; set; }
 
         public double? PnL { get; set; }
 
@@ -50,7 +52,7 @@ namespace Models
 
         [DefaultValue(0)]
         public int? TradeDurationInCandles { get; set; }
-        
+
         /// <summary>
         ///  The research type can be determined based on the trade type.
         /// </summary>

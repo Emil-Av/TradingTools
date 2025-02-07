@@ -424,23 +424,40 @@ $(function () {
                     return;
                 }
                 paperTradesVM = response;
-                // Set the new trade id
-                $("#spanTradeIdInput").val(paperTradesVM['paperTradesVM']['currentTrade']['id']);
-                // Set the sample size id
-                $("#spanSampleSizeIdInput").val(paperTradesVM['paperTradesVM']['currentTrade']['sampleSizeId']);
-                $('#spanJournalIdInput').val(paperTradesVM['paperTradesVM']['currentTrade']['journalId']);
-                setMenuValues(trade);
-                setSelectedItemClass();
-                loadImages();
-                loadReview();
-                loadJournal();
-                loadTradeData();
+                setHiddenSpansValues(paperTradesVM);
+                loadViewData(trade);
+                
             }
         });
     }
 
+    function setHiddenSpansValues(paperTradesVM) {
+        // Set the new trade id
+        $("#spanTradeIdInput").val(paperTradesVM['paperTradesVM']['currentTrade']['id']);
+        // Set the sample size id
+        $("#spanSampleSizeIdInput").val(paperTradesVM['paperTradesVM']['currentTrade']['sampleSizeId']);
+        $('#spanJournalIdInput').val(paperTradesVM['paperTradesVM']['currentTrade']['journalId']);
+    }
+
+    function loadViewData(trade) {
+        setMenuValues(trade);
+        setSelectedItemClass();
+        loadImages();
+        loadReview();
+        loadJournal();
+        loadTradeData();
+    }
+
     function loadTradeData() {
-        $('#StatusInput').val(paperTradesVM['paperTradesVM']['currentTrade']['status']).change();
+        $('#SymbolInput').val(paperTradesVM['paperTradesVM']['currentTrade']['symbol']);
+        $('#StatusInput').val(paperTradesVM['paperTradesVM']['currentTrade']['status']);
+        $('#TriggerPriceInput').val(paperTradesVM['paperTradesVM']['currentTrade']['triggerPriceInput']);
+        $('#EntryPriceInput').val(paperTradesVM['paperTradesVM']['currentTrade']['entryPriceInput']);
+        $('#StopPriceInput').val(paperTradesVM['paperTradesVM']['currentTrade']['stopPriceInput']);
+        $('#ExitPriceInput').val(paperTradesVM['paperTradesVM']['currentTrade']['exitPriceInput']);
+        $('#TargetsInput').val(paperTradesVM['paperTradesVM']['currentTrade']['targetsInput']);
+        $('#PnLInput').val(paperTradesVM['paperTradesVM']['currentTrade']['pnLInput']);
+        $('#FeeInput').val(paperTradesVM['paperTradesVM']['currentTrade']['feeInput']);
     }
 
     // Loads the review of the sample size

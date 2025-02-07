@@ -2,7 +2,7 @@
 
 namespace TradingTools.Controllers
 {
-    public class CalculatorController : Controller
+    public class CalculatorController : BaseController
     {
         public IActionResult Index()
         {

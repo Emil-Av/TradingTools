@@ -13,7 +13,7 @@ using Shared;
 
 namespace TradingTools.Controllers
 {
-    public class ResearchController : Controller
+    public class ResearchController : BaseController
     {
         #region Constructor
         public ResearchController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
@@ -178,12 +178,10 @@ namespace TradingTools.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateTrade([FromBody] ResearchFirstBarPullbackDisplay currentTrade)
         {
-            if (!ModelState.IsValid)
+            JsonResult validationResult = ValidateModelState();
+            if (validationResult != null)
             {
-                // Inspect model binding errors here
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                string allErrors = string.Join(", ", errors);
-                return Json(new { error = allErrors });
+                return validationResult;
             }
 
             ResearchFirstBarPullback trade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(currentTrade, existingEntity: null);

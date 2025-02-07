@@ -12,7 +12,7 @@ using Utilities;
 
 namespace TradingTools.Controllers
 {
-    public class NewTradeController : Controller
+    public class NewTradeController : BaseController
     {
         public NewTradeController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
@@ -40,12 +40,10 @@ namespace TradingTools.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveNewTrade([FromForm] IFormFile[] files, [FromForm] string tradeParams, [FromForm] string researchData, string tradeData)
         {
-            if (!ModelState.IsValid)
+            JsonResult validationResult = ValidateModelState();
+            if (validationResult != null)
             {
-                // Inspect model binding errors here
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                string allErrors = string.Join(", ", errors);
-                return Json(new { error = allErrors });
+                return validationResult;
             }
 
             string errorMsg = NewTradeVM.SetValues(tradeParams, researchData, tradeData);
