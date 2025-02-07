@@ -24,7 +24,7 @@ namespace Models.ViewModels.DisplayClasses
 
         public string? FeeDisplay { get; set; }
 
-        [JsonConverter(typeof(JsonStringEnumConverter))]
+        //[JsonConverter(typeof(JsonStringEnumConverter))]
         public Status StatusDisplay { get; set; }
 
         public SideType? SideTypeDisplay { get; set; }
