@@ -28,7 +28,7 @@
         Trading
     </div>
     <!-- Nav Item - Pages Collapse Menu -->
-    <li class="nav-item">
+   @*  <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#dropdownBtnTrades"
            aria-expanded="false" aria-controls="dropdownBtnTrades">
             <i class="fas fa-fw fa-chart-area"></i>
@@ -36,10 +36,15 @@
         </a>
         <div id="dropdownBtnTrades" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="#">Trades</a>
-                <a class="collapse-item" asp-controller="PaperTrades" asp-action="Index">Paper Trades</a>
+                <a class="collapse-item" asp-controller="Trades" asp-action="Index">Trades</a>
             </div>
         </div>
+    </li> *@
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Trades" asp-action="Index">
+            <i class="fas fa-fw fa-chart-area"></i>
+            <span>Trades</span>
+        </a>
     </li>
     <!-- Nav Item - Research -->
     <li class="nav-item">

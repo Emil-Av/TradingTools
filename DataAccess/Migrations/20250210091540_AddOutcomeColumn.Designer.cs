@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250210091540_AddOutcomeColumn")]
+    partial class AddOutcomeColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,6 +48,284 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Journals");
+                });
+
+            modelBuilder.Entity("Models.PaperTrade", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<double?>("EntryPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<double?>("ExitPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<double?>("Fee")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<bool>("IsLoss")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("JournalId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Outcome")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("PnL")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<int?>("ResearchId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SampleSizeId")
+                        .HasColumnType("int");
+
+                    b.PrimitiveCollection<string>("ScreenshotsUrls")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SideType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("StopPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<string>("Symbol")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Targets")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(MAX)");
+
+                    b.Property<int?>("TradeDurationInCandles")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<int>("TradeRating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TradeType")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("TriggerPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JournalId");
+
+                    b.HasIndex("SampleSizeId");
+
+                    b.ToTable("PaperTrades");
+                });
+
+            modelBuilder.Entity("Models.ResearchFirstBarPullback", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<double?>("EntryPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<double?>("ExitPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<double?>("Fee")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<bool>("FullATRMarketGaveSmth")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("FullATRMaxRR")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FullATROneToOneHitOn")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Is4HTrending")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsBreakeven")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDTrending")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEntryAfter3To5Bars")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEntryAfter5Bars")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEntryAfteriBar")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEntryAtPreviousSwingOnTrigger")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEntryBeforePreviousSwingOn4H")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEntryBeforePreviousSwingOnD")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEntryBeforePreviousSwingOnTrigger")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFullATRBreakeven")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFullATRLoss")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFullATROneToFiveHit")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFullATROneToThreeHit")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsLoss")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsMomentumTrade")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsOneToFiveHit")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsOneToThreeHit")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSignalBarInTradeDirection")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSignalBarStrongReversal")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsTrendTrade")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsTriggerTrending")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("JournalId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("MarketGaveSmth")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MaxRR")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OneToOneHitOn")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Outcome")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("PnL")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<int?>("ResearchId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SampleSizeId")
+                        .HasColumnType("int");
+
+                    b.PrimitiveCollection<string>("ScreenshotsUrls")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SideType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("StopPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<string>("Symbol")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Targets")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(MAX)");
+
+                    b.Property<int?>("TradeDurationInCandles")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<int>("TradeRating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TradeType")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("TriggerPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JournalId");
+
+                    b.HasIndex("SampleSizeId");
+
+                    b.ToTable("ResearchFirstBarPullbacks");
                 });
 
             modelBuilder.Entity("Models.Review", b =>
@@ -102,104 +383,6 @@ namespace DataAccess.Migrations
                     b.ToTable("SampleSizes");
                 });
 
-            modelBuilder.Entity("Models.Trade", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
-
-                    b.Property<double?>("EntryPrice")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
-
-                    b.Property<double?>("ExitPrice")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
-
-                    b.Property<double?>("Fee")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
-
-                    b.Property<int?>("JournalId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderType")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Outcome")
-                        .HasColumnType("int");
-
-                    b.Property<double?>("PnL")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
-
-                    b.Property<int?>("ResearchId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SampleSizeId")
-                        .HasColumnType("int");
-
-                    b.PrimitiveCollection<string>("ScreenshotsUrls")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SideType")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<double?>("StopPrice")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
-
-                    b.Property<string>("Symbol")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Targets")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR(MAX)");
-
-                    b.Property<int>("TradeRating")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TradeType")
-                        .HasColumnType("int");
-
-                    b.Property<double?>("TriggerPrice")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValueSql("0");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("JournalId");
-
-                    b.HasIndex("SampleSizeId");
-
-                    b.ToTable("Trades");
-
-                    b.HasDiscriminator().HasValue("Trade");
-
-                    b.UseTphMappingStrategy();
-                });
-
             modelBuilder.Entity("Models.UserSettings", b =>
                 {
                     b.Property<int>("Id")
@@ -237,107 +420,7 @@ namespace DataAccess.Migrations
                     b.ToTable("UserSettings");
                 });
 
-            modelBuilder.Entity("Models.ResearchFirstBarPullback", b =>
-                {
-                    b.HasBaseType("Models.Trade");
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("FullATRMarketGaveSmth")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("FullATRMaxRR")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FullATROneToOneHitOn")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Is4HTrending")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsBreakeven")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDTrending")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEntryAfter3To5Bars")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEntryAfter5Bars")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEntryAfteriBar")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEntryAtPreviousSwingOnTrigger")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEntryBeforePreviousSwingOn4H")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEntryBeforePreviousSwingOnD")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEntryBeforePreviousSwingOnTrigger")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFullATRBreakeven")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFullATRLoss")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFullATROneToFiveHit")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFullATROneToThreeHit")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsMomentumTrade")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsOneToFiveHit")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsOneToThreeHit")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSignalBarInTradeDirection")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSignalBarStrongReversal")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsTrendTrade")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsTriggerTrending")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("MarketGaveSmth")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("MaxRR")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OneToOneHitOn")
-                        .HasColumnType("int");
-
-                    b.HasDiscriminator().HasValue("Research");
-                });
-
-            modelBuilder.Entity("Models.SampleSize", b =>
-                {
-                    b.HasOne("Models.Review", "Review")
-                        .WithMany()
-                        .HasForeignKey("ReviewId");
-
-                    b.Navigation("Review");
-                });
-
-            modelBuilder.Entity("Models.Trade", b =>
+            modelBuilder.Entity("Models.PaperTrade", b =>
                 {
                     b.HasOne("Models.Journal", "Journal")
                         .WithMany()
@@ -352,6 +435,32 @@ namespace DataAccess.Migrations
                     b.Navigation("Journal");
 
                     b.Navigation("SampleSize");
+                });
+
+            modelBuilder.Entity("Models.ResearchFirstBarPullback", b =>
+                {
+                    b.HasOne("Models.Journal", "Journal")
+                        .WithMany()
+                        .HasForeignKey("JournalId");
+
+                    b.HasOne("Models.SampleSize", "SampleSize")
+                        .WithMany()
+                        .HasForeignKey("SampleSizeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Journal");
+
+                    b.Navigation("SampleSize");
+                });
+
+            modelBuilder.Entity("Models.SampleSize", b =>
+                {
+                    b.HasOne("Models.Review", "Review")
+                        .WithMany()
+                        .HasForeignKey("ReviewId");
+
+                    b.Navigation("Review");
                 });
 #pragma warning restore 612, 618
         }

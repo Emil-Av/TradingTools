@@ -1,16 +1,16 @@
 ﻿<div class="d-flex flex-wrap" id="tradeDataContainer">
     <div class="form-group col-12 col-md-6 col-lg">
         <label class="d-block text-nowrap min-width-60" for="SymbolInput">Symbol</label>
-        <input class="text-center form-control" id="SymbolInput" data-trade-data="SymbolDisplay" value="@Model.TradeData.SymbolDisplay" />
+        <input class="text-center form-control" id="SymbolInput" data-trade-data="Symbol" value="@Model.CurrentTrade.Symbol" />
     </div>
     <div class="form-group col-12 col-md-6 col-lg">
         <label class="d-block text-nowrap min-width-60" for="StatusInput">Status</label>
-        <select class="text-center form-control" id="StatusInput" data-trade-data="StatusDisplay" value="@Model.TradeData.StatusDisplay">
+        <select class="text-center form-control" id="StatusInput" data-trade-data="Status" value="@Model.CurrentTrade.Status">
             @{
                 int enumIntValue = 0;
-                foreach (Status status in Enum.GetValues(typeof(Status)))
+                foreach (EStatus status in Enum.GetValues(typeof(EStatus)))
                 {
-                    if (status == Status.All)
+                    if (status == EStatus.All)
                     {
                         continue;
                     }
@@ -21,31 +21,44 @@
         </select>
     </div>
     <div class="form-group col-12 col-md-6 col-lg">
+        <label class="d-block text-nowrap min-width-60" for="OrderTypeInput">Order Type</label>
+        <select class="text-center form-control" id="OrderTypeInput" data-trade-data="OrderType" value="@Model.CurrentTrade.OrderType">
+            @{
+                enumIntValue = 0;
+                foreach (EOrderType orderType in Enum.GetValues(typeof(EOrderType)))
+                {
+                    <option value="@enumIntValue" selected="@(orderType == Model.CurrentTrade.OrderType ? "selected" : null)">@orderType</option>
+                    enumIntValue++;
+                }
+            }
+        </select>
+    </div>
+    <div class="form-group col-12 col-md-6 col-lg">
         <label class="d-block text-nowrap min-width-60" for="TriggerPriceInput">Trigger Price</label>
-        <input class="text-center form-control number-input" id="TriggerPriceInput" data-trade-data="TriggerPriceDisplay" value="@Model.TradeData.TriggerPriceDisplay" />
+        <input class="text-center form-control number-input" id="TriggerPriceInput" data-trade-data="TriggerPrice" value="@Model.CurrentTrade.TriggerPrice" />
     </div>
     <div class="form-group col-12 col-md-6 col-lg">
         <label class="d-block text-nowrap min-width-60" for="EntryPriceInput">Entry Price</label>
-        <input class="text-center form-control number-input" id="EntryPriceInput" data-trade-data="EntryPriceDisplay" value="@Model.TradeData.EntryPriceDisplay" />
+        <input class="text-center form-control number-input" id="EntryPriceInput" data-trade-data="EntryPrice" value="@Model.CurrentTrade.EntryPrice" />
     </div>
     <div class="form-group col-12 col-md-6 col-lg">
         <label class="d-block text-nowrap min-width-60" for="StopPriceInput">Stop Price</label>
-        <input class="text-center form-control number-input" id="StopPriceInput" data-trade-data="StopPriceDisplay" value="@Model.TradeData.StopPriceDisplay" />
+        <input class="text-center form-control number-input" id="StopPriceInput" data-trade-data="StopPrice" value="@Model.CurrentTrade.StopPrice" />
     </div>
     <div class="form-group col-12 col-md-6 col-lg">
         <label class="d-block text-nowrap min-width-60" for="ExitPriceInput">Exit Price</label>
-        <input class="text-center form-control number-input" id="ExitPriceInput" data-trade-data="ExitPriceDisplay" value="@Model.TradeData.ExitPriceDisplay" />
+        <input class="text-center form-control number-input" id="ExitPriceInput" data-trade-data="ExitPrice" value="@Model.CurrentTrade.ExitPrice" />
     </div>
     <div class="form-group col-12 col-md-6 col-lg">
         <label class="d-block text-nowrap min-width-60" for="TargetsInput">Targets</label>
-        <input class="text-center form-control" id="TargetsInput" data-trade-data="TargetsDisplay" value="@Model.TradeData.TargetsDisplay" />
+        <input class="text-center form-control" id="TargetsInput" data-trade-data="Targets" value="@Model.CurrentTrade.Targets" />
     </div>
     <div class="form-group col-12 col-md-6 col-lg">
         <label class="d-block text-nowrap min-width-60" for="PnLInput">PnL</label>
-        <input class="text-center form-control number-input" id="PnLInput" data-trade-data="PnLDisplay" value="@Model.TradeData.PnLDisplay" />
+        <input class="text-center form-control number-input" id="PnLInput" data-trade-data="PnL" value="@Model.CurrentTrade.PnL" />
     </div>
     <div class="form-group col-12 col-md-6 col-lg">
         <label class="d-block text-nowrap min-width-60" for="FeeInput">Fee</label>
-        <input class="text-center form-control number-input" id="FeeInput" data-trade-data="FeeDisplay" value="@Model.TradeData.FeeDisplay" />
+        <input class="text-center form-control number-input" id="FeeInput" data-trade-data="Fee" value="@Model.CurrentTrade.Fee" />
     </div>
 </div>

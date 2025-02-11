@@ -71,13 +71,13 @@ namespace TradingTools.Controllers
         private async Task SaveTrade(IFormFile[] files)
         {
             // Research
-            if (NewTradeVM.TradeType == TradeType.Research)
+            if (NewTradeVM.TradeType == ETradeType.Research)
             {
-                if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
+                if (NewTradeVM.Strategy == EStrategy.FirstBarPullback)
                 {
                     await SaveResearchDataFirstbarPullback(maxTradesProSampleSize: 100);
                 }
-                else if (NewTradeVM.Strategy == Strategy.Cradle)
+                else if (NewTradeVM.Strategy == EStrategy.Cradle)
                 {
 
                 }
@@ -85,17 +85,17 @@ namespace TradingTools.Controllers
             // Trades or Paper Trades
             else
             {
-                if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
+                if (NewTradeVM.Strategy == EStrategy.FirstBarPullback)
                 {
                     ResearchFirstBarPullback researchData = await SaveResearchDataFirstbarPullback(maxTradesProSampleSize: 20);
-                    PaperTrade newTrade = await SetNewTradeData(researchData);
+                    Trade newTrade = await SetNewTradeData(researchData);
 
                     await CreateJournal(newTrade);
 
-                    _unitOfWork.PaperTrade.Add(newTrade);
+                    _unitOfWork.Trade.Add(newTrade);
                     await _unitOfWork.SaveAsync();
                 }
-                else if (NewTradeVM.Strategy == Strategy.Cradle)
+                else if (NewTradeVM.Strategy == EStrategy.Cradle)
                 {
 
                 }
@@ -103,7 +103,7 @@ namespace TradingTools.Controllers
 
             #region Helper Methods
 
-            async Task CreateJournal(PaperTrade newTrade)
+            async Task CreateJournal(Trade newTrade)
             {
                 Journal journal = new();
                 _unitOfWork.Journal.Add(journal);
@@ -111,9 +111,9 @@ namespace TradingTools.Controllers
                 newTrade.JournalId = journal.Id;
             }
 
-            async Task<PaperTrade> SetNewTradeData(ResearchFirstBarPullback researchData)
+            async Task<Trade> SetNewTradeData(ResearchFirstBarPullback researchData)
             {
-                PaperTrade newTrade = EntityMapper.ViewModelToEntity<PaperTrade, TradeDisplay>(NewTradeVM.TradeData, existingEntity: null);
+                Trade newTrade = EntityMapper.ViewModelDisplayToEntity<Trade, TradeDisplay>(NewTradeVM.TradeData, existingEntity: null);
                 await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, newTrade, files);
                 newTrade.ResearchId = researchData.Id;
                 newTrade.SampleSizeId = researchData.SampleSizeId;
@@ -129,7 +129,7 @@ namespace TradingTools.Controllers
             {
                 ResearchFirstBarPullbackDisplay viewData = NewTradeVM.ResearchData as ResearchFirstBarPullbackDisplay;
                 // Convert the ViewData into DB entity
-                ResearchFirstBarPullback researchData = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(viewData, existingEntity: null);
+                ResearchFirstBarPullback researchData = EntityMapper.ViewModelDisplayToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(viewData, existingEntity: null);
                 researchData.SampleSizeId = (await ProcessSampleSize(maxTradesProSampleSize: maxTradesProSampleSize)).id;
                 // Called for a research trade
                 if (maxTradesProSampleSize == 100)
@@ -164,18 +164,18 @@ namespace TradingTools.Controllers
             int numberTradesInSampleSize = 0;
 
             // Research
-            if (NewTradeVM.TradeType == TradeType.Research)
+            if (NewTradeVM.TradeType == ETradeType.Research)
             {
-                if (NewTradeVM.Strategy == Strategy.FirstBarPullback)
+                if (NewTradeVM.Strategy == EStrategy.FirstBarPullback)
                 {
                     List<ResearchFirstBarPullback> researchedTrades = await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == id);
                     numberTradesInSampleSize = researchedTrades.Count;
                 }
             }
             // Trade or PaperTrade
-            else if (NewTradeVM.TradeType == TradeType.PaperTrade)
+            else if (NewTradeVM.TradeType == ETradeType.PaperTrade)
             {
-                List<PaperTrade> trades = await _unitOfWork.PaperTrade.GetAllAsync(x => x.SampleSizeId == id);
+                List<Trade> trades = await _unitOfWork.Trade.GetAllAsync(x => x.SampleSizeId == id);
                 numberTradesInSampleSize = trades.Count;
             }
 
@@ -200,7 +200,7 @@ namespace TradingTools.Controllers
 
                 Review review = null;
                 // Create a new review for the new sample size
-                if (NewTradeVM.TradeType != TradeType.Research)
+                if (NewTradeVM.TradeType != ETradeType.Research)
                 {
                     review = new();
                     _unitOfWork.Review.Add(review);

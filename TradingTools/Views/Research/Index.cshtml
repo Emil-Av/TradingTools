@@ -26,7 +26,7 @@
                                         Time Frame: <span id="spanTimeFrame">@MyEnumConverter.TimeFrameFromEnum(Model.CurrentSampleSize.TimeFrame)</span>
                                     </button>
                                     <div class="dropdown-menu animated--fade-in" id="dropdownBtnTimeFrame" aria-labelledby="dropdownMenuButton">
-                                        @foreach (TimeFrame tf in Model.AvailableTimeframes)
+                                        @foreach (ETimeFrame tf in Model.AvailableTimeframes)
                                         {
                                             <a class="dropdown-item" role="button">@MyEnumConverter.TimeFrameFromEnum(tf)</a>
                                         }
@@ -40,7 +40,7 @@
                                         Strategy: <span id="spanStrategy">@MyEnumConverter.StrategyFromEnum(Model.CurrentSampleSize.Strategy)</span>
                                     </button>
                                     <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
-                                        @foreach (Strategy strategy in Model.AvailableStrategies)
+                                        @foreach (EStrategy strategy in Model.AvailableStrategies)
                                         {
                                             <a class="dropdown-item" role="button">@MyEnumConverter.StrategyFromEnum(strategy)</a>
                                         }

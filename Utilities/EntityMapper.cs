@@ -56,6 +56,27 @@ namespace Utilities
             return currentTrade;
         }
 
+        public static void ViewModelToEntity<T>(T dbEntity, T viewData) where T : class, new()
+        {
+            if (dbEntity == null || viewData == null)
+            {
+                throw new ArgumentNullException("Entities cannot be null");
+            }
+
+            var entityType = typeof(T);
+            var properties = entityType.GetProperties();
+
+            foreach (var property in properties)
+            {
+                var viewValue = property.GetValue(viewData);
+                if (viewValue != null) // Check if value is set
+                {
+                    property.SetValue(dbEntity, viewValue);
+                }
+            }
+        }
+
+
         /// <summary>
         ///  Converts the values from a display class to an entity.
         /// </summary>
@@ -63,7 +84,8 @@ namespace Utilities
         /// <typeparam name="TViewModelProperty"></typeparam>
         /// <param name="viewModel"></param>
         /// <returns></returns>
-        public static TEntity ViewModelToEntity<TEntity, TViewModelProperty>(TViewModelProperty viewModel, TEntity existingEntity) where TEntity : new()
+
+        public static TEntity ViewModelDisplayToEntity<TEntity, TViewModelProperty>(TViewModelProperty viewModel, TEntity existingEntity) where TEntity : new()
         {
             var entity = existingEntity ?? new TEntity();
             var entityType = typeof(TEntity);
@@ -108,7 +130,7 @@ namespace Utilities
                         {
                             entityProp.SetValue(entity, default);
                         }
-                    } 
+                    }
                     else if (viewModelProp.PropertyType == typeof(string) && entityProp.PropertyType == typeof(List<double>) || Nullable.GetUnderlyingType(entityProp.PropertyType) == typeof(List<double>))
                     {
                         //// A lot of properties can be null. Not all properties have values, especially when creating a new trade.

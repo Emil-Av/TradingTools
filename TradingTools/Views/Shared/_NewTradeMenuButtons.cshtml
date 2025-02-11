@@ -8,9 +8,9 @@
             Status: <span id="spanStatus"></span>
         </button>
         <div class="dropdown-menu animated--fade-in" id="dropdownBtnStatus" aria-labelledby="dropdownMenuButton">
-            @foreach (Status status in Enum.GetValues(typeof(Status)))
+            @foreach (EStatus status in Enum.GetValues(typeof(EStatus)))
             {
-                if (status == Status.All)
+                if (status == EStatus.All)
                 {
                     continue;
                 }
@@ -27,7 +27,7 @@
             Time Frame: <span id="spanTimeFrame"></span>
         </button>
         <div class="dropdown-menu animated--fade-in" id="dropdownBtnTimeFrame" aria-labelledby="dropdownMenuButton">
-            @foreach (TimeFrame tf in Enum.GetValues(typeof(TimeFrame)))
+            @foreach (ETimeFrame tf in Enum.GetValues(typeof(ETimeFrame)))
             {
                 <a class="dropdown-item" role="button">@MyEnumConverter.TimeFrameFromEnum(tf)</a>
             }
@@ -41,7 +41,7 @@
             Strategy: <span id="spanStrategy"></span>
         </button>
         <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
-            @foreach (Strategy strategy in Enum.GetValues(typeof(Strategy)))
+            @foreach (EStrategy strategy in Enum.GetValues(typeof(EStrategy)))
             {
                 <a class="dropdown-item" role="button">@MyEnumConverter.StrategyFromEnum(strategy)</a>
             }
@@ -55,7 +55,7 @@
             Type: <span id="spanTradeType"></span>
         </button>
         <div class="dropdown-menu animated--fade-in" id="dropdownBtnTradeType" aria-labelledby="dropdownMenuButton">
-            @foreach (TradeType tradeType in Enum.GetValues(typeof(TradeType)))
+            @foreach (ETradeType tradeType in Enum.GetValues(typeof(ETradeType)))
             {
                 <a class="dropdown-item" role="button">@MyEnumConverter.TradeTypeFromEnum(tradeType)</a>
             }
@@ -69,7 +69,7 @@
             Side: <span id="spanTradeSide"></span>
         </button>
         <div class="dropdown-menu animated--fade-in" id="dropdownBtnTradeSide" aria-labelledby="dropdownMenuButton">
-            @foreach (SideType sideType in Enum.GetValues(typeof(SideType)))
+            @foreach (ESideType sideType in Enum.GetValues(typeof(ESideType)))
             {
                 <a class="dropdown-item" role="button">@sideType.ToString()</a>
             }
@@ -83,7 +83,7 @@
             Order Type: <span id="spanOrderType"></span>
         </button>
         <div class="dropdown-menu animated--fade-in" id="dropdownBtnOrderType" aria-labelledby="dropdownMenuButton">
-            @foreach (OrderType orderType in Enum.GetValues(typeof(OrderType)))
+            @foreach (EOrderType orderType in Enum.GetValues(typeof(EOrderType)))
             {
                 <a class="dropdown-item" role="button">@MyEnumConverter.OrderTypeFromEnum(orderType)</a>
             }

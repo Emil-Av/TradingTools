@@ -10,6 +10,7 @@ using System.IO.Compression;
 using Utilities;
 using SharedEnums.Enums;
 using Shared;
+using Shared.Enums;
 
 namespace TradingTools.Controllers
 {
@@ -54,7 +55,7 @@ namespace TradingTools.Controllers
         {
             try
             {
-                if (ResearchVM.CurrentStrategy == Strategy.FirstBarPullback)
+                if (ResearchVM.CurrentStrategy == EStrategy.FirstBarPullback)
                 {
                     JsonResult jsonResul = await DeleteFirstBarPullback(id);
                     return jsonResul;
@@ -72,8 +73,8 @@ namespace TradingTools.Controllers
             ResearchFirstBarPullback trade = await _unitOfWork.ResearchFirstBarPullback.GetAsync(x => x.Id == id);
             SampleSize sampleSize = await _unitOfWork.SampleSize.GetAsync(x => x.Id == trade.SampleSizeId);
             List<SampleSize> sampleSizes = null;
-            Strategy currentStrategy = sampleSize.Strategy;
-            TimeFrame currentTF = sampleSize.TimeFrame;
+            EStrategy currentStrategy = sampleSize.Strategy;
+            ETimeFrame currentTF = sampleSize.TimeFrame;
             if (trade == null)
             {
                 return Json(new { error = "No trade was found for this id." });
@@ -91,7 +92,7 @@ namespace TradingTools.Controllers
                 await _unitOfWork.SaveAsync();
 
                 // Check if there are more sample sizes for the paramaters. If yes get the last
-                sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.Strategy == sampleSize.Strategy && x.TimeFrame == sampleSize.TimeFrame && x.TradeType == TradeType.Research);
+                sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.Strategy == sampleSize.Strategy && x.TimeFrame == sampleSize.TimeFrame && x.TradeType == ETradeType.Research);
 
                 int lastSampleSizeId = 0;
                 // No more sample sizes for these parameters. The trade that was deleted was the last for these paramaters
@@ -113,7 +114,7 @@ namespace TradingTools.Controllers
                 // Check if there are any other sample sizes (any TF, any Strategy)
                 else
                 {
-                    sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research);
+                    sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == ETradeType.Research);
 
                     if (sampleSizes.Any())
                     {
@@ -161,7 +162,7 @@ namespace TradingTools.Controllers
                 return Json(new { error = errorMsg });
             }
 
-            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research && x.TimeFrame == ResearchVM.CurrentTimeFrame && x.Strategy == ResearchVM.CurrentStrategy);
+            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == ETradeType.Research && x.TimeFrame == ResearchVM.CurrentTimeFrame && x.Strategy == ResearchVM.CurrentStrategy);
 
             errorMsg = await LoadViewModelData(sampleSizes, ResearchVM.CurrentSampleSizeId);
 
@@ -184,7 +185,7 @@ namespace TradingTools.Controllers
                 return validationResult;
             }
 
-            ResearchFirstBarPullback trade = EntityMapper.ViewModelToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(currentTrade, existingEntity: null);
+            ResearchFirstBarPullback trade = EntityMapper.ViewModelDisplayToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(currentTrade, existingEntity: null);
             // The Id of a trade is in the currentTrade paramater. The id is passed to the trade object in ResearchMapper.ViewModelToEntity().
             // The Update() method, queries the database for a trade based on the Id.
             SanitizationHelper.SanitizeObject(trade);
@@ -204,7 +205,7 @@ namespace TradingTools.Controllers
         public async Task<IActionResult> Index()
         {
             // Get research sample sizes
-            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == TradeType.Research);
+            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == ETradeType.Research);
 
             // No researched trades
             if (!sampleSizes.Any())
@@ -268,7 +269,7 @@ namespace TradingTools.Controllers
                         List<ZipArchiveEntry> sortedEntries = [.. archive.Entries.OrderBy(e => e.FullName, new NaturalStringComparer())];
                         List<ResearchFirstBarPullback> researchTrades = new List<ResearchFirstBarPullback>();
 
-                        TimeFrame researchedTF;
+                        ETimeFrame researchedTF;
                         int tradeIndex = 0;
                         int currentTrade = 0;
                         string currentSampleSize = string.Empty;
@@ -297,8 +298,8 @@ namespace TradingTools.Controllers
                                 researchedTF = MyEnumConverter.TimeFrameFromString(tempTF).Value;
                                 // Set the sample size for the research
                                 SampleSize sampleSize = new SampleSize();
-                                sampleSize.TradeType = TradeType.Research;
-                                sampleSize.Strategy = (Strategy)strategy;
+                                sampleSize.TradeType = ETradeType.Research;
+                                sampleSize.Strategy = (EStrategy)strategy;
                                 sampleSize.TimeFrame = researchedTF;
                                 _unitOfWork.SampleSize.Add(sampleSize);
                                 await _unitOfWork.SaveAsync();
@@ -326,7 +327,7 @@ namespace TradingTools.Controllers
                                                 researchTrade.IsOneToThreeHit = csvData[i][2] == "Yes" ? true : false;
                                                 researchTrade.IsOneToFiveHit = csvData[i][3] == "Yes" ? true : false;
                                                 researchTrade.IsBreakeven = csvData[i][4] == "Yes" ? true : false;
-                                                researchTrade.IsLoss = csvData[i][5] == "Yes" ? true : false;
+                                                researchTrade.Outcome = csvData[i][5] == "Yes" ? EOutcome.Loser : EOutcome.Winner;
                                                 // Format in csvData[i][6] is 1-4. Split the string at '-` and get the second item. Then parse that into int.
                                                 researchTrade.MaxRR = csvData[i][6].Length > 0 ? int.Parse(csvData[i][6].Split('-')[1]) : 0;
                                                 researchTrade.MarketGaveSmth = csvData[i][7].Length > 0 ? true : false;

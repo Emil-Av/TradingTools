@@ -9,7 +9,7 @@ using SharedEnums.Enums;
 
 namespace Models
 {
-    public class ResearchFirstBarPullback : Trade
+    public class ResearchFirstBarPullback : BaseTrade
     {
         /// <summary>
         ///  Risk to reward ratio 1:1.

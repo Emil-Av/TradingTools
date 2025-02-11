@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250210101244_UpdateTradeTable")]
+    partial class UpdateTradeTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,62 +50,7 @@ namespace DataAccess.Migrations
                     b.ToTable("Journals");
                 });
 
-            modelBuilder.Entity("Models.Review", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("First")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Forth")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Second")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Summary")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Third")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Reviews");
-                });
-
-            modelBuilder.Entity("Models.SampleSize", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("ReviewId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Strategy")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TimeFrame")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TradeType")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReviewId");
-
-                    b.ToTable("SampleSizes");
-                });
-
-            modelBuilder.Entity("Models.Trade", b =>
+            modelBuilder.Entity("Models.PaperTrade", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -114,11 +62,6 @@ namespace DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
 
                     b.Property<double?>("EntryPrice")
                         .ValueGeneratedOnAdd()
@@ -193,14 +136,10 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("SampleSizeId");
 
-                    b.ToTable("Trades");
-
-                    b.HasDiscriminator().HasValue("Trade");
-
-                    b.UseTphMappingStrategy();
+                    b.ToTable("PaperTrades");
                 });
 
-            modelBuilder.Entity("Models.UserSettings", b =>
+            modelBuilder.Entity("Models.ResearchFirstBarPullback", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -208,41 +147,28 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<double>("AccountSize")
-                        .HasColumnType("float");
-
-                    b.Property<double>("ExchSizeLimit")
-                        .HasColumnType("float");
-
-                    b.Property<double>("MaxSlippage")
-                        .HasColumnType("float");
-
-                    b.Property<int>("PTStrategy")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PTTimeFrame")
-                        .HasColumnType("int");
-
-                    b.Property<double>("ScaleOut")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TradeFee")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TradeRisk")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UserSettings");
-                });
-
-            modelBuilder.Entity("Models.ResearchFirstBarPullback", b =>
-                {
-                    b.HasBaseType("Models.Trade");
-
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<double?>("EntryPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<double?>("ExitPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<double?>("Fee")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
 
                     b.Property<bool>("FullATRMarketGaveSmth")
                         .HasColumnType("bit");
@@ -316,6 +242,9 @@ namespace DataAccess.Migrations
                     b.Property<bool>("IsTriggerTrending")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("JournalId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("MarketGaveSmth")
                         .HasColumnType("bit");
 
@@ -325,19 +254,157 @@ namespace DataAccess.Migrations
                     b.Property<int>("OneToOneHitOn")
                         .HasColumnType("int");
 
-                    b.HasDiscriminator().HasValue("Research");
+                    b.Property<int>("OrderType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Outcome")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("PnL")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<int?>("ResearchId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SampleSizeId")
+                        .HasColumnType("int");
+
+                    b.PrimitiveCollection<string>("ScreenshotsUrls")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SideType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("StopPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<string>("Symbol")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Targets")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(MAX)");
+
+                    b.Property<int>("TradeRating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TradeType")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("TriggerPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValueSql("0");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JournalId");
+
+                    b.HasIndex("SampleSizeId");
+
+                    b.ToTable("ResearchFirstBarPullbacks");
+                });
+
+            modelBuilder.Entity("Models.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("First")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Forth")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Second")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Summary")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Third")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("Models.SampleSize", b =>
                 {
-                    b.HasOne("Models.Review", "Review")
-                        .WithMany()
-                        .HasForeignKey("ReviewId");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Navigation("Review");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ReviewId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Strategy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TimeFrame")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TradeType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReviewId");
+
+                    b.ToTable("SampleSizes");
                 });
 
-            modelBuilder.Entity("Models.Trade", b =>
+            modelBuilder.Entity("Models.UserSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("AccountSize")
+                        .HasColumnType("float");
+
+                    b.Property<double>("ExchSizeLimit")
+                        .HasColumnType("float");
+
+                    b.Property<double>("MaxSlippage")
+                        .HasColumnType("float");
+
+                    b.Property<int>("PTStrategy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PTTimeFrame")
+                        .HasColumnType("int");
+
+                    b.Property<double>("ScaleOut")
+                        .HasColumnType("float");
+
+                    b.Property<double>("TradeFee")
+                        .HasColumnType("float");
+
+                    b.Property<double>("TradeRisk")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserSettings");
+                });
+
+            modelBuilder.Entity("Models.PaperTrade", b =>
                 {
                     b.HasOne("Models.Journal", "Journal")
                         .WithMany()
@@ -352,6 +419,32 @@ namespace DataAccess.Migrations
                     b.Navigation("Journal");
 
                     b.Navigation("SampleSize");
+                });
+
+            modelBuilder.Entity("Models.ResearchFirstBarPullback", b =>
+                {
+                    b.HasOne("Models.Journal", "Journal")
+                        .WithMany()
+                        .HasForeignKey("JournalId");
+
+                    b.HasOne("Models.SampleSize", "SampleSize")
+                        .WithMany()
+                        .HasForeignKey("SampleSizeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Journal");
+
+                    b.Navigation("SampleSize");
+                });
+
+            modelBuilder.Entity("Models.SampleSize", b =>
+                {
+                    b.HasOne("Models.Review", "Review")
+                        .WithMany()
+                        .HasForeignKey("ReviewId");
+
+                    b.Navigation("Review");
                 });
 #pragma warning restore 612, 618
         }

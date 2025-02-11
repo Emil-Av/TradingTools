@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.ViewModels;
 
 namespace DataAccess.Data
 {
@@ -11,7 +12,7 @@ namespace DataAccess.Data
 
         }
 
-        public DbSet<PaperTrade> PaperTrades { get; set; }
+        public DbSet<Trade> Trades { get; set; }
 
         public DbSet<Journal> Journals { get; set; }
 
@@ -25,44 +26,34 @@ namespace DataAccess.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<PaperTrade>()
-                .Property(e => e.TradeDurationInCandles)
-                .HasDefaultValueSql("0");
-
-            modelBuilder.Entity<PaperTrade>()
+            modelBuilder.Entity<Trade>()
                 .Property(e => e.TriggerPrice)
                 .HasDefaultValueSql("0");
 
-            modelBuilder.Entity<PaperTrade>()
+            modelBuilder.Entity<Trade>()
                 .Property(e => e.EntryPrice)
                 .HasDefaultValueSql("0");
 
-            modelBuilder.Entity<PaperTrade>()
+            modelBuilder.Entity<Trade>()
                 .Property(e => e.StopPrice)
                 .HasDefaultValueSql("0");
 
-            modelBuilder.Entity<PaperTrade>()
+            modelBuilder.Entity<Trade>()
                 .Property(e => e.ExitPrice)
                 .HasDefaultValueSql("0");
 
-            modelBuilder.Entity<PaperTrade>()
+            modelBuilder.Entity<Trade>()
                 .Property(e => e.PnL)
                 .HasDefaultValueSql("0");
 
-            modelBuilder.Entity<PaperTrade>()
+            modelBuilder.Entity<Trade>()
                 .Property(e => e.ExitPrice)
                 .HasDefaultValueSql("0");
 
-            modelBuilder.Entity<PaperTrade>()
+            modelBuilder.Entity<Trade>()
                 .Property(e => e.Fee)
                 .HasDefaultValueSql("0");
 
-
-
-
-            modelBuilder.Entity<ResearchFirstBarPullback>()
-                .Property(e => e.TradeDurationInCandles)
-                .HasDefaultValueSql("0");
 
             modelBuilder.Entity<ResearchFirstBarPullback>()
                 .Property(e => e.TriggerPrice)
@@ -97,7 +88,7 @@ namespace DataAccess.Data
 
 
 
-            modelBuilder.Entity<PaperTrade>()
+            modelBuilder.Entity<Trade>()
                 .Property(e => e.CreatedAt)
                 .HasDefaultValueSql("GETDATE()");
 

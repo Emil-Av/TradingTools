@@ -37,16 +37,16 @@ namespace Models.ViewModels
         }
 
         #region Properties
-        public Status Status { get; set; }
-        public TimeFrame TimeFrame { get; set; }
+        public EStatus Status { get; set; }
+        public ETimeFrame TimeFrame { get; set; }
 
-        public Strategy Strategy { get; set; }
+        public EStrategy Strategy { get; set; }
 
-        public TradeType TradeType { get; set; }
+        public ETradeType TradeType { get; set; }
 
-        public SideType SideType { get; set; }
+        public ESideType SideType { get; set; }
 
-        public OrderType OrderType { get; set; }
+        public EOrderType OrderType { get; set; }
 
         public object ResearchData { get; set; }
 
@@ -74,18 +74,18 @@ namespace Models.ViewModels
             try
             {
                 List<string> errors = new List<string>();
-                Result<Status>? statusResult = null;
-                Result<OrderType>? orderTypeResult = null;
+                Result<EStatus>? statusResult = null;
+                Result<EOrderType>? orderTypeResult = null;
 
                 Dictionary<string, string> tradeDataObject = JsonConvert.DeserializeObject<Dictionary<string, string>>(tradeParams);
 
-                Result<TimeFrame> timeFrameResult = MyEnumConverter.TimeFrameFromString(tradeDataObject["timeFrame"]);
-                Result<Strategy> strategyResult = MyEnumConverter.StrategyFromString(tradeDataObject["strategy"]);
-                Result<TradeType> typeResult = MyEnumConverter.TradeTypeFromString(tradeDataObject["tradeType"]);
-                Result<SideType> sideResult = MyEnumConverter.SideTypeFromString(tradeDataObject["tradeSide"]);
+                Result<ETimeFrame> timeFrameResult = MyEnumConverter.TimeFrameFromString(tradeDataObject["timeFrame"]);
+                Result<EStrategy> strategyResult = MyEnumConverter.StrategyFromString(tradeDataObject["strategy"]);
+                Result<ETradeType> typeResult = MyEnumConverter.TradeTypeFromString(tradeDataObject["tradeType"]);
+                Result<ESideType> sideResult = MyEnumConverter.SideTypeFromString(tradeDataObject["tradeSide"]);
 
                 // For a research trade there is no need for Status or OrderType
-                if (!typeResult.Success || typeResult.Success && typeResult.Value != TradeType.Research)
+                if (!typeResult.Success || typeResult.Success && typeResult.Value != ETradeType.Research)
                 {
                     statusResult = MyEnumConverter.StatusFromString(tradeDataObject["status"]);
                     orderTypeResult = MyEnumConverter.OrderTypeFromString(tradeDataObject["orderType"]);
@@ -111,13 +111,13 @@ namespace Models.ViewModels
                 SideType = sideResult.Value;
 
                 // Status and OrderType are not required for Research
-                if (TradeType != TradeType.Research)
+                if (TradeType != ETradeType.Research)
                 {
                     Status = statusResult!.Value;
                     OrderType = orderTypeResult!.Value;
                 }
 
-                if (Strategy == Strategy.FirstBarPullback)
+                if (Strategy == EStrategy.FirstBarPullback)
                 {
                     // ResearchData is of type object because it can contain research data for different strategies. See NewTradeController -> SaveTrade()
                     ResearchData = JsonConvert.DeserializeObject<ResearchFirstBarPullbackDisplay>(researchData);

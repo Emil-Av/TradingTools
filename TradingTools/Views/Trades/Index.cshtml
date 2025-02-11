@@ -3,7 +3,7 @@
     ViewData["Title"] = "Paper Trades";
 }
 
-@model PaperTradesVM
+@model TradesVM
 
 @if (Model.CurrentTrade != null)
 {
@@ -36,7 +36,7 @@
                                     Strategy: <span id="spanStrategy">@MyEnumConverter.StrategyFromEnum(Model.CurrentSampleSize.Strategy)</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="dropdownBtnStrategy" aria-labelledby="dropdownMenuButton">
-                                    @foreach (Strategy strategy in Model.AvailableStrategies)
+                                    @foreach (EStrategy strategy in Model.AvailableStrategies)
                                     {
                                         <a class="dropdown-item" role="button">@MyEnumConverter.StrategyFromEnum(strategy)</a>
                                     }
@@ -50,7 +50,7 @@
                                     Type: <span id="spanTradeType">@MyEnumConverter.TradeTypeFromEnum(Model.CurrentTrade.TradeType)</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="dropdownBtnTradeType" aria-labelledby="dropdownMenuButton">
-                                    @foreach (TradeType tradeType in Enum.GetValues(typeof(TradeType)))
+                                    @foreach (ETradeType tradeType in Enum.GetValues(typeof(ETradeType)))
                                     {
                                         <a class="dropdown-item" role="button">@MyEnumConverter.TradeTypeFromEnum(tradeType)</a>
                                     }
@@ -65,7 +65,7 @@
                                     Status: <span id="spanStatus">@Model.DefaultTradeStatus</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="dropdownBtnStatus" aria-labelledby="dropdownMenuButton">
-                                    @foreach (Status status in Enum.GetValues(typeof(Status)))
+                                    @foreach (EStatus status in Enum.GetValues(typeof(EStatus)))
                                     {
                                         <a class="dropdown-item" role="button">@status.ToString()</a>
                                     }
@@ -77,10 +77,10 @@
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Time Frame: <span id="spanTimeFrame">@MyEnumConverter.TimeFrameFromEnum((TimeFrame)Model.CurrentSampleSize.TimeFrame)</span>
+                                    Time Frame: <span id="spanTimeFrame">@MyEnumConverter.TimeFrameFromEnum((ETimeFrame)Model.CurrentSampleSize.TimeFrame)</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="dropdownBtnTimeFrame" aria-labelledby="dropdownMenuButton">
-                                    @foreach (TimeFrame tf in Model.AvailableTimeframes)
+                                    @foreach (ETimeFrame tf in Model.AvailableTimeframes)
                                     {
                                         <a class="dropdown-item" role="button">@MyEnumConverter.TimeFrameFromEnum(tf)</a>
                                     }
@@ -314,6 +314,6 @@
     </div>
 </div>
 @section Scripts {
-    <script src="~/js/paperTrades.js"></script>
+    <script src="~/js/trades.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
 }

@@ -47,7 +47,7 @@ namespace Utilities
                     // /Screenshots/Research(e.g.)
                     Directory.CreateDirectory(pathToSaveFiles);
                 }
-                if (tradeType == MyEnumConverter.TradeTypeFromEnum(SharedEnums.Enums.TradeType.Research))
+                if (tradeType == MyEnumConverter.TradeTypeFromEnum(SharedEnums.Enums.ETradeType.Research))
                 {
                     // /Screenshots/Research/FirstBarPullback(e.g.)
                     pathToSaveFiles = Path.Combine(pathToSaveFiles, newTrade.GetType().Name);
@@ -146,7 +146,7 @@ namespace Utilities
         }
 
         /// <summary>
-        ///  Creates the folders in wwwroot\Screenshots for the screenshots when uploading a .zip file for PaperTrades or Research
+        ///  Creates the folders in wwwroot\Screenshots for the screenshots when uploading a .zip file for Trades or Research
         /// </summary>
         /// <param name="tradeInfo"></param>
         /// <param name="currentFolder"></param>
@@ -176,7 +176,7 @@ namespace Utilities
             currentFolder = Path.Combine(screenshotsFolder, tradeType);
             if (!Directory.Exists(currentFolder))
             {
-                // Create View folder (e.g. wwwroot\Screenshots\PaperTrades
+                // Create View folder (e.g. wwwroot\Screenshots\Trades
                 Directory.CreateDirectory(currentFolder);
             }
             // Get all subfolders

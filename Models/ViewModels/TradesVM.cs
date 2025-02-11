@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace Models.ViewModels
 {
-    public class PaperTradesVM
+    public class TradesVM
     {
-        public PaperTradesVM()
+        public TradesVM()
         {
-            AvailableStrategies = new List<Strategy>();
-            AvailableTimeframes = new List<TimeFrame>();
+            AvailableStrategies = new List<EStrategy>();
+            AvailableTimeframes = new List<ETimeFrame>();
             TradeData = new();
         }
         public int TradesInSampleSize { get; set; }
@@ -31,20 +31,20 @@ namespace Models.ViewModels
         public string? ErrorMsg { get; set; }
 
         // The trade being displayed
-        public PaperTrade CurrentTrade { get; set; }
+        public Trade CurrentTrade { get; set; }
 
         public TradeDisplay TradeData { get; set; }
 
         public SampleSize CurrentSampleSize { get; set; }
 
         // The current number of trades for the latest sample size
-        public List<Strategy> AvailableStrategies { get; set; }
+        public List<EStrategy> AvailableStrategies { get; set; }
 
-        public List<TimeFrame> AvailableTimeframes { get; set; }
+        public List<ETimeFrame> AvailableTimeframes { get; set; }
 
-        public Status DefaultTradeStatus { get; set; } = Status.All;
+        public EStatus DefaultTradeStatus { get; set; } = EStatus.All;
 
-        public TimeFrame DefaultTimeFrame { get; set; } = TimeFrame.M10;
+        public ETimeFrame DefaultTimeFrame { get; set; } = ETimeFrame.M10;
 
     }
 }

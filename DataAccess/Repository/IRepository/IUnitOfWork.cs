@@ -8,7 +8,7 @@ namespace DataAccess.Repository.IRepository
 {
     public interface IUnitOfWork
     {
-        IPaperTradeRepository PaperTrade { get; }
+        ITradeRepository Trade { get; }
 
         IJournalRepository Journal { get; }
 

@@ -4,173 +4,173 @@ namespace Shared
 {
     public class MyEnumConverter
     {
-        public static string OrderTypeFromEnum(OrderType orderType)
+        public static string OrderTypeFromEnum(EOrderType orderType)
         {
-            Dictionary<OrderType, string> statusType = new Dictionary<OrderType, string>()
+            Dictionary<EOrderType, string> statusType = new Dictionary<EOrderType, string>()
             {
-                { OrderType.Market, "Market" },
-                { OrderType.Limit, "Limit" },
-                { OrderType.StopLoss, "Stop Loss" }
+                { EOrderType.Market, "Market" },
+                { EOrderType.Limit, "Limit" },
+                { EOrderType.StopLoss, "Stop Loss" }
             };
 
             return statusType[orderType];
         }
 
-        public static Result<OrderType> OrderTypeFromString(string orderType)
+        public static Result<EOrderType> OrderTypeFromString(string orderType)
         {
-            Dictionary<string, OrderType> orderTypes = new Dictionary<string, OrderType>()
+            Dictionary<string, EOrderType> orderTypes = new Dictionary<string, EOrderType>()
             {
-                { "Market", OrderType.Market },
-                { "Limit", OrderType.Limit },
-                { "Stop Loss", OrderType.StopLoss }
+                { "Market", EOrderType.Market },
+                { "Limit", EOrderType.Limit },
+                { "Stop Loss", EOrderType.StopLoss }
             };
             try
             {
-                return Result<OrderType>.SuccessResult(orderTypes[orderType]);
+                return Result<EOrderType>.SuccessResult(orderTypes[orderType]);
             }
             catch
             {
-                return Result<OrderType>.ErrorResult($"Error converting order type from a string. Value given: {orderType}");
+                return Result<EOrderType>.ErrorResult($"Error converting order type from a string. Value given: {orderType}");
             }
         }
 
-        public static Result<Status> StatusFromString(string status)
+        public static Result<EStatus> StatusFromString(string status)
         {
-            Dictionary<string, Status> statusTypes = new Dictionary<string, Status>()
+            Dictionary<string, EStatus> statusTypes = new Dictionary<string, EStatus>()
             {
-                { "Pending", Status.Pending },
-                { "Opened", Status.Opened },
-                { "Closed", Status.Closed },
-                { "All", Status.All }
-            };
-
-            try
-            {
-                return Result<Status>.SuccessResult(statusTypes[status]);
-            }
-            catch
-            {
-                return Result<Status>.ErrorResult($"Error converting status from a string. Value given: {status}");
-            }
-        }
-
-        public static Result<SideType> SideTypeFromString(string sideType)
-        {
-            Dictionary<string, SideType> sideTypes = new Dictionary<string, SideType>() 
-            {
-                { "Long", SideType.Long },
-                { "Short", SideType.Short }
+                { "Pending", EStatus.Pending },
+                { "Opened", EStatus.Opened },
+                { "Closed", EStatus.Closed },
+                { "All", EStatus.All }
             };
 
             try
             {
-                return Result<SideType>.SuccessResult(sideTypes[sideType]);
+                return Result<EStatus>.SuccessResult(statusTypes[status]);
             }
             catch
             {
-                return Result<SideType>.ErrorResult($"Error converting side type from a string. Value given: {sideType}");
+                return Result<EStatus>.ErrorResult($"Error converting status from a string. Value given: {status}");
             }
         }
 
-        public static Result<TradeType> TradeTypeFromString(string tradeType)
+        public static Result<ESideType> SideTypeFromString(string sideType)
         {
-            Dictionary<string, TradeType> tradeTypes = new Dictionary<string, TradeType>()
+            Dictionary<string, ESideType> sideTypes = new Dictionary<string, ESideType>() 
             {
-                { "Trade", TradeType.Trade },
-                { "Paper Trade" , TradeType.PaperTrade },
-                { "Research", TradeType.Research },
+                { "Long", ESideType.Long },
+                { "Short", ESideType.Short }
             };
 
             try
             {
-                return Result<TradeType>.SuccessResult(tradeTypes[tradeType]);
+                return Result<ESideType>.SuccessResult(sideTypes[sideType]);
             }
             catch
             {
-                return Result<TradeType>.ErrorResult($"Error converting the trade type from a string. Value given: {tradeType}");
+                return Result<ESideType>.ErrorResult($"Error converting side type from a string. Value given: {sideType}");
             }
         }
 
-        public static string TradeTypeFromEnum(TradeType tradeType)
+        public static Result<ETradeType> TradeTypeFromString(string tradeType)
         {
-            Dictionary<TradeType, string> tradeTypes = new Dictionary<TradeType, string>()
+            Dictionary<string, ETradeType> tradeTypes = new Dictionary<string, ETradeType>()
             {
-                { TradeType.Trade , "Trade"},
-                { TradeType.PaperTrade, "Paper Trade" },
-                { TradeType.Research, "Research" },
+                { "Trade", ETradeType.Trade },
+                { "Paper Trade" , ETradeType.PaperTrade },
+                { "Research", ETradeType.Research },
+            };
+
+            try
+            {
+                return Result<ETradeType>.SuccessResult(tradeTypes[tradeType]);
+            }
+            catch
+            {
+                return Result<ETradeType>.ErrorResult($"Error converting the trade type from a string. Value given: {tradeType}");
+            }
+        }
+
+        public static string TradeTypeFromEnum(ETradeType tradeType)
+        {
+            Dictionary<ETradeType, string> tradeTypes = new Dictionary<ETradeType, string>()
+            {
+                { ETradeType.Trade , "Trade"},
+                { ETradeType.PaperTrade, "Paper Trade" },
+                { ETradeType.Research, "Research" },
             };
 
             return tradeTypes[tradeType];
         }
 
-        public static Result<TimeFrame> TimeFrameFromString(string timeFrame)
+        public static Result<ETimeFrame> TimeFrameFromString(string timeFrame)
         {
 
-            Dictionary<string, TimeFrame> timeFrames = new Dictionary<string, TimeFrame>()
+            Dictionary<string, ETimeFrame> timeFrames = new Dictionary<string, ETimeFrame>()
             {
-                { "5M", TimeFrame.M5 },
-                { "10M", TimeFrame.M10 },
-                { "15M", TimeFrame.M15 },
-                { "30M", TimeFrame.M30 },
-                { "1H", TimeFrame.H1 },
-                { "2H", TimeFrame.H2 },
-                { "4H", TimeFrame.H4 },
-                { "D", TimeFrame.D }
+                { "5M", ETimeFrame.M5 },
+                { "10M", ETimeFrame.M10 },
+                { "15M", ETimeFrame.M15 },
+                { "30M", ETimeFrame.M30 },
+                { "1H", ETimeFrame.H1 },
+                { "2H", ETimeFrame.H2 },
+                { "4H", ETimeFrame.H4 },
+                { "D", ETimeFrame.D }
 
             };
 
             try
             {
-                return Result<TimeFrame>.SuccessResult(timeFrames[timeFrame]);
+                return Result<ETimeFrame>.SuccessResult(timeFrames[timeFrame]);
             }
             catch
             {
-                return Result<TimeFrame>.ErrorResult($"Error converting the time frame from as string. Value given: {timeFrame}");
+                return Result<ETimeFrame>.ErrorResult($"Error converting the time frame from as string. Value given: {timeFrame}");
             }
         }
 
-        public static string TimeFrameFromEnum(TimeFrame timeFrame)
+        public static string TimeFrameFromEnum(ETimeFrame timeFrame)
         {
-            Dictionary<TimeFrame, string> timeFrames = new Dictionary<TimeFrame, string>()
+            Dictionary<ETimeFrame, string> timeFrames = new Dictionary<ETimeFrame, string>()
             {
-                { TimeFrame.M5, "5M" },
-                { TimeFrame.M10 , "10M" },
-                { TimeFrame.M15 , "15M" },
-                { TimeFrame.M30 , "30M" },
-                { TimeFrame.H1 , "1H" },
-                { TimeFrame.H2 , "2H" },
-                { TimeFrame.H4 , "4H" },
-                { TimeFrame.D , "D" }
+                { ETimeFrame.M5, "5M" },
+                { ETimeFrame.M10 , "10M" },
+                { ETimeFrame.M15 , "15M" },
+                { ETimeFrame.M30 , "30M" },
+                { ETimeFrame.H1 , "1H" },
+                { ETimeFrame.H2 , "2H" },
+                { ETimeFrame.H4 , "4H" },
+                { ETimeFrame.D , "D" }
 
             };
 
             return timeFrames[timeFrame];
         }
 
-        public static Result<Strategy> StrategyFromString(string strategy)
+        public static Result<EStrategy> StrategyFromString(string strategy)
         {
-            Dictionary<string, Strategy> strategies = new Dictionary<string, Strategy>()
+            Dictionary<string, EStrategy> strategies = new Dictionary<string, EStrategy>()
             {
-                { "Cradle", Strategy.Cradle },
-                { "First Bar Pullback", Strategy.FirstBarPullback }
+                { "Cradle", EStrategy.Cradle },
+                { "First Bar Pullback", EStrategy.FirstBarPullback }
             };
 
             try
             {
-                return Result<Strategy>.SuccessResult(strategies[strategy]);
+                return Result<EStrategy>.SuccessResult(strategies[strategy]);
             }
             catch
             {
-                return Result<Strategy>.ErrorResult($"Error converting the strategy from a string. Value given: {strategy}");
+                return Result<EStrategy>.ErrorResult($"Error converting the strategy from a string. Value given: {strategy}");
             }
         }
 
-        public static string StrategyFromEnum(Strategy? strategy)
+        public static string StrategyFromEnum(EStrategy? strategy)
         {
-            Dictionary<Strategy?, string> strategies = new Dictionary<Strategy?, string>()
+            Dictionary<EStrategy?, string> strategies = new Dictionary<EStrategy?, string>()
             {
-                { Strategy.Cradle, "Cradle" },
-                { Strategy.FirstBarPullback, "First Bar Pullback" }
+                { EStrategy.Cradle, "Cradle" },
+                { EStrategy.FirstBarPullback, "First Bar Pullback" }
             };
 
             return strategies[strategy];

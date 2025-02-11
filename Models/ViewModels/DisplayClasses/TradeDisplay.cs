@@ -25,13 +25,13 @@ namespace Models.ViewModels.DisplayClasses
         public string? FeeDisplay { get; set; }
 
         //[JsonConverter(typeof(JsonStringEnumConverter))]
-        public Status StatusDisplay { get; set; }
+        public EStatus StatusDisplay { get; set; }
 
-        public SideType? SideTypeDisplay { get; set; }
+        public ESideType? SideTypeDisplay { get; set; }
 
-        public OrderType? OrderTypeDisplay { get; set; }
+        public EOrderType? OrderTypeDisplay { get; set; }
 
-        public TradeRating? TradeRatingDisplay { get; set; }
+        public ETradeRating? TradeRatingDisplay { get; set; }
 
         public List<string>? ScreenshotsUrlsDisplay { get; set; }
 

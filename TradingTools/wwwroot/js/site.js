@@ -32,8 +32,7 @@ function getTradeData() {
             var bindProperty = $(this).data('trade-data');
             tradeData[bindProperty] = $(this).val();
         });
-    //tradeData['StatusDisplay'] = 'Closed';
-        tradeData['IdDisplay'] = $('#spanTradeIdInput').val();
+        tradeData['Id'] = $('#spanTradeIdInput').val();
 
         return tradeData;
 

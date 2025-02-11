@@ -11,13 +11,13 @@ namespace Models
         ///  Last used time frame in PaperTrades
         /// </summary>
 
-        public TimeFrame PTTimeFrame { get; set; }
+        public ETimeFrame PTTimeFrame { get; set; }
 
         [DefaultValue(0)]
         /// <summary>
         ///  Last used strategy in PaperTrades
         /// </summary>
-        public Strategy PTStrategy { get; set; }    
+        public EStrategy PTStrategy { get; set; }    
 
         public double AccountSize { get; set; }
 

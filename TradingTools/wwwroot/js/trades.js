@@ -13,7 +13,7 @@ $(function () {
     let showLastTrade;
     let loadLastSampleSize = false;
     let statusChanged = false;
-    let paperTradesVM;
+    let tradesVM;
     let currentTab = '#pre'; // Always the start value
     let isEditorShown = false;
     let currentCardMenu = 'itemTradingData';
@@ -62,7 +62,7 @@ $(function () {
 
         $.ajax({
             method: 'POST',
-            url: '/papertrades/updatereview',
+            url: '/trades/updatereview',
             contentType: 'application/json; charset=utf-8',
             dataType: 'JSON',
             data: JSON.stringify(dataToSend),
@@ -84,7 +84,7 @@ $(function () {
 
         $.ajax({
             method: 'POST',
-            url: '/papertrades/updateTradeData',
+            url: '/trades/updateTradeData',
             contentType: 'application/json; charset=utf-8',
             dataType: 'JSON',
             data: JSON.stringify(tradeData),
@@ -119,7 +119,7 @@ $(function () {
 
         $.ajax({
             method: 'POST',
-            url: '/papertrades/updatejournal',
+            url: '/trades/updatejournal',
             contentType: "application/json; charset=utf-8",
             dataType: 'JSON',
             data: JSON.stringify(dataToSend),
@@ -395,7 +395,7 @@ $(function () {
     function loadTrade(status, timeFrame, strategy, tradeType, sampleSize, trade, showLastTrade, loadLastSampleSize, statusChanged) {
         $.ajax({
             method: 'POST',
-            url: '/papertrades/loadtrade',
+            url: '/trades/loadtrade',
             dataType: 'JSON',
             data: {
                 tradeParams: {
@@ -423,20 +423,20 @@ $(function () {
                     menuClicked.text(clickedMenuValue);
                     return;
                 }
-                paperTradesVM = response;
-                setHiddenSpansValues(paperTradesVM);
+                tradesVM = response;
+                setHiddenSpansValues(tradesVM);
                 loadViewData(trade);
                 
             }
         });
     }
 
-    function setHiddenSpansValues(paperTradesVM) {
+    function setHiddenSpansValues(tradesVM) {
         // Set the new trade id
-        $("#spanTradeIdInput").val(paperTradesVM['paperTradesVM']['currentTrade']['id']);
+        $("#spanTradeIdInput").val(tradesVM['tradesVM']['currentTrade']['id']);
         // Set the sample size id
-        $("#spanSampleSizeIdInput").val(paperTradesVM['paperTradesVM']['currentTrade']['sampleSizeId']);
-        $('#spanJournalIdInput').val(paperTradesVM['paperTradesVM']['currentTrade']['journalId']);
+        $("#spanSampleSizeIdInput").val(tradesVM['tradesVM']['currentTrade']['sampleSizeId']);
+        $('#spanJournalIdInput').val(tradesVM['tradesVM']['currentTrade']['journalId']);
     }
 
     function loadViewData(trade) {
@@ -449,15 +449,15 @@ $(function () {
     }
 
     function loadTradeData() {
-        $('#SymbolInput').val(paperTradesVM['paperTradesVM']['currentTrade']['symbol']);
-        $('#StatusInput').val(paperTradesVM['paperTradesVM']['currentTrade']['status']);
-        $('#TriggerPriceInput').val(paperTradesVM['paperTradesVM']['currentTrade']['triggerPriceInput']);
-        $('#EntryPriceInput').val(paperTradesVM['paperTradesVM']['currentTrade']['entryPriceInput']);
-        $('#StopPriceInput').val(paperTradesVM['paperTradesVM']['currentTrade']['stopPriceInput']);
-        $('#ExitPriceInput').val(paperTradesVM['paperTradesVM']['currentTrade']['exitPriceInput']);
-        $('#TargetsInput').val(paperTradesVM['paperTradesVM']['currentTrade']['targetsInput']);
-        $('#PnLInput').val(paperTradesVM['paperTradesVM']['currentTrade']['pnLInput']);
-        $('#FeeInput').val(paperTradesVM['paperTradesVM']['currentTrade']['feeInput']);
+        $('#SymbolInput').val(tradesVM['tradesVM']['currentTrade']['symbol']);
+        $('#StatusInput').val(tradesVM['tradesVM']['currentTrade']['status']);
+        $('#TriggerPriceInput').val(tradesVM['tradesVM']['currentTrade']['triggerPriceInput']);
+        $('#EntryPriceInput').val(tradesVM['tradesVM']['currentTrade']['entryPriceInput']);
+        $('#StopPriceInput').val(tradesVM['tradesVM']['currentTrade']['stopPriceInput']);
+        $('#ExitPriceInput').val(tradesVM['tradesVM']['currentTrade']['exitPriceInput']);
+        $('#TargetsInput').val(tradesVM['tradesVM']['currentTrade']['targetsInput']);
+        $('#PnLInput').val(tradesVM['tradesVM']['currentTrade']['pnLInput']);
+        $('#FeeInput').val(tradesVM['tradesVM']['currentTrade']['feeInput']);
     }
 
     // Loads the review of the sample size
@@ -465,11 +465,11 @@ $(function () {
         // Activate the 'First' tab
         $('#first-tab').trigger('click');
         // Set the values
-        $('#first').html(paperTradesVM['paperTradesVM']['currentSampleSize']['review']['first']);
-        $('#second').html(paperTradesVM['paperTradesVM']['currentSampleSize']['review']['second']);
-        $('#third').html(paperTradesVM['paperTradesVM']['currentSampleSize']['review']['third']);
-        $('#forth').html(paperTradesVM['paperTradesVM']['currentSampleSize']['review']['forth']);
-        $('#summary').html(paperTradesVM['paperTradesVM']['currentSampleSize']['review']['summary']);
+        $('#first').html(tradesVM['tradesVM']['currentSampleSize']['review']['first']);
+        $('#second').html(tradesVM['tradesVM']['currentSampleSize']['review']['second']);
+        $('#third').html(tradesVM['tradesVM']['currentSampleSize']['review']['third']);
+        $('#forth').html(tradesVM['tradesVM']['currentSampleSize']['review']['forth']);
+        $('#summary').html(tradesVM['tradesVM']['currentSampleSize']['review']['summary']);
     }
 
     // Loads the journal of the trade
@@ -477,20 +477,20 @@ $(function () {
         // Activate the 'Pre' tab
         $('#pre-tab').trigger('click');
         // Set the values
-        $('#pre').html(paperTradesVM['paperTradesVM']['currentTrade']['journal']['pre']);
-        $('#during').html(paperTradesVM['paperTradesVM']['currentTrade']['journal']['during']);
-        $('#exit').html(paperTradesVM['paperTradesVM']['currentTrade']['journal']['exit']);
-        $('#post').html(paperTradesVM['paperTradesVM']['currentTrade']['journal']['post']);
+        $('#pre').html(tradesVM['tradesVM']['currentTrade']['journal']['pre']);
+        $('#during').html(tradesVM['tradesVM']['currentTrade']['journal']['during']);
+        $('#exit').html(tradesVM['tradesVM']['currentTrade']['journal']['exit']);
+        $('#post').html(tradesVM['tradesVM']['currentTrade']['journal']['post']);
     }
 
     // Populate the drop down items after a new trade has been selected and set the values in the spans.
     function setMenuValues(displayedTrade) {
         // Menu Buttons
-        let numberSampleSizes = paperTradesVM['paperTradesVM']['numberSampleSizes'] !== -1 ? paperTradesVM['paperTradesVM']['numberSampleSizes'] : '-';
-        let numberTrades = paperTradesVM['paperTradesVM']['tradesInSampleSize'] !== 0 ? paperTradesVM['paperTradesVM']['tradesInSampleSize'] : paperTradesVM['paperTradesVM']['tradesInTimeFrame'];
+        let numberSampleSizes = tradesVM['tradesVM']['numberSampleSizes'] !== -1 ? tradesVM['tradesVM']['numberSampleSizes'] : '-';
+        let numberTrades = tradesVM['tradesVM']['tradesInSampleSize'] !== 0 ? tradesVM['tradesVM']['tradesInSampleSize'] : tradesVM['tradesVM']['tradesInTimeFrame'];
 
         // Set the SampleSize menu
-        $('#spanSampleSize').text(paperTradesVM['paperTradesVM']['currentSampleSizeNumber']);
+        $('#spanSampleSize').text(tradesVM['tradesVM']['currentSampleSizeNumber']);
         $('#dropdownBtnSampleSize').empty();
         let sampleSizes = '';
         for (let i = numberSampleSizes; i > 0; i--) {
@@ -517,7 +517,7 @@ $(function () {
         }
         $('#dropdownBtnTrade').html(trades);
 
-        setTimeFrameMenu(paperTradesVM['paperTradesVM']['availableTimeframes']);
+        setTimeFrameMenu(tradesVM['tradesVM']['availableTimeframes']);
 
         // Menu card header
         currentCardMenu = journal;
@@ -526,16 +526,26 @@ $(function () {
 
     function setTimeFrameMenu(timeframes) {
 
-        let test = paperTradesVM;
+        let test = tradesVM;
+        //const timeFrameMapping = {
+        //    0: "5M",
+        //    1: "10M",
+        //    2: "15M",
+        //    3: "30M",
+        //    4: "1H",
+        //    5: "2H",
+        //    6: "4H",
+        //    7: "D"
+        //}
         const timeFrameMapping = {
-            0: "5M",
-            1: "10M",
-            2: "15M",
-            3: "30M",
-            4: "1H",
-            5: "2H",
-            6: "4H",
-            7: "D"
+            "M5": "5M",
+            "M10": "10M",
+            "M15": "15M",
+            "M30": "30M",
+            "H1": "1H",
+            "H2": "2H",
+            "H4": "4H",
+            "D": "D"
         }
 
         $('#dropdownBtnTimeFrame').empty();
@@ -546,13 +556,13 @@ $(function () {
             j++;
         }
         $('#dropdownBtnTimeFrame').html(availableTimeFrames);
-        $('#spanTimeFrame').text(timeFrameMapping[paperTradesVM['paperTradesVM']['currentSampleSize']['timeFrame']]);
+        $('#spanTimeFrame').text(timeFrameMapping[tradesVM['tradesVM']['currentSampleSize']['timeFrame']]);
     }
 
     // Load the images into the carousel
     function loadImages() {
         $('#imageContainer').empty();
-        let screenshots = paperTradesVM['paperTradesVM']['currentTrade']['screenshotsUrls'];
+        let screenshots = tradesVM['tradesVM']['currentTrade']['screenshotsUrls'];
 
         let newCarouselHtml = '<ol class="carousel-indicators">';
         for (let i = 0; i < screenshots.length; i++) {

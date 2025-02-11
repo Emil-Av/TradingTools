@@ -11,8 +11,8 @@ namespace Models.ViewModels
         #region Constructor
         public ResearchVM()
         {
-            AvailableStrategies = new List<Strategy>();
-            AvailableTimeframes = new List<TimeFrame>();
+            AvailableStrategies = new List<EStrategy>();
+            AvailableTimeframes = new List<ETimeFrame>();
 
             YesNoOptions = new List<SelectListItem>
             {
@@ -39,11 +39,11 @@ namespace Models.ViewModels
 
         #region Public Properties
 
-        public TimeFrame CurrentTimeFrame { get; set; }
+        public ETimeFrame CurrentTimeFrame { get; set; }
 
-        public Strategy CurrentStrategy { get; set; }
+        public EStrategy CurrentStrategy { get; set; }
 
-        public Status Status { get; set; }
+        public EStatus Status { get; set; }
 
         public SampleSize CurrentSampleSize { get; set; }
 
@@ -64,9 +64,9 @@ namespace Models.ViewModels
 
         public List<SelectListItem> OrderType { get; set; }
 
-        public List<Strategy> AvailableStrategies { get; set; }
+        public List<EStrategy> AvailableStrategies { get; set; }
 
-        public List<TimeFrame> AvailableTimeframes { get; set; }
+        public List<ETimeFrame> AvailableTimeframes { get; set; }
 
         // The number of sample sizes for a strategy and time frame
         public int NumberSampleSizes { get; set; }
@@ -92,8 +92,8 @@ namespace Models.ViewModels
         {
             List<string> errors = new List<string>();
             string error = string.Empty;
-            Result<TimeFrame> timeFrameResult = MyEnumConverter.TimeFrameFromString(timeFrame);
-            Result<Strategy> strategyResult = MyEnumConverter.StrategyFromString(strategy);
+            Result<ETimeFrame> timeFrameResult = MyEnumConverter.TimeFrameFromString(timeFrame);
+            Result<EStrategy> strategyResult = MyEnumConverter.StrategyFromString(strategy);
             if (!timeFrameResult.Success)
             {
                 errors.Add(timeFrameResult.ErrorMessage);
