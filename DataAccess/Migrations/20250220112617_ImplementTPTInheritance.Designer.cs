@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250220100150_TPTInheritance")]
-    partial class TPTInheritance
+    [Migration("20250220112617_ImplementTPTInheritance")]
+    partial class ImplementTPTInheritance
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,6 +35,11 @@ namespace DataAccess.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(34)
+                        .HasColumnType("nvarchar(34)");
 
                     b.Property<double?>("EntryPrice")
                         .HasColumnType("float");
@@ -93,9 +98,11 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("SampleSizeId");
 
-                    b.ToTable("BaseTrades", (string)null);
+                    b.ToTable("BaseTrades");
 
-                    b.UseTptMappingStrategy();
+                    b.HasDiscriminator().HasValue("BaseTrade");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Models.Journal", b =>
@@ -303,7 +310,7 @@ namespace DataAccess.Migrations
                     b.Property<int>("OneToOneHitOn")
                         .HasColumnType("int");
 
-                    b.ToTable("ResearchFirstBarPullbacks", (string)null);
+                    b.HasDiscriminator().HasValue("ResearchFirstBarPullback");
                 });
 
             modelBuilder.Entity("Models.Trade", b =>
@@ -315,7 +322,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("ResearchId");
 
-                    b.ToTable("Trades", (string)null);
+                    b.HasDiscriminator().HasValue("Trade");
                 });
 
             modelBuilder.Entity("Models.BaseTrade", b =>
@@ -344,23 +351,8 @@ namespace DataAccess.Migrations
                     b.Navigation("Review");
                 });
 
-            modelBuilder.Entity("Models.ResearchFirstBarPullback", b =>
-                {
-                    b.HasOne("Models.BaseTrade", null)
-                        .WithOne()
-                        .HasForeignKey("Models.ResearchFirstBarPullback", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Models.Trade", b =>
                 {
-                    b.HasOne("Models.BaseTrade", null)
-                        .WithOne()
-                        .HasForeignKey("Models.Trade", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Models.ResearchFirstBarPullback", "Research")
                         .WithMany()
                         .HasForeignKey("ResearchId")

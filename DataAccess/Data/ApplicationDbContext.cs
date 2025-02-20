@@ -30,17 +30,19 @@ namespace DataAccess.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configuring TPT (Table Per Type) inheritance strategy
-            modelBuilder.Entity<BaseTrade>()
-                .ToTable("BaseTrades"); // Base class table
-
+            // Configuring the relationship between Trade and BaseTrade
             modelBuilder.Entity<Trade>()
-                .ToTable("Trades") // Table for Trade
-                .HasBaseType<BaseTrade>(); // Inherit from BaseTrade
+                .HasOne<BaseTrade>()
+                .WithOne()
+                .HasForeignKey<Trade>(t => t.Id)
+                .OnDelete(DeleteBehavior.NoAction);  // Avoid cascading delete
 
+            // Configuring the relationship between Research and BaseTrade
             modelBuilder.Entity<ResearchFirstBarPullback>()
-                .ToTable("ResearchFirstBarPullbacks") // Table for ResearchTypeA
-                .HasBaseType<BaseTrade>(); // Inherit from BaseTrade
+                .HasOne<BaseTrade>()
+                .WithOne()
+                .HasForeignKey<ResearchFirstBarPullback>(r => r.Id)
+                .OnDelete(DeleteBehavior.NoAction);  // Avoid cascading delete
         }
     }
 }
