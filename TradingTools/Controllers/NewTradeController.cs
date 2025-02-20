@@ -136,8 +136,15 @@ namespace TradingTools.Controllers
                 {
                     await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, researchData, files);
                 }
-                _unitOfWork.ResearchFirstBarPullback.Add(researchData);
-                await _unitOfWork.SaveAsync();
+                try
+                {
+                    _unitOfWork.ResearchFirstBarPullback.Add(researchData);
+                    await _unitOfWork.SaveAsync();
+                }
+                catch (Exception ex)
+                {
+
+                }
 
                 return researchData;
             }

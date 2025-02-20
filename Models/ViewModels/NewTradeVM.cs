@@ -34,6 +34,7 @@ namespace Models.ViewModels
             ResearchData = new();
             ResearchFirstBarPullbackDisplay = new();
             TradeData = new();
+            CurrentTrade = new();
         }
 
         #region Properties
@@ -52,6 +53,7 @@ namespace Models.ViewModels
 
         public ResearchFirstBarPullbackDisplay ResearchFirstBarPullbackDisplay { get; set; }
 
+        public Trade CurrentTrade { get; set; }
         public TradeDisplay TradeData { get; set; }
 
         public List<SelectListItem> YesNoOptions { get; set; }

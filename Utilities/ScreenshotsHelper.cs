@@ -104,7 +104,7 @@ namespace Utilities
                         {
                             await file.CopyToAsync(stream);
                             var dbFilePath = Path.GetRelativePath(webRootPath, filePath).Replace("\\", "/");
-                            Trade trade = newTrade as Trade;
+                            BaseTrade trade = newTrade as BaseTrade;
                             if (trade.ScreenshotsUrls == null)
                             {
                                 trade.ScreenshotsUrls = new List<string>();

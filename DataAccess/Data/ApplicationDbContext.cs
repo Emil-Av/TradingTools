@@ -12,8 +12,11 @@ namespace DataAccess.Data
 
         }
 
+        public DbSet<BaseTrade> BaseTrades { get; set; }
+
         public DbSet<Trade> Trades { get; set; }
 
+        public DbSet<ResearchFirstBarPullback> ResearchFirstBarPullbacks { get; set; }
         public DbSet<Journal> Journals { get; set; }
 
         public DbSet<Review> Reviews { get; set; }
@@ -22,79 +25,22 @@ namespace DataAccess.Data
 
         public DbSet<UserSettings> UserSettings { get; set; }
 
-        public DbSet<ResearchFirstBarPullback> ResearchFirstBarPullbacks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Trade>()
-                .Property(e => e.TriggerPrice)
-                .HasDefaultValueSql("0");
+            base.OnModelCreating(modelBuilder);
+
+            // Configuring TPT (Table Per Type) inheritance strategy
+            modelBuilder.Entity<BaseTrade>()
+                .ToTable("BaseTrades"); // Base class table
 
             modelBuilder.Entity<Trade>()
-                .Property(e => e.EntryPrice)
-                .HasDefaultValueSql("0");
-
-            modelBuilder.Entity<Trade>()
-                .Property(e => e.StopPrice)
-                .HasDefaultValueSql("0");
-
-            modelBuilder.Entity<Trade>()
-                .Property(e => e.ExitPrice)
-                .HasDefaultValueSql("0");
-
-            modelBuilder.Entity<Trade>()
-                .Property(e => e.PnL)
-                .HasDefaultValueSql("0");
-
-            modelBuilder.Entity<Trade>()
-                .Property(e => e.ExitPrice)
-                .HasDefaultValueSql("0");
-
-            modelBuilder.Entity<Trade>()
-                .Property(e => e.Fee)
-                .HasDefaultValueSql("0");
-
+                .ToTable("Trades") // Table for Trade
+                .HasBaseType<BaseTrade>(); // Inherit from BaseTrade
 
             modelBuilder.Entity<ResearchFirstBarPullback>()
-                .Property(e => e.TriggerPrice)
-                .HasDefaultValueSql("0");
-
-            modelBuilder.Entity<ResearchFirstBarPullback>()
-                .Property(e => e.EntryPrice)
-                .HasDefaultValueSql("0");
-
-            modelBuilder.Entity<ResearchFirstBarPullback>()
-                .Property(e => e.StopPrice)
-                .HasDefaultValueSql("0");
-
-            modelBuilder.Entity<ResearchFirstBarPullback>()
-                .Property(e => e.ExitPrice)
-                .HasDefaultValueSql("0");
-
-            modelBuilder.Entity<ResearchFirstBarPullback>()
-                .Property(e => e.PnL)
-                .HasDefaultValueSql("0");
-
-            modelBuilder.Entity<ResearchFirstBarPullback>()
-                .Property(e => e.ExitPrice)
-                .HasDefaultValueSql("0");
-
-            modelBuilder.Entity<ResearchFirstBarPullback>()
-                .Property(e => e.Fee)
-                .HasDefaultValueSql("0");
-
-
-
-
-
-
-            modelBuilder.Entity<Trade>()
-                .Property(e => e.CreatedAt)
-                .HasDefaultValueSql("GETDATE()");
-
-            modelBuilder.Entity<ResearchFirstBarPullback>()
-               .Property(e => e.CreatedAt)
-               .HasDefaultValueSql("GETDATE()");
+                .ToTable("ResearchFirstBarPullbacks") // Table for ResearchTypeA
+                .HasBaseType<BaseTrade>(); // Inherit from BaseTrade
         }
     }
 }

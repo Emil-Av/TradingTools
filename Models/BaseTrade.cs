@@ -29,7 +29,7 @@ namespace Models
         public double? ExitPrice { get; set; }
 
         [Column(TypeName = "NVARCHAR(MAX)")]
-        public string Targets { get; set; }
+        public string? Targets { get; set; }
 
         public double? PnL { get; set; }
 
@@ -50,11 +50,6 @@ namespace Models
 
         public List<string>? ScreenshotsUrls { get; set; }
 
-        /// <summary>
-        ///  The research type can be determined based on the trade type.
-        /// </summary>
-        public int? ResearchId { get; set; }
-
         public int SampleSizeId { get; set; }
 
         [ForeignKey(nameof(SampleSizeId))]
@@ -67,7 +62,6 @@ namespace Models
 
         [ForeignKey(nameof(JournalId))]
         public Journal? Journal { get; set; }
-
 
         public DateTime CreatedAt { get; set; }
 
