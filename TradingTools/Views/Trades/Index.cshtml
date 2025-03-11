@@ -47,7 +47,7 @@
                         <div class="col-auto p-2">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Type: <span id="spanTradeType">@MyEnumConverter.TradeTypeFromEnum(Model.CurrentTrade.TradeType)</span>
+                                    Type: <span id="spanTradeType">@MyEnumConverter.TradeTypeFromEnum(Model.CurrentTrade.SampleSize.TradeType)</span>
                                 </button>
                                 <div class="dropdown-menu animated--fade-in" id="dropdownBtnTradeType" aria-labelledby="dropdownMenuButton">
                                     @foreach (ETradeType tradeType in Enum.GetValues(typeof(ETradeType)))

@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250304151656_UpdateTPTInheritance")]
+    partial class UpdateTPTInheritance
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,6 +81,9 @@ namespace DataAccess.Migrations
                     b.Property<int>("TradeRating")
                         .HasColumnType("int");
 
+                    b.Property<int>("TradeType")
+                        .HasColumnType("int");
+
                     b.Property<double?>("TriggerPrice")
                         .HasColumnType("float");
 
@@ -87,7 +93,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("SampleSizeId");
 
-                    b.ToTable("BaseTrades");
+                    b.ToTable("BaseTrades", (string)null);
 
                     b.UseTptMappingStrategy();
                 });
@@ -304,7 +310,7 @@ namespace DataAccess.Migrations
                 {
                     b.HasBaseType("Models.BaseTrade");
 
-                    b.Property<int?>("ResearchId")
+                    b.Property<int>("ResearchId")
                         .HasColumnType("int");
 
                     b.HasIndex("ResearchId");
@@ -321,7 +327,7 @@ namespace DataAccess.Migrations
                     b.HasOne("Models.SampleSize", "SampleSize")
                         .WithMany()
                         .HasForeignKey("SampleSizeId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Journal");
@@ -343,7 +349,7 @@ namespace DataAccess.Migrations
                     b.HasOne("Models.BaseTrade", null)
                         .WithOne()
                         .HasForeignKey("Models.ResearchFirstBarPullback", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -357,7 +363,9 @@ namespace DataAccess.Migrations
 
                     b.HasOne("Models.ResearchFirstBarPullback", "Research")
                         .WithMany()
-                        .HasForeignKey("ResearchId");
+                        .HasForeignKey("ResearchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Research");
                 });

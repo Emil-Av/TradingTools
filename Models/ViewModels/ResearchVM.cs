@@ -13,6 +13,7 @@ namespace Models.ViewModels
         {
             AvailableStrategies = new List<EStrategy>();
             AvailableTimeframes = new List<ETimeFrame>();
+            CurrentTrade = new();
 
             YesNoOptions = new List<SelectListItem>
             {
@@ -53,6 +54,8 @@ namespace Models.ViewModels
         public int CurrentSampleSizeNumber { get; set; }
 
         public ResearchFirstBarPullbackDisplay ResearchFirstBarPullbackDisplay { get; set; }
+
+        public ResearchFirstBarPullback CurrentTrade { get; set; }
 
         public TradeDisplay TradeData { get; set; }
 

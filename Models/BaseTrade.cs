@@ -4,6 +4,7 @@ using SharedEnums.Enums;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
+using System.ComponentModel.DataAnnotations;
 
 namespace Models
 {
@@ -44,8 +45,6 @@ namespace Models
 
         public ETradeRating TradeRating { get; set; }
 
-        public ETradeType TradeType { get; set; }
-
         public EOutcome Outcome { get; set; }   
 
         public List<string>? ScreenshotsUrls { get; set; }
@@ -64,6 +63,5 @@ namespace Models
         public Journal? Journal { get; set; }
 
         public DateTime CreatedAt { get; set; }
-
     }
 }

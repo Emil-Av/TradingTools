@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Shared.Enums
 {
-    public enum EOutcome { Winner, Loser, Breakeven}
+    public enum EOutcome { Winner, Loser, Breakeven }
 }

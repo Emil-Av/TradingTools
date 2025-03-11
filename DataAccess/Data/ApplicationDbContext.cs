@@ -30,19 +30,24 @@ namespace DataAccess.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configuring the relationship between Trade and BaseTrade
+            // TPT Configuration: Maps each derived class to its own table
+            //modelBuilder.Entity<BaseTrade>().ToTable("BaseTrades");
+            modelBuilder.Entity<Trade>().ToTable("Trades"); // Ensures Trade has a separate table
+            modelBuilder.Entity<ResearchFirstBarPullback>().ToTable("ResearchFirstBarPullbacks");
+
+            // Configure the primary key inheritance
             modelBuilder.Entity<Trade>()
                 .HasOne<BaseTrade>()
                 .WithOne()
                 .HasForeignKey<Trade>(t => t.Id)
-                .OnDelete(DeleteBehavior.NoAction);  // Avoid cascading delete
+                .OnDelete(DeleteBehavior.NoAction);  // Prevent cascading delete
 
-            // Configuring the relationship between Research and BaseTrade
-            modelBuilder.Entity<ResearchFirstBarPullback>()
-                .HasOne<BaseTrade>()
-                .WithOne()
-                .HasForeignKey<ResearchFirstBarPullback>(r => r.Id)
-                .OnDelete(DeleteBehavior.NoAction);  // Avoid cascading delete
+            // Include SampleSize relationship
+            modelBuilder.Entity<BaseTrade>()
+                .HasOne(b => b.SampleSize)
+                .WithMany()
+                .HasForeignKey(b => b.SampleSizeId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

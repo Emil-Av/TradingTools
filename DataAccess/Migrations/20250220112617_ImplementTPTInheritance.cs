@@ -244,7 +244,7 @@ namespace DataAccess.Migrations
                 column: "ResearchId",
                 principalTable: "BaseTrades",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.NoAction);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_BaseTrades_Journals_JournalId",

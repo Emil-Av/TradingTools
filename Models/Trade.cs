@@ -10,7 +10,7 @@ namespace Models
 {
     public class Trade : BaseTrade
     {
-        public int ResearchId { get; set; }
+        public int? ResearchId { get; set; }
 
         [ForeignKey("ResearchId")]
         public ResearchFirstBarPullback Research { get; set; }

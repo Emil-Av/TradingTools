@@ -38,7 +38,7 @@ namespace DataAccess.Repository
                 objFromDb.Fee = paperTrade.Fee;
                 objFromDb.OrderType = paperTrade.OrderType;
                 objFromDb.ScreenshotsUrls = paperTrade.ScreenshotsUrls;
-                objFromDb.TradeType = paperTrade.TradeType;
+                objFromDb.SampleSize.TradeType = paperTrade.SampleSize.TradeType;
             }
         }
     }

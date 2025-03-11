@@ -403,7 +403,7 @@ namespace TradingTools.Controllers
                     return (await _unitOfWork.Trade
                                         .GetAllAsync(trade =>
                                                         trade.SampleSize.Strategy == tradeParams.Strategy &&
-                                                        trade.TradeType == tradeParams.TradeType &&
+                                                        trade.SampleSize.TradeType == tradeParams.TradeType &&
                                                         tradeParams.Status == EStatus.All &&
                                                         trade.SampleSize.TimeFrame == tradeParams.TimeFrame))
                                                         .Select(trade => trade.SampleSizeId)
@@ -415,7 +415,7 @@ namespace TradingTools.Controllers
                     return (await _unitOfWork.Trade
                                         .GetAllAsync(trade =>
                                                         trade.SampleSize.Strategy == tradeParams.Strategy &&
-                                                        trade.TradeType == tradeParams.TradeType &&
+                                                        trade.SampleSize.TradeType == tradeParams.TradeType &&
                                                         trade.Status == tradeParams.Status))
                                                         .Select(trade => trade.SampleSizeId)
                                                         .Distinct()
@@ -490,7 +490,7 @@ namespace TradingTools.Controllers
             async Task<bool> SetCurrentTradeValues()
             {
                 TradesVM.CurrentTrade =
-                (await _unitOfWork.Trade.GetAllAsync(x => x.SampleSizeId == TradesVM.CurrentSampleSize.Id)).LastOrDefault();
+                (await _unitOfWork.Trade.GetAllAsync(x => x.SampleSizeId == TradesVM.CurrentSampleSize.Id, includeProperties: "SampleSize")).LastOrDefault();
 
                 if (TradesVM.CurrentTrade == null)
                 {
@@ -498,7 +498,7 @@ namespace TradingTools.Controllers
                 }
                 TradesVM.CurrentTrade.Journal = await _unitOfWork.Journal.GetAsync(x => x.Id == TradesVM.CurrentTrade.JournalId);
                 SanitizationHelper.SanitizeObject(TradesVM.CurrentTrade.Journal);
-                TradesVM.CurrentTrade.TradeType = _defaultTradeType;
+                TradesVM.CurrentTrade.SampleSize.TradeType = _defaultTradeType;
 
                 return true;
             }
@@ -563,7 +563,7 @@ namespace TradingTools.Controllers
                                     }
                                     journal = new Journal();
                                     trade = new Trade();
-                                    trade.TradeType = ETradeType.PaperTrade;
+                                    //trade.SampleSize.TradeType = ETradeType.PaperTrade;
                                 }
                                 canCreateNewTrade = false;
                                 currentIndex++;

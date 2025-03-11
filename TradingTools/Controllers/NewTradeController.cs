@@ -120,7 +120,7 @@ namespace TradingTools.Controllers
                 newTrade.Status = NewTradeVM.Status;
                 newTrade.SideType = NewTradeVM.SideType;
                 newTrade.OrderType = NewTradeVM.OrderType;
-                newTrade.TradeType = NewTradeVM.TradeType;
+                newTrade.SampleSize = researchData.SampleSize;
 
                 return newTrade;
             }

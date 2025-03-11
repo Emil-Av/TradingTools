@@ -526,17 +526,6 @@ $(function () {
 
     function setTimeFrameMenu(timeframes) {
 
-        let test = tradesVM;
-        //const timeFrameMapping = {
-        //    0: "5M",
-        //    1: "10M",
-        //    2: "15M",
-        //    3: "30M",
-        //    4: "1H",
-        //    5: "2H",
-        //    6: "4H",
-        //    7: "D"
-        //}
         const timeFrameMapping = {
             "M5": "5M",
             "M10": "10M",
