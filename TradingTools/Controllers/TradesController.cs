@@ -57,7 +57,7 @@ namespace TradingTools.Controllers
 
             try
             {
-                Trade trade = await _unitOfWork.Trade.GetAsync(x => x.Id == tradeData.Id);
+                Trade trade = await _unitOfWork.Trade.GetAsync(x => x.Id == tradeData.Id, includeProperties: "SampleSize");
                 EntityMapper.ViewModelToEntity(trade, tradeData);
                 await _unitOfWork.Trade.UpdateAsync(trade);
                 await _unitOfWork.SaveAsync();

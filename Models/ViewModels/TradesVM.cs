@@ -1,10 +1,6 @@
-﻿using Models.ViewModels.DisplayClasses;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Models.ViewModels.DisplayClasses;
 using SharedEnums.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Models.ViewModels
 {
@@ -14,6 +10,13 @@ namespace Models.ViewModels
         {
             AvailableStrategies = new List<EStrategy>();
             AvailableTimeframes = new List<ETimeFrame>();
+            TradeRatingOptions = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "0", Text = "A+"},
+                new SelectListItem { Value = "1", Text = "A"},
+                new SelectListItem { Value = "2", Text = "A-" },
+                new SelectListItem { Value = "3", Text = "Book of Horror" }
+            };
             TradeData = new();
         }
         public int TradesInSampleSize { get; set; }
@@ -41,6 +44,8 @@ namespace Models.ViewModels
         public List<EStrategy> AvailableStrategies { get; set; }
 
         public List<ETimeFrame> AvailableTimeframes { get; set; }
+
+        public List<SelectListItem> TradeRatingOptions { get; set; }
 
         public EStatus DefaultTradeStatus { get; set; } = EStatus.All;
 

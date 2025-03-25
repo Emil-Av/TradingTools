@@ -13,6 +13,6 @@ namespace Models
         public int? ResearchId { get; set; }
 
         [ForeignKey("ResearchId")]
-        public ResearchFirstBarPullback Research { get; set; }
+        public ResearchFirstBarPullback? Research { get; set; }
     }
 }

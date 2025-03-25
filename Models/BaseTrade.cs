@@ -17,16 +17,12 @@ namespace Models
         public int Id { get; set; }
         public string? Symbol { get; set; }
 
-        [DefaultValue(0)]
         public double? TriggerPrice { get; set; }
 
-        [DefaultValue(0)]
         public double? EntryPrice { get; set; }
 
-        [DefaultValue(0)]
         public double? StopPrice { get; set; }
 
-        [DefaultValue(0)]
         public double? ExitPrice { get; set; }
 
         [Column(TypeName = "NVARCHAR(MAX)")]
@@ -34,7 +30,6 @@ namespace Models
 
         public double? PnL { get; set; }
 
-        [DefaultValue(0)]
         public double? Fee { get; set; }
 
         public EStatus Status { get; set; }

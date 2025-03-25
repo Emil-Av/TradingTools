@@ -27,16 +27,19 @@ function hideLoadingIndicator() {
 
 // Gets the data from the elements which have data-trade-data attribute. Used in multiple views.
 function getTradeData() {
-        var tradeData = {};
-        $('#cardBody [data-trade-data]').each(function () {
-            var bindProperty = $(this).data('trade-data');
+    var tradeData = {};
+    $('#cardBody [data-trade-data]').each(function () {
+        var bindProperty = $(this).data('trade-data');
+        if ($(this).val() === "") {
+            tradeData[bindProperty] = null;
+        }
+        else {
             tradeData[bindProperty] = $(this).val();
-        });
-        tradeData['Id'] = $('#spanTradeIdInput').val();
+        }
+    });
+    tradeData['Id'] = $('#spanTradeIdInput').val();
 
-        return tradeData;
-
-    return null;
+    return tradeData;
 }
 
 function validateNumberInputs() {
@@ -44,8 +47,7 @@ function validateNumberInputs() {
     let isValid = true;
     $(".number-input").each(function () {
         const value = $(this).val();
-
-        if (value !== "" && !isNumeric(value)) {
+        if (value !== "" && !$.isNumeric(value)) {
             $(this).addClass("is-invalid");
             isValid = false;
         }
@@ -55,7 +57,7 @@ function validateNumberInputs() {
     })
 
     if (!isValid) {
-        toastr.error("The marked fields must be either empty or contain a number.<br>For decimal separator use comma.");
+        toastr.error("The marked fields must be either empty or contain a number.<br>For decimal separator use a point.");
     }
 
     return isValid;

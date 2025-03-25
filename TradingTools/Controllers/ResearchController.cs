@@ -327,7 +327,7 @@ namespace TradingTools.Controllers
                                                 researchTrade.IsOneToThreeHit = csvData[i][2] == "Yes" ? true : false;
                                                 researchTrade.IsOneToFiveHit = csvData[i][3] == "Yes" ? true : false;
                                                 researchTrade.IsBreakeven = csvData[i][4] == "Yes" ? true : false;
-                                                researchTrade.Outcome = csvData[i][5] == "Yes" ? EOutcome.Loser : EOutcome.Winner;
+                                                researchTrade.Outcome = csvData[i][5] == "Yes" ? EOutcome.Loss : EOutcome.Win;
                                                 // Format in csvData[i][6] is 1-4. Split the string at '-` and get the second item. Then parse that into int.
                                                 researchTrade.MaxRR = csvData[i][6].Length > 0 ? int.Parse(csvData[i][6].Split('-')[1]) : 0;
                                                 researchTrade.MarketGaveSmth = csvData[i][7].Length > 0 ? true : false;

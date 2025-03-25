@@ -24,6 +24,7 @@ namespace DataAccess.Repository
             Trade? objFromDb = await _db.Trades.FindAsync(paperTrade.Id);
             if (objFromDb != null)
             {
+                objFromDb.SampleSize = paperTrade.SampleSize;
                 objFromDb.Symbol = paperTrade.Symbol;
                 objFromDb.SideType = paperTrade.SideType;
                 objFromDb.Status = paperTrade.Status;
@@ -32,9 +33,9 @@ namespace DataAccess.Repository
                 objFromDb.TriggerPrice = paperTrade.TriggerPrice;
                 objFromDb.EntryPrice = paperTrade.EntryPrice;
                 objFromDb.StopPrice = paperTrade.StopPrice;
-                objFromDb.ExitPrice = paperTrade.ExitPrice; 
+                objFromDb.ExitPrice = paperTrade.ExitPrice;
                 objFromDb.Targets = paperTrade.Targets;
-                objFromDb.PnL = paperTrade.PnL; 
+                objFromDb.PnL = paperTrade.PnL;
                 objFromDb.Fee = paperTrade.Fee;
                 objFromDb.OrderType = paperTrade.OrderType;
                 objFromDb.ScreenshotsUrls = paperTrade.ScreenshotsUrls;
