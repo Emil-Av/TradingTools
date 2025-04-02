@@ -12,6 +12,7 @@ namespace DataAccess.Data
 
         }
 
+        public DbSet<ResearchCradle> ResearchCradles { get; set; }
         public DbSet<BaseTrade> BaseTrades { get; set; }
 
         public DbSet<Trade> Trades { get; set; }

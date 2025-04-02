@@ -79,7 +79,7 @@ namespace TradingTools.Controllers
                 }
                 else if (NewTradeVM.Strategy == EStrategy.Cradle)
                 {
-
+                    await SaveResearachDataCradle(maxTradesProSampleSize: 100);
                 }
             }
             // Trades or Paper Trades
@@ -123,6 +123,30 @@ namespace TradingTools.Controllers
                 newTrade.SampleSize = researchData.SampleSize;
 
                 return newTrade;
+            }
+
+            async Task<ResearchCradle> SaveResearachDataCradle(int maxTradesProSampleSize)
+            {
+                ResearchCradle viewData = NewTradeVM.ResearchData as ResearchCradle;
+                viewData.SampleSizeId = (await ProcessSampleSize(maxTradesProSampleSize: maxTradesProSampleSize)).id;
+                if (maxTradesProSampleSize == 100)
+                {
+                    await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, viewData, files);
+                }
+                else
+                {
+                    try
+                    {
+                        _unitOfWork.ResearchCradle.Add(viewData);
+                        await _unitOfWork.SaveAsync();
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+
+                return viewData;
             }
 
             async Task<ResearchFirstBarPullback> SaveResearchDataFirstbarPullback(int maxTradesProSampleSize)

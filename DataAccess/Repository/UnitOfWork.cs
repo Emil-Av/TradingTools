@@ -24,6 +24,8 @@ namespace DataAccess.Repository
 
         public IResearchFirstBarPullbackRepository ResearchFirstBarPullback { get; private set; }
 
+        public IResearchCradleRepository ResearchCradle { get; private set; }
+
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
@@ -33,6 +35,7 @@ namespace DataAccess.Repository
             SampleSize = new SampleSizeRepository(_db);
             UserSettings = new UserSettingsRepository(_db);
             ResearchFirstBarPullback = new ResearchFirstBarPullbackRepository(_db);
+            ResearchCradle = new ResearchCradleRepository(_db);
         }
 
         public async Task SaveAsync()

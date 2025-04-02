@@ -20,6 +20,8 @@ namespace DataAccess.Repository.IRepository
 
         IResearchFirstBarPullbackRepository ResearchFirstBarPullback { get; }
 
+        IResearchCradleRepository ResearchCradle { get; }
+
         Task SaveAsync();
     }
 }
