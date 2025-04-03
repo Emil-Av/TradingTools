@@ -18,7 +18,8 @@ namespace TradingTools.Controllers
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
-            NewTradeVM = new NewTradeVM();
+            NewTradeVM = new ();
+            NewTradeParentVM = new();
         }
 
         #region Fields
@@ -31,7 +32,9 @@ namespace TradingTools.Controllers
 
         #region Properties
 
-        NewTradeVM NewTradeVM { get; set; }
+        public NewTradeVM NewTradeVM { get; set; }
+
+        public PartialViewsVM NewTradeParentVM { get; set; }
 
         #endregion
 
@@ -65,7 +68,7 @@ namespace TradingTools.Controllers
 
         public IActionResult Index()
         {
-            return View(NewTradeVM);
+            return View(NewTradeParentVM);
         }
 
         private async Task SaveTrade(IFormFile[] files)

@@ -18,6 +18,7 @@ namespace Models.ViewModels
                 new SelectListItem { Value = "3", Text = "Book of Horror" }
             };
             TradeData = new();
+            CurrentTrade = new();
         }
         public int TradesInSampleSize { get; set; }
 

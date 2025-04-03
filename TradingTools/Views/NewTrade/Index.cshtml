@@ -1,5 +1,5 @@
 ﻿@using global::Shared
-@model NewTradeVM
+@model PartialViewsVM
 
 @{
     ViewData["Title"] = "Paper Trades";
@@ -12,7 +12,7 @@
             <div class="row justify-content-center">
                 <div class="col-12 col-md-auto d-flex align-items-center flex-wrap justify-content-center">
                     <!-- Menu Status -->
-                    <partial name="_NewTradeMenuButtons"/>
+                    <partial name="_NewTradeMenuButtons" />
                 </div>
                 <!-- Menu buttons ends -->
                 <!-- Card prices and screenshots -->
@@ -59,27 +59,56 @@
                     <!-- Card research data -->
                     <div class="col-10 justify-content-center align-items-center mt-4">
                         <div class="card border-left-info shadow">
-                            <partial name="/Views/Shared/_ResearchFirstBarPullbackData.cshtml" />
+                            <div class="card-header py-3">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <div class="dropdown">
+                                            <a class="dropdown-toggle" role="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <span id="currentMenu" class="min-width-60">Trade Data</span>
+                                            </a>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="headerMenu">
+                                                <a class="dropdown-item bg-gray-400" role="button" id="itemTradingData">Trade Data</a>
+                                                <a class="dropdown-item" role="button" id="itemResearch">Research</a>
+                                            </div>
+                                        </div>
+                                        <div class="border-bottom"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="col mr-md-5 d-flex mt-3 justify-content-center">
+                                    <div id="tradeData">
+                                        <partial name="/Views/Shared/_TradeData.cshtml" />
+                                    </div>
+                                    <div id="researchFirstBarPullbackData" style="display: none">
+                                        <partial name="/Views/Shared/_ResearchFirstBarPullbackData.cshtml" />
+                                    </div>
+                                    <div id="researchCradleData" style="display: none">
+                                        <partial name="/Views/Shared/_ResearchCradleData.cshtml" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row justify-content-center">
-                <div class="col-10 mt-4">
-                    <div class="card-footer mt-2 d-flex justify-content-end">
-                        <button class="btn btn-warning" id="btnClear">
-                            <span class="text"><i class="fa-solid fa-broom mr-2"></i>Clear</span>
-                        </button>
-                        <button class="btn btn-info ml-1" id="btnSave">
-                            <span class="text"><i class="fa-regular fa-floppy-disk mr-2"></i>Save</span>
-                        </button>
-                    </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-10 mt-4">
+                <div class="card-footer mt-2 d-flex justify-content-end">
+                    <button class="btn btn-warning" id="btnClear">
+                        <span class="text"><i class="fa-solid fa-broom mr-2"></i>Clear</span>
+                    </button>
+                    <button class="btn btn-info ml-1" id="btnSave">
+                        <span class="text"><i class="fa-regular fa-floppy-disk mr-2"></i>Save</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+</div>
 
 @section Scripts {
     <script src="~/js/newTrade.js"></script>
-}
+            }

@@ -1,6 +1,1 @@
-1. In NewTradeData view I need to adjust the html and java script:
-	- HTML: add the new partial view _ResearchCradleData
-	- JS: make a if statement to which selects the research data for the selected strategy
-	- This then needs to be passed to the controller.
-	- The passed object needs to be savable in the ResearchCradle. Check if BaseTrade table and the new ResearchCradle 
-	save the data correctly.
+1. NewTrade - need to adjust the java script so that the dropdown menu works

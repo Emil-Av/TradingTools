@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Models.ViewModels;
 using Models.ViewModels.DisplayClasses;
 using System;
 using System.Collections.Generic;
@@ -14,8 +15,7 @@ namespace Models
 
         TradeDisplay TradeData { get; set; }
 
-        List<SelectListItem> YesNoOptions { get; set; }
+        
 
-        List<SelectListItem> TradeRating { get; set; }
     }
 }

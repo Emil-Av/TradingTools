@@ -2,7 +2,6 @@
 using Models.ViewModels.DisplayClasses;
 using SharedEnums.Enums;
 using Shared;
-using Shared.Enums;
 
 namespace Models.ViewModels
 {
