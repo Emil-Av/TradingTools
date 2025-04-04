@@ -2,7 +2,7 @@
 @model PartialViewsVM
 
 @{
-    ViewData["Title"] = "Paper Trades";
+    ViewData["Title"] = "New Trade";
 }
 
 <div class="row justify-content-center align-items-top">
@@ -76,14 +76,14 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                <div class="col mr-md-5 d-flex mt-3 justify-content-center">
+                                <div class="col mr-md-5 d-flex mt-1 justify-content-center">
                                     <div id="tradeData">
                                         <partial name="/Views/Shared/_TradeData.cshtml" />
                                     </div>
-                                    <div id="researchFirstBarPullbackData" style="display: none">
+                                    <div id="researchFirstBarPullbackData" class="d-none">
                                         <partial name="/Views/Shared/_ResearchFirstBarPullbackData.cshtml" />
                                     </div>
-                                    <div id="researchCradleData" style="display: none">
+                                    <div id="researchCradleData" class="d-none">
                                         <partial name="/Views/Shared/_ResearchCradleData.cshtml" />
                                     </div>
                                 </div>

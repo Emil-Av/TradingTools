@@ -39,8 +39,33 @@
                 var value = $(this).text();
                 $(menuButtons[key]).text(value);
                 SetSelectedItemClass(key);
+                if (key == '#dropdownBtnStrategy') {
+                    SetResearchPartialView(key);
+                }
+
             });
         })(key);
+    }
+
+    function SetResearchPartialView(key) {
+        if ($('#currentMenu').text() == 'Research') {
+            if ($('#spanStrategy').text() == 'Cradle') {
+                ShowResearchCradlePartialView();
+            }
+            else if ($('#spanStrategy').text() == 'First Bar Pullback') {
+                ShowFirstBarPullbackPartialView();
+            }
+        }
+    }
+
+    function ShowResearchCradlePartialView() {
+        $('#researchCradleData').removeClass('d-none');
+        $('#researchFirstBarPullbackData').addClass('d-none');
+    }
+
+    function ShowFirstBarPullbackPartialView() {
+        $('#researchFirstBarPullbackData').removeClass('d-none');
+        $('#researchCradleData').addClass('d-none');
     }
 
     // Mark the selected drop down item of the buttons on the top
@@ -72,20 +97,28 @@
 
     $('#headerMenu').on('click', '.dropdown-item', function () {
         var currentCardMenu = $(this).text();
-        console.log(currentCardMenu);
-        // Display TradeData tabs
+        var selectedStrategy = $('#spanStrategy').text();
+        // Display TradeData Partial View
         if (currentCardMenu == 'Trade Data') {
-            $('#tradeDataTabHeaders').removeClass('d-none');
-            $('#tradeDataTabContent').removeClass('d-none');
-            $('#researchDataTabHeaders').addClass('d-none');
-            $('#researchDataTabContent').addClass('d-none');
+            $('#tradeData').removeClass('d-none');
+            $('#researchFirstBarPullbackData').addClass('d-none');
+            $('#researchCradleData').addClass('d-none');
+
         }
-        // Display Research Tabs
+        // Display Research Partial View
+        else if (selectedStrategy.length > 0) {
+            if (selectedStrategy == "Cradle") {
+                ShowResearchCradlePartialView();
+                $('#tradeData').addClass('d-none');
+            }
+            else if (selectedStrategy == "First Bar Pullback") {
+                ShowFirstBarPullbackPartialView();
+                $('#tradeData').addClass('d-none');
+            }
+        }
         else {
-            $('#researchDataTabHeaders').removeClass('d-none');
-            $('#researchDataTabContent').removeClass('d-none');
-            $('#tradeDataTabHeaders').addClass('d-none');
-            $('#tradeDataTabContent').addClass('d-none');
+            currentCardMenu = 'Trade Data';
+            toastr.info('Choose strategy first.');
         }
 
         // Set the text of the card menu

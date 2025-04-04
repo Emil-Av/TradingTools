@@ -3,7 +3,7 @@
 <div class="row justify-content-center">
     <div class="text-center">
         <!-- Header Menu begins -->
-        <div class="card-header">
+        <div class="@(ViewData["Title"]?.ToString() == "New Trade" ? "" : "card-header")">
             <div class="row align-items-center">
                 <!-- Header tabs begin -->
                 <div class="col mr-md-5 d-flex justify-content-center">
@@ -20,9 +20,6 @@
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link" id="fullATR-tab" data-toggle="tab" data-target="#fullATR" type="button" role="tab" aria-controls="fullATR" aria-selected="false">Full ATR</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="tradeData-tab" data-toggle="tab" data-target="#tradeData" type="button" role="tab" aria-controls="tradeData" aria-selected="true">Trade Data</button>
                             </li>
                         </ul>
                     </div>
@@ -195,14 +192,6 @@
                         </div>
                     </div>
                 </div>
-                @* <!-- Tab content Trade Data -->
-                <div class="tab-pane fade show tundora text-left" id="tradeData" role="tabpanel" aria-labelledby="tradeData-tab">
-                    <div class="row">
-                        <div class="col">
-                            <partial name="_TradeData"/>
-                        </div>
-                    </div>
-                </div> *@
             </div>
         </div>
     </div>
