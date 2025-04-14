@@ -124,6 +124,10 @@ namespace Models.ViewModels
                     // ResearchData is of type object because it can contain research data for different strategies. See NewTradeController -> SaveTrade()
                     ResearchData = JsonConvert.DeserializeObject<ResearchFirstBarPullbackDisplay>(researchData);
                 }
+                else if (Strategy == EStrategy.Cradle)
+                {
+                    ResearchData = JsonConvert.DeserializeObject<ResearchCradle>(researchData);
+                }
                 TradeData = JsonConvert.DeserializeObject<TradeDisplay>(tradeData);
 
                 // Helper method to avoid duplicating code

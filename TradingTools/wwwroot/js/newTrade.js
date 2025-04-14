@@ -209,10 +209,19 @@
         formData.append('tradeParams', JSON.stringify(tradeParams));
 
         var researchData = {};
-        $('#cardBody [data-research]').each(function () {
-            var bindProperty = $(this).data('research');
-            researchData[bindProperty] = $(this).val();
-        });
+        if (tradeParams['strategy'] == 'Cradle') {
+            $('#cardBody [data-research-cradle]').each(function () {
+                var bindProperty = $(this).data('research-cradle');
+                researchData[bindProperty] = $(this).val();
+            });
+        }
+        else if (tradeParams['strategy'] == 'First Bar Pullback') {
+
+            $('#cardBody [data-research-firstbar]').each(function () {
+                var bindProperty = $(this).data('research-firstbar');
+                researchData[bindProperty] = $(this).val();
+            });
+        }
 
         formData.append('researchData', JSON.stringify(researchData));
 

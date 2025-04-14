@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using AngleSharp.Dom;
+using Models;
 using Models.ViewModels.DisplayClasses;
 
 namespace Utilities

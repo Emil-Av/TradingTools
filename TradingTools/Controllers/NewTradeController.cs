@@ -18,7 +18,7 @@ namespace TradingTools.Controllers
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
-            NewTradeVM = new ();
+            NewTradeVM = new();
             NewTradeParentVM = new();
         }
 
@@ -82,7 +82,7 @@ namespace TradingTools.Controllers
                 }
                 else if (NewTradeVM.Strategy == EStrategy.Cradle)
                 {
-                    await SaveResearachDataCradle(maxTradesProSampleSize: 100);
+                    await SaveResearchCradleData(maxTradesProSampleSize: 100);
                 }
             }
             // Trades or Paper Trades
@@ -128,25 +128,25 @@ namespace TradingTools.Controllers
                 return newTrade;
             }
 
-            async Task<ResearchCradle> SaveResearachDataCradle(int maxTradesProSampleSize)
+            async Task<ResearchCradle> SaveResearchCradleData(int maxTradesProSampleSize)
             {
                 ResearchCradle viewData = NewTradeVM.ResearchData as ResearchCradle;
                 viewData.SampleSizeId = (await ProcessSampleSize(maxTradesProSampleSize: maxTradesProSampleSize)).id;
-                if (maxTradesProSampleSize == 100)
-                {
-                    await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, viewData, files);
-                }
-                else
-                {
-                    try
-                    {
-                        _unitOfWork.ResearchCradle.Add(viewData);
-                        await _unitOfWork.SaveAsync();
-                    }
-                    catch (Exception ex)
-                    {
 
-                    }
+                ResearchCradle researchData = new();
+                EntityMapper.ViewModelToEntity(researchData, viewData);
+                researchData.SampleSizeId = (await ProcessSampleSize(maxTradesProSampleSize: maxTradesProSampleSize)).id;
+
+                await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, viewData, files);
+
+                try
+                {
+                    _unitOfWork.ResearchCradle.Add(researchData);
+                    await _unitOfWork.SaveAsync();
+                }
+                catch (Exception ex)
+                {
+
                 }
 
                 return viewData;
@@ -203,6 +203,11 @@ namespace TradingTools.Controllers
                 if (NewTradeVM.Strategy == EStrategy.FirstBarPullback)
                 {
                     List<ResearchFirstBarPullback> researchedTrades = await _unitOfWork.ResearchFirstBarPullback.GetAllAsync(x => x.SampleSizeId == id);
+                    numberTradesInSampleSize = researchedTrades.Count;
+                }
+                else if (NewTradeVM.Strategy == EStrategy.Cradle)
+                {
+                    List<ResearchCradle> researchedTrades = await _unitOfWork.ResearchCradle.GetAllAsync(x => x.SampleSizeId == id);
                     numberTradesInSampleSize = researchedTrades.Count;
                 }
             }
