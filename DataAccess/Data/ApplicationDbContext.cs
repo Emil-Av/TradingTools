@@ -35,12 +35,19 @@ namespace DataAccess.Data
             //modelBuilder.Entity<BaseTrade>().ToTable("BaseTrades");
             modelBuilder.Entity<Trade>().ToTable("Trades"); // Ensures Trade has a separate table
             modelBuilder.Entity<ResearchFirstBarPullback>().ToTable("ResearchFirstBarPullbacks");
+            modelBuilder.Entity<ResearchCradle>().ToTable("ResearchCradles");
 
             // Configure the primary key inheritance
             modelBuilder.Entity<Trade>()
                 .HasOne<BaseTrade>()
                 .WithOne()
                 .HasForeignKey<Trade>(t => t.Id)
+                .OnDelete(DeleteBehavior.NoAction);  // Prevent cascading delete
+
+            modelBuilder.Entity<ResearchCradle>()
+                .HasOne<BaseTrade>()
+                .WithOne()
+                .HasForeignKey<ResearchCradle>(t => t.Id)
                 .OnDelete(DeleteBehavior.NoAction);  // Prevent cascading delete
 
             // Include SampleSize relationship

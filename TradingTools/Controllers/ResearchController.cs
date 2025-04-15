@@ -21,7 +21,7 @@ namespace TradingTools.Controllers
         {
             _unitOfWork = unitOfWork;
             ResearchVM = new ResearchVM();
-            ResearchVM.AllTrades = new List<ResearchFirstBarPullbackDisplay>();
+            ResearchVM.AllTrades = new List<object>();
             _webHostEnvironment = webHostEnvironment;
         }
 
@@ -447,11 +447,21 @@ namespace TradingTools.Controllers
                     lastSampleSizeId = sampleSizes.Last().Id;
                 }
             }
-            // Get all researched trades from the DB and project the instances into ResearchFirstBarPullbackDisplay
-            ResearchVM.AllTrades = (await _unitOfWork.ResearchFirstBarPullback
-                                    .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId))
-                                    .Select(EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>)
-                                    .ToList();
+            SampleSize sampleSize = sampleSizes.Where(sampleSize => sampleSize.Id == lastSampleSizeId).ToList()[0];
+            if (sampleSize.Strategy == EStrategy.Cradle)
+            {
+                ResearchVM.AllTrades = (await _unitOfWork.ResearchCradle
+                    .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId)).Cast<object>().ToList();
+            }
+            else if (sampleSize.Strategy == EStrategy.FirstBarPullback)
+            {
+                // Get all researched trades from the DB and project the instances into ResearchFirstBarPullbackDisplay
+                ResearchVM.AllTrades = (await _unitOfWork.ResearchFirstBarPullback
+                                        .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId))
+                                        .Select(EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>)
+                                        .Cast<object>()
+                                        .ToList();
+            }
             ResearchVM.AllTrades.ForEach(x => SanitizationHelper.SanitizeObject(x));
 
             // Should not happen
@@ -460,7 +470,7 @@ namespace TradingTools.Controllers
                 errorMsg = "No trades available for this sample size.";
             }
             // Set the values for the button menus
-            ResearchVM.ResearchFirstBarPullbackDisplay = ResearchVM.AllTrades.FirstOrDefault()!;
+            ResearchVM.ResearchFirstBarPullbackDisplay = ResearchVM.AllTrades.FirstOrDefault()! as ResearchFirstBarPullbackDisplay;
             ResearchVM.CurrentSampleSize = sampleSizes.FirstOrDefault(x => x.Id == lastSampleSizeId)!;
             ResearchVM.CurrentTimeFrame = ResearchVM.CurrentSampleSize.TimeFrame;
             ResearchVM.CurrentSampleSizeNumber = sampleSizeNumber;

@@ -1,1 +1,1 @@
-1. NewTrade - need to adjust the java script so that the dropdown menu works
+1. Fix the update-database problem for the new migration. The db doesn't find the ResearchCradle records in ResearchController.LoadViewModelData() row 453

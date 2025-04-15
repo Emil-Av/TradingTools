@@ -58,7 +58,7 @@ namespace Models.ViewModels
 
         public TradeDisplay TradeData { get; set; }
 
-        public List<ResearchFirstBarPullbackDisplay> AllTrades { get; set; }
+        public List<object> AllTrades { get; set; }
 
         public List<SelectListItem> YesNoOptions { get; set; }
 
