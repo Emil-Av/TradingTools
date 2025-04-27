@@ -5,7 +5,7 @@ using Shared;
 
 namespace Models.ViewModels
 {
-    public class ResearchVM : IResearchFirstBPBDisplayModel
+    public class ResearchVM : PartialViewsVM, IResearchDisplayModel
     {
         #region Constructor
         public ResearchVM()
@@ -13,6 +13,7 @@ namespace Models.ViewModels
             AvailableStrategies = new List<EStrategy>();
             AvailableTimeframes = new List<ETimeFrame>();
             CurrentTrade = new();
+            TradeData = new();
 
             YesNoOptions = new List<SelectListItem>
             {
@@ -54,7 +55,9 @@ namespace Models.ViewModels
 
         public ResearchFirstBarPullbackDisplay ResearchFirstBarPullbackDisplay { get; set; }
 
-        public ResearchFirstBarPullback CurrentTrade { get; set; }
+        public object CurrentTrade { get; set; }
+
+        public ResearchCradle ResearchCradle { get; set; }
 
         public TradeDisplay TradeData { get; set; }
 

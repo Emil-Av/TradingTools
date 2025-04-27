@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Models.ViewModels
 {
-    public class NewTradeVM : IResearchFirstBPBDisplayModel
+    public class NewTradeVM : IResearchDisplayModel
     {
         public NewTradeVM()
         {
@@ -54,7 +54,10 @@ namespace Models.ViewModels
         public ResearchFirstBarPullbackDisplay ResearchFirstBarPullbackDisplay { get; set; }
 
         public Trade CurrentTrade { get; set; }
+
         public TradeDisplay TradeData { get; set; }
+
+        public ResearchCradle ResearchCradle { get; set; }
 
         public List<SelectListItem> YesNoOptions { get; set; }
 

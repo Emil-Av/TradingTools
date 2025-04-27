@@ -1,1 +1,1 @@
-1. Fix the update-database problem for the new migration. The db doesn't find the ResearchCradle records in ResearchController.LoadViewModelData() row 453
+1. In ResearchView, check the card - currently it displays ResearchFirstBar data when it displays CradleResearch data. Also the menu "Strategies" has to be populated with the avialable strategies.

@@ -452,6 +452,7 @@ namespace TradingTools.Controllers
             {
                 ResearchVM.AllTrades = (await _unitOfWork.ResearchCradle
                     .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId)).Cast<object>().ToList();
+                
             }
             else if (sampleSize.Strategy == EStrategy.FirstBarPullback)
             {
@@ -470,7 +471,7 @@ namespace TradingTools.Controllers
                 errorMsg = "No trades available for this sample size.";
             }
             // Set the values for the button menus
-            ResearchVM.ResearchFirstBarPullbackDisplay = ResearchVM.AllTrades.FirstOrDefault()! as ResearchFirstBarPullbackDisplay;
+            ResearchVM.TradeData.ScreenshotsUrlsDisplay = [.. (ResearchVM.AllTrades.FirstOrDefault()! as BaseTrade)!.ScreenshotsUrls!];
             ResearchVM.CurrentSampleSize = sampleSizes.FirstOrDefault(x => x.Id == lastSampleSizeId)!;
             ResearchVM.CurrentTimeFrame = ResearchVM.CurrentSampleSize.TimeFrame;
             ResearchVM.CurrentSampleSizeNumber = sampleSizeNumber;
@@ -478,13 +479,8 @@ namespace TradingTools.Controllers
             // Set the NumberSampleSizes for the button menu
             ResearchVM.NumberSampleSizes = sampleSizes.Count(x => x.TimeFrame == ResearchVM.CurrentTimeFrame);
             ResearchVM.TradesInSampleSize = ResearchVM.AllTrades.Count;
-            ResearchVM.TradeData = new();
 
             return errorMsg;
-        }
-
-        private void LoadTradeData()
-        {
 
         }
 

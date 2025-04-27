@@ -104,12 +104,9 @@ namespace Utilities
                         {
                             await file.CopyToAsync(stream);
                             var dbFilePath = Path.GetRelativePath(webRootPath, filePath).Replace("\\", "/");
-                            BaseTrade trade = newTrade as BaseTrade;
-                            if (trade.ScreenshotsUrls == null)
-                            {
-                                trade.ScreenshotsUrls = new List<string>();
-                            }
-                            trade.ScreenshotsUrls.Add(dbFilePath);
+                            //BaseTrade trade = newTrade as BaseTrade; wtf?
+                            //trade.ScreenshotsUrls!.Add(dbFilePath); wtf?
+                            screenshotsPaths.Add(dbFilePath);
                         }
                         string downloadedFilePath = Path.Combine(downloadFolder, file.FileName);
                         // Delete the file from the download directory

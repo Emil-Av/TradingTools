@@ -87,7 +87,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("SampleSizeId");
 
-                    b.ToTable("BaseTrades");
+                    b.ToTable("BaseTrades", (string)null);
 
                     b.UseTptMappingStrategy();
                 });
@@ -114,7 +114,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Journals");
+                    b.ToTable("Journals", (string)null);
                 });
 
             modelBuilder.Entity("Models.Review", b =>
@@ -142,7 +142,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("Models.SampleSize", b =>
@@ -169,7 +169,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("ReviewId");
 
-                    b.ToTable("SampleSizes");
+                    b.ToTable("SampleSizes", (string)null);
                 });
 
             modelBuilder.Entity("Models.UserSettings", b =>
@@ -206,7 +206,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserSettings");
+                    b.ToTable("UserSettings", (string)null);
                 });
 
             modelBuilder.Entity("Models.ResearchCradle", b =>

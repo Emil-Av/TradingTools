@@ -9,9 +9,9 @@
 <div class="row justify-content-center align-items-top">
     <div class="col-12 text-center">
         <h2>
-            @(Model.ResearchFirstBarPullbackDisplay != null ? "Research" : "No researched strategies yet")
+            @(!Model.TradeData.ScreenshotsUrlsDisplay.Any()? "Research" : "No researched strategies yet")
         </h2>
-        @if (Model.ResearchFirstBarPullbackDisplay != null)
+        @if (Model.TradeData.ScreenshotsUrlsDisplay.Any())
         {
             <!-- Menus -->
             <div class="container mb-4">
@@ -88,18 +88,18 @@
                     <div id="carouselTrades" class="carousel slide" data-interval="false">
                         <div id="imageContainer">
                             <ol class="carousel-indicators">
-                                @for (int i = 0; i < Model.ResearchFirstBarPullbackDisplay.ScreenshotsUrlsDisplay.Count; i++)
+                                @for (int i = 0; i < Model.TradeData.ScreenshotsUrlsDisplay.Count; i++)
                                 {
                                     <li data-bs-target="#carouselTrades" data-slide-to="@(i)" @(i == 0 ? "class=active" : "")></li>
                                 }
                             </ol>
                             <div class="carousel-inner">
 
-                                @for (int i = 0; i < Model.ResearchFirstBarPullbackDisplay.ScreenshotsUrlsDisplay.Count; i++)
+                                @for (int i = 0; i < Model.TradeData.ScreenshotsUrlsDisplay.Count; i++)
                                 {
                                     <script>console.log(@i)</script>
                                     <div class="@(i == 0? "carousel-item active" : "carousel-item")">
-                                        <img src="@Model.ResearchFirstBarPullbackDisplay.ScreenshotsUrlsDisplay[i]" class="d-block w-100" alt="...">
+                                        <img src="@Model.TradeData.ScreenshotsUrlsDisplay[i]" class="d-block w-100" alt="...">
                                     </div>
                                 }
                             </div>
@@ -119,7 +119,7 @@
                 <div class="col-8 text-center">
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <partial name="/Views/Shared/_ResearchFirstBarPullbackData.cshtml" />
+                            <partial name="/Views/Shared/_ResearchFirstBarPullbackData.cshtml" model="Model" />
                         </div>
                     </div>
                 </div>

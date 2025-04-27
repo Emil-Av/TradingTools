@@ -1,12 +1,15 @@
 ﻿using Shared.Enums;
 using SharedEnums.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace Models.ViewModels.DisplayClasses
 {
     public class TradeDisplay
     {
+        public TradeDisplay()
+        {
+            ScreenshotsUrlsDisplay = new();
+        }
         public string? IdDisplay { get; set; }
         public string? SymbolDisplay { get; set; }
 
@@ -24,7 +27,6 @@ namespace Models.ViewModels.DisplayClasses
 
         public string? FeeDisplay { get; set; }
 
-        //[JsonConverter(typeof(JsonStringEnumConverter))]
         public EStatus StatusDisplay { get; set; }
 
         public ESideType? SideTypeDisplay { get; set; }

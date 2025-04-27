@@ -21,7 +21,6 @@ $(function () {
     var researchVM;
     var trades = $('#tradesData').data('trades');
 
-    //console.log(trades);
 
     /**
     * ******************************
@@ -328,7 +327,7 @@ $(function () {
         // Add the Id and the Screenshots
         updatedTrade['TradeRatingDisplay'] = parseInt($('#TradeRatingInput').val());
         updatedTrade['IdDisplay'] = trades[index]['IdDisplay'];
-        updatedTrade['ScreenshotsUrlsDisplay'] = trades[index]['ScreenshotsUrlsDisplay'];
+        updatedTrade['ScreenshotsUrls'] = trades[index]['ScreenshotsUrls'];
 
         $('#cardBody [data-trade-data]').each(function () {
             var bindProperty = $(this).data('trade-data');
@@ -368,7 +367,7 @@ $(function () {
     }
     // Loads the images into the carousel
     function loadImages() {
-        var screenshots = trades[tradeIndex]['ScreenshotsUrlsDisplay'];
+        var screenshots = trades[tradeIndex]['ScreenshotsUrls'];
         if (screenshots === null) {
             toastr.error("No screenshots for the selected trade.");
             return;

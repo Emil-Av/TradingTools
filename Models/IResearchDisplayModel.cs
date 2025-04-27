@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace Models
 {
-    public interface IResearchFirstBPBDisplayModel
+    public interface IResearchDisplayModel
     {
         ResearchFirstBarPullbackDisplay ResearchFirstBarPullbackDisplay { get; set; }
 
         TradeDisplay TradeData { get; set; }
 
-        
+        ResearchCradle ResearchCradle { get; set; }
 
     }
 }
