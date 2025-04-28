@@ -16,6 +16,13 @@ namespace Models.ViewModels
             ResearchFirstBarPullbackDisplay = new();
             TradesVM = new();
             ResearchCradle = new();
+            TradeRating = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "0", Text = "A+"},
+                new SelectListItem { Value = "1", Text = "A"},
+                new SelectListItem { Value = "2", Text = "A-"},
+                new SelectListItem { Value = "3", Text = "Book of Horror"}
+            };
         }
         public ResearchFirstBarPullbackDisplay ResearchFirstBarPullbackDisplay { get; set; }
 

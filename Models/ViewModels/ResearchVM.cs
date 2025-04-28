@@ -21,13 +21,7 @@ namespace Models.ViewModels
                 new SelectListItem {Value = "1", Text = "Yes"}
             };
 
-            TradeRating = new List<SelectListItem>
-            {
-                new SelectListItem { Value = "0", Text = "A+"},
-                new SelectListItem { Value = "1", Text = "A"},
-                new SelectListItem { Value = "2", Text = "A-"},
-                new SelectListItem { Value = "3", Text = "Book of Horror"}
-            };
+            
 
             OrderType = new List<SelectListItem>
             {
@@ -53,19 +47,13 @@ namespace Models.ViewModels
         // The selected sample size for the selected time frame and strategy (e.g. 2nd out of 5)
         public int CurrentSampleSizeNumber { get; set; }
 
-        public ResearchFirstBarPullbackDisplay ResearchFirstBarPullbackDisplay { get; set; }
-
         public object CurrentTrade { get; set; }
-
-        public ResearchCradle ResearchCradle { get; set; }
 
         public TradeDisplay TradeData { get; set; }
 
         public List<object> AllTrades { get; set; }
 
         public List<SelectListItem> YesNoOptions { get; set; }
-
-        public List<SelectListItem> TradeRating { get; set; }
 
         public List<SelectListItem> OrderType { get; set; }
 
