@@ -1,1 +1,0 @@
-1. Create new research trade for first bar pullback. Check how the buttons behave when I switch between the different strategies.
