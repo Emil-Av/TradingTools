@@ -367,7 +367,7 @@ $(function () {
     }
     // Loads the images into the carousel
     function loadImages() {
-        var screenshots = trades[tradeIndex]['ScreenshotsUrls'];
+        var screenshots = trades[tradeIndex]['ScreenshotsUrlsDisplay'];
         if (screenshots === null) {
             toastr.error("No screenshots for the selected trade.");
             return;

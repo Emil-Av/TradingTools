@@ -97,7 +97,6 @@
 
                                 @for (int i = 0; i < Model.TradeData.ScreenshotsUrlsDisplay.Count; i++)
                                 {
-                                    <script>console.log(@i)</script>
                                     <div class="@(i == 0? "carousel-item active" : "carousel-item")">
                                         <img src="@Model.TradeData.ScreenshotsUrlsDisplay[i]" class="d-block w-100" alt="...">
                                     </div>
