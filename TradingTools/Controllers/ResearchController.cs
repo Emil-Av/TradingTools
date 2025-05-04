@@ -156,15 +156,20 @@ namespace TradingTools.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> LoadResearchSampleSize(string timeFrame, string strategy, string sampleSizeNumber, string isSampleSizeChanged)
+        public async Task<IActionResult> LoadResearchSampleSize(LoadResearchSampleSize viewData)
         {
-            string errorMsg = ResearchVM.SetSampleSizeParams(timeFrame, strategy, sampleSizeNumber, isSampleSizeChanged);
+            string errorMsg = ResearchVM.SetSampleSizeParams(viewData);
             if (!string.IsNullOrEmpty(errorMsg))
             {
                 return Json(new { error = errorMsg });
             }
 
-            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == ETradeType.Research && x.TimeFrame == ResearchVM.CurrentTimeFrame && x.Strategy == ResearchVM.CurrentStrategy);
+            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == ETradeType.Research && x.Strategy == ResearchVM.CurrentStrategy);
+
+            if (!sampleSizes.Any())
+            {
+                return Json(new { error = "No sample sizes for those params." });
+            }
 
             errorMsg = await LoadViewModelData(sampleSizes, ResearchVM.CurrentSampleSizeId);
 
@@ -478,6 +483,9 @@ namespace TradingTools.Controllers
                 else if (sampleSize.Strategy == EStrategy.FirstBarPullback)
                 {
                     // Get all researched trades from the DB and project the instances into ResearchFirstBarPullbackDisplay
+                    var test = (await _unitOfWork.ResearchFirstBarPullback
+                                            .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId));
+
                     ResearchVM.AllTrades = (await _unitOfWork.ResearchFirstBarPullback
                                             .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId))
                                             .Select(EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>)
@@ -503,12 +511,12 @@ namespace TradingTools.Controllers
             {
                 if (ResearchVM.CurrentSampleSize.Strategy == EStrategy.Cradle)
                 {
-                    ResearchVM.TradeData.ScreenshotsUrlsDisplay = [.. (ResearchVM.AllTrades.FirstOrDefault()! as BaseTrade)!.ScreenshotsUrls!];
+                    ResearchVM.TradeData.ScreenshotsUrls = [.. (ResearchVM.AllTrades.FirstOrDefault()! as BaseTrade)!.ScreenshotsUrls!];
                 }
                 else
                 {
                     // Workaround - load the ScreenshotUrls from BaseTrade and map them to the IDs from TradeData...
-                    ResearchVM.TradeData.ScreenshotsUrlsDisplay = [.. (ResearchVM.AllTrades.FirstOrDefault()! as ResearchFirstBarPullbackDisplay)!.ScreenshotsUrlsDisplay!];
+                    ResearchVM.TradeData.ScreenshotsUrls = [.. (ResearchVM.AllTrades.FirstOrDefault()! as ResearchFirstBarPullbackDisplay)!.ScreenshotsUrls!];
                 }
             }
 

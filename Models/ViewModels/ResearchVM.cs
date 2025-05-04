@@ -81,12 +81,12 @@ namespace Models.ViewModels
         /// <param name="sampleSizeNumber"></param>
         /// <param name="isSampleSizeChanged"></param>
         /// <returns></returns>
-        public string SetSampleSizeParams(string timeFrame, string strategy, string sampleSizeNumber, string isSampleSizeChanged)
+        public string SetSampleSizeParams(LoadResearchSampleSize viewData)
         {
             List<string> errors = new List<string>();
             string error = string.Empty;
-            Result<ETimeFrame> timeFrameResult = MyEnumConverter.TimeFrameFromString(timeFrame);
-            Result<EStrategy> strategyResult = MyEnumConverter.StrategyFromString(strategy);
+            Result<ETimeFrame> timeFrameResult = MyEnumConverter.TimeFrameFromString(viewData.TimeFrame);
+            Result<EStrategy> strategyResult = MyEnumConverter.StrategyFromString(viewData.Strategy);
             if (!timeFrameResult.Success)
             {
                 errors.Add(timeFrameResult.ErrorMessage);
@@ -95,7 +95,7 @@ namespace Models.ViewModels
             {
                 errors.Add(strategyResult.ErrorMessage);
             }
-            if (!Int32.TryParse(sampleSizeNumber, out int _sampleSizeNumber))
+            if (!Int32.TryParse(viewData.SampleSizeNumber, out int _sampleSizeNumber))
             {
                 errors.Add("Error parsing the sample size number");
             }
@@ -103,7 +103,7 @@ namespace Models.ViewModels
             {
                 CurrentSampleSizeId = _sampleSizeNumber;
             }
-            if (bool.TryParse(isSampleSizeChanged, out bool tempIsSampleSizeChanged))
+            if (bool.TryParse(viewData.IsSampleSizeChanged, out bool tempIsSampleSizeChanged))
             {
                 HasSampleSizeChanged = tempIsSampleSizeChanged;
             }

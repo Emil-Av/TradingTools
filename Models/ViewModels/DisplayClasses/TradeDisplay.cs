@@ -8,7 +8,7 @@ namespace Models.ViewModels.DisplayClasses
     {
         public TradeDisplay()
         {
-            ScreenshotsUrlsDisplay = new();
+            ScreenshotsUrls = new();
         }
         public string? IdDisplay { get; set; }
         public string? SymbolDisplay { get; set; }
@@ -35,7 +35,7 @@ namespace Models.ViewModels.DisplayClasses
 
         public ETradeRating? TradeRatingDisplay { get; set; }
 
-        public List<string>? ScreenshotsUrlsDisplay { get; set; }
+        public List<string>? ScreenshotsUrls { get; set; }
 
         public int? SampleSizeId { get; set; }
         [ForeignKey(nameof(SampleSizeId))]
