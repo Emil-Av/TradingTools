@@ -156,7 +156,7 @@ namespace TradingTools.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> LoadResearchSampleSize(LoadResearchSampleSize viewData)
+        public async Task<IActionResult> LoadSampleSize(LoadResearchSampleSize viewData)
         {
             string errorMsg = ResearchVM.SetSampleSizeParams(viewData);
             if (!string.IsNullOrEmpty(errorMsg))
@@ -227,24 +227,18 @@ namespace TradingTools.Controllers
                 return Json(new { error = errorMsg });
             }
 
-            SetAvailableTFsAndStrategies();
+            SetAvailableTimeframes(sampleSizes);
+            SetAvailableStrategies();
 
             return View(ResearchVM);
 
             #region Helper Methods
 
-            void SetAvailableTFsAndStrategies()
+            void SetAvailableStrategies()
             {
                 // Display only values for which there are data records.
                 foreach (SampleSize sampleSize in sampleSizes)
                 {
-                    if (!ResearchVM.AvailableTimeframes.Contains(sampleSize.TimeFrame))
-                    {
-                        ResearchVM.AvailableTimeframes.Add(sampleSize.TimeFrame);
-                    }
-                    // Set the time frames in ascending order
-                    ResearchVM.AvailableTimeframes.Sort();
-
                     if (!ResearchVM.AvailableStrategies.Contains(sampleSize.Strategy))
                     {
                         ResearchVM.AvailableStrategies.Add(sampleSize.Strategy);
@@ -255,6 +249,20 @@ namespace TradingTools.Controllers
             }
 
             #endregion
+        }
+
+        private void SetAvailableTimeframes(List<SampleSize> sampleSizes)
+        {
+            List<SampleSize> sampleSizesForCurrentStrategy = sampleSizes.Where(x => x.Strategy == ResearchVM.CurrentSampleSize.Strategy).ToList();
+            sampleSizesForCurrentStrategy.ForEach(sampleSize =>
+            {
+                if (!ResearchVM.AvailableTimeframes.Contains(sampleSize.TimeFrame))
+                {
+                    ResearchVM.AvailableTimeframes.Add(sampleSize.TimeFrame);
+                }
+            });
+            // Sort the time frames in ascending order
+            ResearchVM.AvailableTimeframes.Sort();
         }
 
 

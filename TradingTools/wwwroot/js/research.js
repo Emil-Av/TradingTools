@@ -31,14 +31,34 @@ $(function () {
 
     function setMenuValues(researchVM) {
         // Menu Buttons
-        var numberSampleSizes = researchVM.NumberSampleSizes;
         var tradesInSampleSize = researchVM.TradesInSampleSize;
         $('#tradesInSampleSize').val('/' + tradesInSampleSize);
         // Set the SampleSize menu
         $('#spanSampleSize').text(researchVM.CurrentSampleSizeNumber);
+        setDropdownBtnSampleSize(researchVM);
+        setTimeFrameMenu(researchVM['AvailableTimeframes'], GetTimeFrameMapping(), researchVM['CurrentSampleSize']['TimeFrame']);
+       
+    }
+
+    function GetTimeFrameMapping() {
+        const timeFrames = {
+            0: "5M",   // ETimeFrame.M5
+            1: "10M",  // ETimeFrame.M10
+            2: "15M",  // ETimeFrame.M15
+            3: "30M",  // ETimeFrame.M30
+            4: "1H",   // ETimeFrame.H1
+            5: "2H",   // ETimeFrame.H2
+            6: "4H",   // ETimeFrame.H4
+            7: "D"     // ETimeFrame.D
+        };
+
+        return timeFrames;
+    }
+
+    function setDropdownBtnSampleSize(researchVM) {
         $('#dropdownBtnSampleSize').empty();
         var sampleSizes = '';
-        for (var i = numberSampleSizes; i > 0; i--) {
+        for (var i = researchVM.NumberSampleSizes; i > 0; i--) {
             sampleSizes += '<a class="dropdown-item" role="button">' + i + '</a>';
         }
 
@@ -78,7 +98,7 @@ $(function () {
                 // Set the new value
                 var value = $(this).text();
                 $(menuButtons[key]).text(value);
-                loadResearchSampleSizeAsync($('#spanTimeFrame').text(),
+                loadSampleSizeAsync($('#spanTimeFrame').text(),
                     $('#spanStrategy').text(),
                     $('#spanSampleSize').text(),
                     sampleSizeChanged);
@@ -211,7 +231,7 @@ $(function () {
 
     /**
      * ***************************
-     * Region even handlers ends
+     * Region event handlers ends
      * ***************************
      */
 
@@ -290,7 +310,7 @@ $(function () {
                 if (response['error'] !== undefined) {
                     toastr.error(response['error']);
                 }
-                loadViewData(response);
+                setViewData(response);
             },
             error: function (jqXHR, exception) // code for exceptions
             {
@@ -404,11 +424,11 @@ $(function () {
         console.log(newCarouselHtml);
     }
 
-    function loadResearchSampleSizeAsync(timeFrame, strategy, sampleSizeNumber, isSampleSizeChanged) {
+    function loadSampleSizeAsync(timeFrame, strategy, sampleSizeNumber, isSampleSizeChanged) {
         // make the API call
         $.ajax({
             method: 'POST',
-            url: '/research/loadResearchSampleSize',
+            url: '/research/loadSampleSize',
             dataType: 'JSON',
             data: {
                 timeFrame: timeFrame,
@@ -420,7 +440,7 @@ $(function () {
                 if (response['error'] !== undefined) {
                     toastr.error(response['error']);
                 }
-                loadViewData(response);
+                setViewData(response);
             },
             error: function (jqXHR, exception) // code for exceptions
             {
@@ -447,7 +467,7 @@ $(function () {
 
     }
 
-    function loadViewData(response) {
+    function setViewData(response) {
         researchVM = JSON.parse(response.researchVM);
         tradeIndex = 0;
         trades = researchVM.AllTrades;

@@ -353,8 +353,7 @@ $(function () {
                 if (key == '#dropdownBtnTimeFrame') {
                     loadLastSampleSize = true;
                 }
-                else if (key == '#dropdownBtnStatus')
-                {
+                else if (key == '#dropdownBtnStatus') {
                     statusChanged = true;
                 }
                 else {
@@ -426,7 +425,7 @@ $(function () {
                 tradesVM = response;
                 setHiddenSpansValues(tradesVM);
                 loadViewData(trade);
-                
+
             }
         });
     }
@@ -517,16 +516,15 @@ $(function () {
         }
         $('#dropdownBtnTrade').html(trades);
 
-        setTimeFrameMenu(tradesVM['tradesVM']['availableTimeframes']);
+        setTimeFrameMenu(tradesVM['tradesVM']['availableTimeframes'], GetTimeFrameMapping(), tradesVM['tradesVM']['currentSampleSize']['timeFrame']);
 
         // Menu card header
         currentCardMenu = journal;
         $('#cardMenuTradeData').trigger('click');
     }
 
-    function setTimeFrameMenu(timeframes) {
-
-        const timeFrameMapping = {
+    function GetTimeFrameMapping() {
+        const timeFrames = {
             "M5": "5M",
             "M10": "10M",
             "M15": "15M",
@@ -537,15 +535,7 @@ $(function () {
             "D": "D"
         }
 
-        $('#dropdownBtnTimeFrame').empty();
-        let availableTimeFrames = '';
-        let j = 0;
-        for (let i = timeframes.length - 1; i >= 0; i--) {
-            availableTimeFrames += '<a class="dropdown-item" role="button">' + timeFrameMapping[timeframes[j]] + '</a>';
-            j++;
-        }
-        $('#dropdownBtnTimeFrame').html(availableTimeFrames);
-        $('#spanTimeFrame').text(timeFrameMapping[tradesVM['tradesVM']['currentSampleSize']['timeFrame']]);
+        return timeFrames;
     }
 
     // Load the images into the carousel
