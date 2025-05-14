@@ -77,7 +77,6 @@ function isNumeric(value) {
 }
 
 function setTimeFrameMenu(timeframes, timeFrameMapping, currentTimeFrame) {
-
     $('#dropdownBtnTimeFrame').empty();
     let availableTimeFrames = '';
     let j = 0;
@@ -86,6 +85,8 @@ function setTimeFrameMenu(timeframes, timeFrameMapping, currentTimeFrame) {
         j++;
     }
     $('#dropdownBtnTimeFrame').html(availableTimeFrames);
+
+    // Corrected the issue here by removing the invalid empty brackets
     $('#spanTimeFrame').text(timeFrameMapping[currentTimeFrame]);
-    $('#spanTimeFrame').text(timeFrameMapping[]);
 }
+

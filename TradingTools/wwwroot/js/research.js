@@ -36,8 +36,8 @@ $(function () {
         // Set the SampleSize menu
         $('#spanSampleSize').text(researchVM.CurrentSampleSizeNumber);
         setDropdownBtnSampleSize(researchVM);
-        setTimeFrameMenu(researchVM['AvailableTimeframes'], GetTimeFrameMapping(), researchVM['CurrentSampleSize']['TimeFrame']);
-       
+        var test = GetTimeFrameMapping();
+        setTimeFrameMenu(researchVM['AvailableTimeframes'], test, researchVM['CurrentSampleSize']['TimeFrame']);
     }
 
     function GetTimeFrameMapping() {
@@ -483,4 +483,5 @@ $(function () {
     * Region methods
     * ***************************
     */
+    
 });

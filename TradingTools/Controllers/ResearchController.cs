@@ -172,7 +172,6 @@ namespace TradingTools.Controllers
             }
 
             errorMsg = await LoadViewModelData(sampleSizes, ResearchVM.CurrentSampleSizeId);
-
             if (!string.IsNullOrEmpty(errorMsg))
             {
                 return Json(new { error = errorMsg });
@@ -513,8 +512,9 @@ namespace TradingTools.Controllers
                 // Set the NumberSampleSizes for the button menu
                 ResearchVM.NumberSampleSizes = sampleSizes.Count(x => x.TimeFrame == ResearchVM.CurrentTimeFrame);
                 ResearchVM.TradesInSampleSize = ResearchVM.AllTrades.Count;
-            }
+                SetAvailableTimeframes(sampleSizes);
 
+            }
             void SetScreenShotsUrls()
             {
                 if (ResearchVM.CurrentSampleSize.Strategy == EStrategy.Cradle)
