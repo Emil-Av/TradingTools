@@ -15,19 +15,19 @@ namespace Models.ViewModels
             CurrentTrade = new();
             TradeData = new();
 
-            YesNoOptions = new List<SelectListItem>
-            {
-                new SelectListItem {Value = "0", Text = "No"},
-                new SelectListItem {Value = "1", Text = "Yes"}
-            };
+            //YesNoOptions = new List<SelectListItem>
+            //{
+            //    new SelectListItem {Value = "0", Text = "No"},
+            //    new SelectListItem {Value = "1", Text = "Yes"}
+            //};
 
             
 
-            OrderType = new List<SelectListItem>
-            {
-                new SelectListItem { Value = "0", Text = "Market"},
-                new SelectListItem { Value = "1", Text = "Limit"},
-            };
+            //OrderType = new List<SelectListItem>
+            //{
+            //    new SelectListItem { Value = "0", Text = "Market"},
+            //    new SelectListItem { Value = "1", Text = "Limit"},
+            //};
         }
 
         #endregion

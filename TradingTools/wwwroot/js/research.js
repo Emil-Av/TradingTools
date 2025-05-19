@@ -36,8 +36,7 @@ $(function () {
         // Set the SampleSize menu
         $('#spanSampleSize').text(researchVM.CurrentSampleSizeNumber);
         setDropdownBtnSampleSize(researchVM);
-        var test = GetTimeFrameMapping();
-        setTimeFrameMenu(researchVM['AvailableTimeframes'], test, researchVM['CurrentSampleSize']['TimeFrame']);
+        setTimeFrameMenu(researchVM['AvailableTimeframes'], GetTimeFrameMapping(), researchVM['CurrentSampleSize']['TimeFrame']);
     }
 
     function GetTimeFrameMapping() {
@@ -475,6 +474,19 @@ $(function () {
         loadImages();
         setMenuValues(researchVM);
         setSelectedItemClass();
+        showResearchData(researchVM['CurrentStrategy']);
+    }
+
+    function showResearchData(strategy) {
+        if (strategy == 0) {
+            $('#researchFirstBarPullbackData').removeClass('d-none');
+            $('#researchCradleData').addClass('d-none');
+
+        }
+        else if (strategy == 1) {
+            $('#researchCradleData').removeClass('d-none');
+            $('#researchFirstBarPullbackData').addClass('d-none');
+        }
     }
 
 
@@ -483,5 +495,5 @@ $(function () {
     * Region methods
     * ***************************
     */
-    
+
 });

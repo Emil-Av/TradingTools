@@ -11,8 +11,6 @@ using Utilities;
 using SharedEnums.Enums;
 using Shared;
 using Shared.Enums;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Runtime.CompilerServices;
 
 namespace TradingTools.Controllers
 {
