@@ -154,18 +154,22 @@ namespace TradingTools.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> LoadResearchSampleSize(string timeFrame, string strategy, string sampleSizeNumber, string isSampleSizeChanged)
+        public async Task<IActionResult> LoadSampleSize(LoadResearchSampleSize viewData)
         {
-            string errorMsg = ResearchVM.SetSampleSizeParams(timeFrame, strategy, sampleSizeNumber, isSampleSizeChanged);
+            string errorMsg = ResearchVM.SetSampleSizeParams(viewData);
             if (!string.IsNullOrEmpty(errorMsg))
             {
                 return Json(new { error = errorMsg });
             }
 
-            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == ETradeType.Research && x.TimeFrame == ResearchVM.CurrentTimeFrame && x.Strategy == ResearchVM.CurrentStrategy);
+            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == ETradeType.Research && x.Strategy == ResearchVM.CurrentStrategy);
+
+            if (!sampleSizes.Any())
+            {
+                return Json(new { error = "No sample sizes for those params." });
+            }
 
             errorMsg = await LoadViewModelData(sampleSizes, ResearchVM.CurrentSampleSizeId);
-
             if (!string.IsNullOrEmpty(errorMsg))
             {
                 return Json(new { error = errorMsg });
@@ -220,24 +224,42 @@ namespace TradingTools.Controllers
                 return Json(new { error = errorMsg });
             }
 
-            // Display only values for which there are data records.
-            foreach (SampleSize sampleSize in sampleSizes)
+            SetAvailableTimeframes(sampleSizes);
+            SetAvailableStrategies();
+
+            return View(ResearchVM);
+
+            #region Helper Methods
+
+            void SetAvailableStrategies()
+            {
+                // Display only values for which there are data records.
+                foreach (SampleSize sampleSize in sampleSizes)
+                {
+                    if (!ResearchVM.AvailableStrategies.Contains(sampleSize.Strategy))
+                    {
+                        ResearchVM.AvailableStrategies.Add(sampleSize.Strategy);
+                    }
+                    // Sort the strategies in ascending order
+                    ResearchVM.AvailableStrategies.Sort();
+                }
+            }
+
+            #endregion
+        }
+
+        private void SetAvailableTimeframes(List<SampleSize> sampleSizes)
+        {
+            List<SampleSize> sampleSizesForCurrentStrategy = sampleSizes.Where(x => x.Strategy == ResearchVM.CurrentSampleSize.Strategy).ToList();
+            sampleSizesForCurrentStrategy.ForEach(sampleSize =>
             {
                 if (!ResearchVM.AvailableTimeframes.Contains(sampleSize.TimeFrame))
                 {
                     ResearchVM.AvailableTimeframes.Add(sampleSize.TimeFrame);
                 }
-                // Set the time frames in ascending order
-                ResearchVM.AvailableTimeframes.Sort();
-
-                if (!ResearchVM.AvailableStrategies.Contains(sampleSize.Strategy))
-                {
-                    ResearchVM.AvailableStrategies.Add(sampleSize.Strategy);
-                }
-                // Sort the strategies in ascending order
-                ResearchVM.AvailableStrategies.Sort();
-            }
-            return View(ResearchVM);
+            });
+            // Sort the time frames in ascending order
+            ResearchVM.AvailableTimeframes.Sort();
         }
 
 
@@ -425,7 +447,6 @@ namespace TradingTools.Controllers
 
         private async Task<string> LoadViewModelData(List<SampleSize> sampleSizes, int sampleSizeNumber)
         {
-            string errorMsg = string.Empty;
             int lastSampleSizeId = 0;
             // Method is called from the Index()
             if (sampleSizeNumber == IndexMethod)
@@ -448,39 +469,64 @@ namespace TradingTools.Controllers
                 }
             }
             SampleSize sampleSize = sampleSizes.Where(sampleSize => sampleSize.Id == lastSampleSizeId).ToList()[0];
-            if (sampleSize.Strategy == EStrategy.Cradle)
-            {
-                ResearchVM.AllTrades = (await _unitOfWork.ResearchCradle
-                    .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId)).Cast<object>().ToList();
-                
-            }
-            else if (sampleSize.Strategy == EStrategy.FirstBarPullback)
-            {
-                // Get all researched trades from the DB and project the instances into ResearchFirstBarPullbackDisplay
-                ResearchVM.AllTrades = (await _unitOfWork.ResearchFirstBarPullback
-                                        .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId))
-                                        .Select(EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>)
-                                        .Cast<object>()
-                                        .ToList();
-            }
-            ResearchVM.AllTrades.ForEach(x => SanitizationHelper.SanitizeObject(x));
+            await SetAllTrades();
+            SetValuesForButtons();
+            SetScreenShotsUrls();
 
-            // Should not happen
-            if (!ResearchVM.AllTrades.Any())
-            {
-                errorMsg = "No trades available for this sample size.";
-            }
-            // Set the values for the button menus
-            ResearchVM.TradeData.ScreenshotsUrlsDisplay = [.. (ResearchVM.AllTrades.FirstOrDefault()! as BaseTrade)!.ScreenshotsUrls!];
-            ResearchVM.CurrentSampleSize = sampleSizes.FirstOrDefault(x => x.Id == lastSampleSizeId)!;
-            ResearchVM.CurrentTimeFrame = ResearchVM.CurrentSampleSize.TimeFrame;
-            ResearchVM.CurrentSampleSizeNumber = sampleSizeNumber;
-            ResearchVM.CurrentSampleSizeId = lastSampleSizeId;
-            // Set the NumberSampleSizes for the button menu
-            ResearchVM.NumberSampleSizes = sampleSizes.Count(x => x.TimeFrame == ResearchVM.CurrentTimeFrame);
-            ResearchVM.TradesInSampleSize = ResearchVM.AllTrades.Count;
+            return ResearchVM.AllTrades.Any() ? string.Empty : "No trades available for this sample size.";
 
-            return errorMsg;
+            #region Helper Methods
+
+            async Task SetAllTrades()
+            {
+                if (sampleSize.Strategy == EStrategy.Cradle)
+                {
+                    ResearchVM.AllTrades = (await _unitOfWork.ResearchCradle
+                        .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId)).Cast<object>().ToList();
+
+                }
+                else if (sampleSize.Strategy == EStrategy.FirstBarPullback)
+                {
+                    // Get all researched trades from the DB and project the instances into ResearchFirstBarPullbackDisplay
+                    var test = (await _unitOfWork.ResearchFirstBarPullback
+                                            .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId));
+
+                    ResearchVM.AllTrades = (await _unitOfWork.ResearchFirstBarPullback
+                                            .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId))
+                                            .Select(EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>)
+                                            .Cast<object>()
+                                            .ToList();
+                }
+                ResearchVM.AllTrades.ForEach(x => SanitizationHelper.SanitizeObject(x));
+            }
+
+            void SetValuesForButtons()
+            {
+                // Set the values for the button menus
+                ResearchVM.CurrentSampleSize = sampleSizes.FirstOrDefault(x => x.Id == lastSampleSizeId)!;
+                ResearchVM.CurrentTimeFrame = ResearchVM.CurrentSampleSize.TimeFrame;
+                ResearchVM.CurrentSampleSizeNumber = sampleSizeNumber;
+                ResearchVM.CurrentSampleSizeId = lastSampleSizeId;
+                // Set the NumberSampleSizes for the button menu
+                ResearchVM.NumberSampleSizes = sampleSizes.Count(x => x.TimeFrame == ResearchVM.CurrentTimeFrame);
+                ResearchVM.TradesInSampleSize = ResearchVM.AllTrades.Count;
+                SetAvailableTimeframes(sampleSizes);
+
+            }
+            void SetScreenShotsUrls()
+            {
+                if (ResearchVM.CurrentSampleSize.Strategy == EStrategy.Cradle)
+                {
+                    ResearchVM.TradeData.ScreenshotsUrls = [.. (ResearchVM.AllTrades.FirstOrDefault()! as BaseTrade)!.ScreenshotsUrls!];
+                }
+                else
+                {
+                    // Workaround - load the ScreenshotUrls from BaseTrade and map them to the IDs from TradeData...
+                    ResearchVM.TradeData.ScreenshotsUrls = [.. (ResearchVM.AllTrades.FirstOrDefault()! as ResearchFirstBarPullbackDisplay)!.ScreenshotsUrls!];
+                }
+            }
+
+            #endregion
 
         }
 

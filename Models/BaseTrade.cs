@@ -13,7 +13,7 @@ namespace Models
         public BaseTrade()
         {
             CreatedAt = DateTime.Now;
-            ScreenshotsUrls = new();
+            //ScreenshotsUrls = new();
         }
 
         public int Id { get; set; }

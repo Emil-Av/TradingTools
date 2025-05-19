@@ -75,3 +75,18 @@ function isNumeric(value) {
     const regex = /^-?\d+(\,\d+)?$/;
     return regex.test(value);
 }
+
+function setTimeFrameMenu(timeframes, timeFrameMapping, currentTimeFrame) {
+    $('#dropdownBtnTimeFrame').empty();
+    let availableTimeFrames = '';
+    let j = 0;
+    for (let i = timeframes.length - 1; i >= 0; i--) {
+        availableTimeFrames += '<a class="dropdown-item" role="button">' + timeFrameMapping[timeframes[j]] + '</a>';
+        j++;
+    }
+    $('#dropdownBtnTimeFrame').html(availableTimeFrames);
+
+    // Corrected the issue here by removing the invalid empty brackets
+    $('#spanTimeFrame').text(timeFrameMapping[currentTimeFrame]);
+}
+

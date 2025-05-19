@@ -1,4 +1,5 @@
 ﻿using AngleSharp.Dom;
+using Microsoft.Extensions.Primitives;
 using Models;
 using Models.ViewModels.DisplayClasses;
 
@@ -22,6 +23,11 @@ namespace Utilities
             foreach (var entityProp in entityType.GetProperties())
             {
                 var viewModelProp = viewModelPropType.GetProperty(entityProp.Name + "Display");
+                if (entityProp.ToString().Contains("Screenshot"))
+                {
+                    var value = entityProp.GetValue(entity) as List<string>;
+                    (currentTrade as ResearchFirstBarPullbackDisplay).ScreenshotsUrls = value;
+                }
 
                 if (viewModelProp != null)
                 {

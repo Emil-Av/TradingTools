@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.ViewModels.DisplayClasses;
+using SharedEnums.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,20 @@ namespace Models.ViewModels
                 new SelectListItem { Value = "2", Text = "A-"},
                 new SelectListItem { Value = "3", Text = "Book of Horror"}
             };
+
+            YesNoOptions = new List<SelectListItem>
+            {
+                new SelectListItem {Value = "0", Text = "No"},
+                new SelectListItem {Value = "1", Text = "Yes"}
+            };
+
+
+
+            OrderType = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "0", Text = "Market"},
+                new SelectListItem { Value = "1", Text = "Limit"},
+            };
         }
         public ResearchFirstBarPullbackDisplay ResearchFirstBarPullbackDisplay { get; set; }
 
@@ -31,7 +46,7 @@ namespace Models.ViewModels
         public ResearchCradle ResearchCradle { get; set; }
 
         public List<SelectListItem> YesNoOptions { get; set; }
-
+        public List<SelectListItem> OrderType { get; set; }
         public List<SelectListItem> TradeRating { get; set; }
     }
 }
