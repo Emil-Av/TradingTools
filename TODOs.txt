@@ -1,1 +1,3 @@
-
+1. Set getCradleResearchData() in research.js
+2. Check if all values in research first bar can be updated properly
+3. Make updating a cradle research trade work.

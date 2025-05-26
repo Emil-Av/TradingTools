@@ -181,7 +181,29 @@ namespace TradingTools.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateTrade([FromBody] ResearchFirstBarPullbackDisplay currentTrade)
+        public async Task<IActionResult> UpdateCradleResearch([FromBody] ResearchCradle researchTrade)
+        {
+            JsonResult validationResult = ValidateModelState();
+            if (validationResult != null)
+            {
+                return validationResult;
+            }
+
+            await _unitOfWork.ResearchCradle.UpdateAsync(researchTrade);
+            try
+            {
+                await _unitOfWork.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = $"{ex.Message}" });
+            }
+
+            return Json(new { success = "Under development" });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateFirstBarResearch([FromBody] ResearchFirstBarPullbackDisplay currentTrade)
         {
             JsonResult validationResult = ValidateModelState();
             if (validationResult != null)
@@ -192,7 +214,6 @@ namespace TradingTools.Controllers
             ResearchFirstBarPullback trade = EntityMapper.ViewModelDisplayToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(currentTrade, existingEntity: null);
             // The Id of a trade is in the currentTrade paramater. The id is passed to the trade object in ResearchMapper.ViewModelToEntity().
             // The Update() method, queries the database for a trade based on the Id.
-            SanitizationHelper.SanitizeObject(trade);
             await _unitOfWork.ResearchFirstBarPullback.UpdateAsync(trade);
             try
             {
@@ -488,8 +509,6 @@ namespace TradingTools.Controllers
                 else if (sampleSize.Strategy == EStrategy.FirstBarPullback)
                 {
                     // Get all researched trades from the DB and project the instances into ResearchFirstBarPullbackDisplay
-                    var test = (await _unitOfWork.ResearchFirstBarPullback
-                                            .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId));
 
                     ResearchVM.AllTrades = (await _unitOfWork.ResearchFirstBarPullback
                                             .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId))
@@ -497,7 +516,6 @@ namespace TradingTools.Controllers
                                             .Cast<object>()
                                             .ToList();
                 }
-                ResearchVM.AllTrades.ForEach(x => SanitizationHelper.SanitizeObject(x));
             }
 
             void SetValuesForButtons()

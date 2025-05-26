@@ -86,7 +86,6 @@ namespace TradingTools.Controllers
             }
 
 
-            SanitizationHelper.SanitizeObject(data.CurrentSampleSize.Review);
             Review review = await _unitOfWork.Review.GetAsync(x => x.Id == data.CurrentSampleSize.Review.Id);
             if (review != null)
             {
@@ -150,8 +149,6 @@ namespace TradingTools.Controllers
                 // Notification error
                 return Json(new { error = "Journal wasn't updated. Journal was null." });
             }
-
-            SanitizationHelper.SanitizeObject(data.CurrentTrade.Journal);
 
             Journal journal = await _unitOfWork.Journal.GetAsync(x => x.Id == data.CurrentTrade.JournalId);
             if (journal != null)
@@ -305,10 +302,8 @@ namespace TradingTools.Controllers
             async Task SetJournalAndReviewData()
             {
                 TradesVM.CurrentTrade.Journal = await _unitOfWork.Journal.GetAsync(x => x.Id == TradesVM.CurrentTrade!.JournalId);
-                SanitizationHelper.SanitizeObject(TradesVM.CurrentTrade.Journal);
                 int? reviewID = (await _unitOfWork.SampleSize.GetAsync(x => x.Id == TradesVM.CurrentTrade!.SampleSizeId)).ReviewId;
                 TradesVM.CurrentSampleSize.Review = await _unitOfWork.Review.GetAsync(x => x.Id == reviewID);
-                SanitizationHelper.SanitizeObject(TradesVM.CurrentSampleSize.Review);
             }
 
             #endregion
@@ -484,7 +479,6 @@ namespace TradingTools.Controllers
 
                 int? reviewID = (await _unitOfWork.SampleSize.GetAsync(x => x.Id == TradesVM.CurrentTrade!.SampleSizeId)).ReviewId;
                 TradesVM.CurrentSampleSize.Review = await _unitOfWork.Review.GetAsync(x => x.Id == reviewID);
-                SanitizationHelper.SanitizeObject(TradesVM.CurrentSampleSize.Review);
             }
 
             async Task<bool> SetCurrentTradeValues()
@@ -497,7 +491,6 @@ namespace TradingTools.Controllers
                     return false;
                 }
                 TradesVM.CurrentTrade.Journal = await _unitOfWork.Journal.GetAsync(x => x.Id == TradesVM.CurrentTrade.JournalId);
-                SanitizationHelper.SanitizeObject(TradesVM.CurrentTrade.Journal);
                 TradesVM.CurrentTrade.SampleSize.TradeType = _defaultTradeType;
 
                 return true;

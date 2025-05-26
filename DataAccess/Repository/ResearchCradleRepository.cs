@@ -24,7 +24,25 @@ namespace DataAccess.Repository
             ResearchCradle? objFromDb = await _db.ResearchCradles.FindAsync(researchCradle.Id);
             if (objFromDb != null)
             {
-                
+                Type type = typeof(ResearchCradle);
+
+                foreach (var property in type.GetProperties())
+                {
+                    if (property.Name == "Id" || property.Name == "SampleSizeId")
+                    {
+                        continue;
+                    }
+                    var value = property.GetValue(researchCradle);
+                    try
+                    {
+                        property.SetValue(objFromDb, value);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle the exception as needed, e.g., log it
+                        throw new InvalidOperationException($"Error setting property {property.Name}: {ex.Message}", ex);
+                    }
+                }
             }
         }
 

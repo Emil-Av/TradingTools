@@ -21,6 +21,11 @@ $(function () {
     var researchVM;
     var trades = $('#tradesData').data('trades');
 
+    const strategies = {
+        FirstBarPullback: 'First Bar Pullback',
+        Cradle: 'Cradle',
+    };
+
 
     /**
     * ******************************
@@ -337,29 +342,25 @@ $(function () {
 
     // Updates the database with the values from the card for the displayed trade
     function updateTradeData(index) {
-        var updatedTrade = {};
-        // Get all data from the input and select fields in the card
-        $('#cardBody [data-research]').each(function () {
-            var bindProperty = $(this).data('research');
-            updatedTrade[bindProperty] = $(this).val();
-        });
-        // Add the Id and the Screenshots
-        updatedTrade['TradeRatingDisplay'] = parseInt($('#TradeRatingInput').val());
-        updatedTrade['IdDisplay'] = trades[index]['IdDisplay'];
-        updatedTrade['ScreenshotsUrls'] = trades[index]['ScreenshotsUrls'];
+        var updatedResearch = {};
+        var strategy = $('#spanStrategy').text();
+        if (strategy == strategies.FirstBarPullback) {
+            updatedResearch = getFirstBarResearchData(index);
+            updateFirstBarResearch(updatedResearch);
+        }
+        else if (strategy == strategies.Cradle) {
+            updatedResearch = getCradleResearchData(index);
+            updateCradleResearch(updatedResearch);
+        }
+    }
 
-        $('#cardBody [data-trade-data]').each(function () {
-            var bindProperty = $(this).data('trade-data');
-            updatedTrade[bindProperty] = $(this).val();
-        });
-
-        // make the API call
+    function updateCradleResearch(updatedResearch) {
         $.ajax({
             method: 'POST',
-            url: '/research/updatetrade',
+            url: '/research/UpdateCradleResearch',
             contentType: 'application/json; charset=utf-8',
             dataType: 'JSON',
-            data: JSON.stringify(updatedTrade),
+            data: JSON.stringify(updatedResearch),
             success: function (response) {
                 if (response['success'] !== undefined) {
                     toastr.success(response['success']);
@@ -373,16 +374,86 @@ $(function () {
             }
         });
     }
+
+    function updateFirstBarResearch(updatedResearch) {
+        // make the API call
+        $.ajax({
+            method: 'POST',
+            url: '/research/UpdateFirstBarResearch',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'JSON',
+            data: JSON.stringify(updatedResearch),
+            success: function (response) {
+                if (response['success'] !== undefined) {
+                    toastr.success(response['success']);
+                }
+                else if (response['error'] !== undefined) {
+                    toastr.error(response['error']);
+                }
+            },
+            error: function (response) {
+                console.error(response);
+            }
+        });
+    }
+
+    function getCradleResearchData(index) {
+        var updatedTrade = {};
+        $('#cardBody [data-research-cradle]').each(function () {
+            var bindProperty = $(this).data('research-cradle');
+            updatedTrade[bindProperty] = $(this).val();
+        });
+
+        //updatedTrade['TradeRating'] = parseInt($('#TradeRatingInput').val());
+        updatedTrade['Id'] = trades[index]['Id'];
+        updatedTrade['ScreenshotsUrls'] = trades[index]['ScreenshotsUrls'];
+
+        return updatedTrade;
+    }
+
+    function getFirstBarResearchData(index) {
+        var updatedTrade = {};
+        $('#cardBody [data-research-firstbar]').each(function () {
+            var bindProperty = $(this).data('research-firstbar');
+            updatedTrade[bindProperty] = $(this).val();
+        });
+
+        // Add the Id and the Screenshots
+        updatedTrade['TradeRatingDisplay'] = parseInt($('#TradeRatingInput').val());
+        updatedTrade['IdDisplay'] = trades[index]['IdDisplay'];
+        updatedTrade['ScreenshotsUrls'] = trades[index]['ScreenshotsUrls'];
+
+        return updatedTrade;
+    }
+
     // Loads the trade data into the input/select elements. Used in the prev/next buttons or the key combination
-    function loadTradeData() {
+    function loadTradeData(strategy) {
         var trade = trades[tradeIndex];
-        $('#cardBody [data-research]').each(function () {
-            var bindProperty = $(this).data('research');
+        $('#currentTradeId').val(trade['Id']);
+        if (strategy == 0) {
+            setFirstBarResearchData(trade);
+        }
+        else if (strategy == 1) {
+            setCradleResearchData(trade);
+        }
+    }
+
+    function setCradleResearchData(trade) {
+        $('#cardBody [data-research-cradle]').each(function () {
+            var bindProperty = $(this).data('research-cradle');
             if (trade.hasOwnProperty(bindProperty)) {
                 $(this).val(trade[bindProperty]);
             }
         });
-        $('#currentTradeId').val(trade['IdDisplay']);
+    }
+
+    function setFirstBarResearchData(trade) {
+        $('#cardBody [data-research-firstbar]').each(function () {
+            var bindProperty = $(this).data('research-firstbar');
+            if (trade.hasOwnProperty(bindProperty)) {
+                $(this).val(trade[bindProperty]);
+            }
+        });
     }
     // Loads the images into the carousel
     function loadImages() {
@@ -470,7 +541,7 @@ $(function () {
         researchVM = JSON.parse(response.researchVM);
         tradeIndex = 0;
         trades = researchVM.AllTrades;
-        loadTradeData();
+        loadTradeData(researchVM['CurrentStrategy']);
         loadImages();
         setMenuValues(researchVM);
         setSelectedItemClass();
