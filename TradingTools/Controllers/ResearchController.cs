@@ -230,7 +230,7 @@ namespace TradingTools.Controllers
         public async Task<IActionResult> Index()
         {
             // Get research sample sizes
-            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == ETradeType.Research && x.Strategy == EStrategy.FirstBarPullback);
+            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == ETradeType.Research);
 
             // No researched trades
             if (!sampleSizes.Any())
