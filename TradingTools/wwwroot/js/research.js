@@ -26,7 +26,6 @@ $(function () {
         Cradle: 'Cradle',
     };
 
-
     /**
     * ******************************
     * Region global variables ends
@@ -318,26 +317,29 @@ $(function () {
             },
             error: function (jqXHR, exception) // code for exceptions
             {
-                var msg = '';
-                if (jqXHR.status === 0) {
-                    msg = 'Not connect.\n Verify Network.';
-                } else if (jqXHR.status == 404) {
-                    msg = 'Requested page not found. [404]';
-                } else if (jqXHR.status == 500) {
-                    msg = 'Internal Server Error [500].';
-                } else if (exception === 'parsererror') {
-                    msg = 'Requested JSON parse failed.';
-                } else if (exception === 'timeout') {
-                    msg = 'Time out error.';
-                } else if (exception === 'abort') {
-                    msg = 'Ajax request aborted.';
-                } else {
-                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
-                }
-                alert(msg);
+                createAjaxErrorMsg(jqXHR, exception);
             }
-
         });
+    }
+
+    function createAjaxErrorMsg(jqXHR, exception) {
+        var msg = '';
+        if (jqXHR.status === 0) {
+            msg = 'Not connect.\n Verify Network.';
+        } else if (jqXHR.status == 404) {
+            msg = 'Requested page not found. [404]';
+        } else if (jqXHR.status == 500) {
+            msg = 'Internal Server Error [500].';
+        } else if (exception === 'parsererror') {
+            msg = 'Requested JSON parse failed.';
+        } else if (exception === 'timeout') {
+            msg = 'Time out error.';
+        } else if (exception === 'abort') {
+            msg = 'Ajax request aborted.';
+        } else {
+            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+        }
+        alert(msg);
     }
 
     // Updates the database with the values from the card for the displayed trade
@@ -428,6 +430,9 @@ $(function () {
 
     // Loads the trade data into the input/select elements. Used in the prev/next buttons or the key combination
     function loadTradeData(strategy) {
+        if (strategy === undefined) {
+            strategy = getStrategy();
+        }
         var trade = trades[tradeIndex];
         $('#currentTradeId').val(trade['Id']);
         if (strategy == 0) {
@@ -435,6 +440,17 @@ $(function () {
         }
         else if (strategy == 1) {
             setCradleResearchData(trade);
+        }
+    }
+
+    function getStrategy()
+    {
+        var strategy = $('#spanStrategy').text();
+        if (strategy == strategies.FirstBarPullback) {
+            return 0;
+        }
+        else if (strategy == strategies.Cradle) {
+            return 1;
         }
     }
 
@@ -514,23 +530,7 @@ $(function () {
             },
             error: function (jqXHR, exception) // code for exceptions
             {
-                var msg = '';
-                if (jqXHR.status === 0) {
-                    msg = 'Not connect.\n Verify Network.';
-                } else if (jqXHR.status == 404) {
-                    msg = 'Requested page not found. [404]';
-                } else if (jqXHR.status == 500) {
-                    msg = 'Internal Server Error [500].';
-                } else if (exception === 'parsererror') {
-                    msg = 'Requested JSON parse failed.';
-                } else if (exception === 'timeout') {
-                    msg = 'Time out error.';
-                } else if (exception === 'abort') {
-                    msg = 'Ajax request aborted.';
-                } else {
-                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
-                }
-                alert(msg);
+                createAjaxErrorMsg(jqXHR, exception);
             }
         });
 
@@ -541,22 +541,20 @@ $(function () {
         researchVM = JSON.parse(response.researchVM);
         tradeIndex = 0;
         trades = researchVM.AllTrades;
+        showResearchData(researchVM['CurrentStrategy']);
         loadTradeData(researchVM['CurrentStrategy']);
         loadImages();
         setMenuValues(researchVM);
         setSelectedItemClass();
-        showResearchData(researchVM['CurrentStrategy']);
     }
 
     function showResearchData(strategy) {
         if (strategy == 0) {
-            $('#researchFirstBarPullbackData').removeClass('d-none');
-            $('#researchCradleData').addClass('d-none');
+            $('#researchDataContainer').html(partialViewFirstBarResearch);
 
         }
         else if (strategy == 1) {
-            $('#researchCradleData').removeClass('d-none');
-            $('#researchFirstBarPullbackData').addClass('d-none');
+            $('#researchDataContainer').html(partialViewCradleResesarch);
         }
     }
 

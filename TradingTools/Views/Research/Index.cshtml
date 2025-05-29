@@ -1,4 +1,6 @@
 ﻿@model ResearchVM
+@using Microsoft.AspNetCore.Mvc.ModelBinding
+@using Microsoft.AspNetCore.Mvc.ViewEngines
 @using Newtonsoft.Json
 @using global::Shared
 
@@ -22,7 +24,7 @@
                             <div class="p-2">
                                 <div class="dropdown">
                                     <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Time Frame: <span id="spanTimeFrame">@MyEnumConverter.TimeFrameFromEnum(Model.CurrentSampleSize.TimeFrame)</span>
                                     </button>
                                     <div class="dropdown-menu animated--fade-in" id="dropdownBtnTimeFrame" aria-labelledby="dropdownMenuButton">
@@ -118,11 +120,15 @@
                 <div class="col-8 text-center">
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <div id="researchCradleData" class="@(Model.CurrentSampleSize.Strategy == EStrategy.Cradle ? "" : "d-none")">
-                                <partial name="/Views/Shared/_ResearchCradleData.cshtml" />
-                            </div>
-                            <div id="researchFirstBarPullbackData" class="@(Model.CurrentSampleSize.Strategy == EStrategy.Cradle ? "d-none" : "")">
-                                <partial name="/Views/Shared/_ResearchFirstBarPullbackData.cshtml" />
+                            <div id="researchDataContainer">
+                                @if (Model.CurrentSampleSize.Strategy == EStrategy.Cradle)
+                                {
+                                    <partial name="/Views/Shared/_ResearchCradleData.cshtml" />
+                                }
+                                else if (Model.CurrentSampleSize.Strategy == EStrategy.FirstBarPullback)
+                                {
+                                    <partial name="/Views/Shared/_ResearchFirstBarPullbackData.cshtml" />
+                                }
                             </div>
                         </div>
                     </div>
@@ -158,6 +164,60 @@
 @*Save all trades data in a div element. See: https://security.stackexchange.com/questions/254647/passing-a-c-object-to-javascript-in-asp-net-mvc *@
 <div id="tradesData" data-trades="@JsonConvert.SerializeObject(Model.AllTrades)"></div>
 
+@functions {
+    public static string RenderPartialView(ViewContext viewContext, string partialName, object model)
+    {
+        using (var writer = new System.IO.StringWriter())
+        {
+            var serviceProvider = viewContext.HttpContext.RequestServices;
+            var viewEngine = (ICompositeViewEngine)serviceProvider.GetService(typeof(ICompositeViewEngine));
+            var tempDataProvider = (ITempDataProvider)serviceProvider.GetService(typeof(ITempDataProvider));
+
+            var viewResult = viewEngine.FindView(viewContext, partialName, false);
+            if (!viewResult.Success)
+            {
+                throw new InvalidOperationException($"Could not find partial view '{partialName}'");
+            }
+
+            var viewDictionary = new ViewDataDictionary(
+                new Microsoft.AspNetCore.Mvc.ModelBinding.EmptyModelMetadataProvider(),
+                new ModelStateDictionary())
+                {
+                    Model = model
+                };
+
+            var tempData = new TempDataDictionary(viewContext.HttpContext, tempDataProvider);
+
+            var viewContextCopy = new ViewContext(
+                viewContext,
+                viewResult.View,
+                viewDictionary,
+                tempData,
+                writer,
+                new HtmlHelperOptions()
+            );
+
+            viewResult.View.RenderAsync(viewContextCopy).GetAwaiter().GetResult();
+
+            return writer.ToString();
+        }
+    }
+}
+
+
+@{
+    var pullbackHtml = RenderPartialView(ViewContext, "_ResearchFirstBarPullbackData", Model);
+    var cradleHtml = RenderPartialView(ViewContext, "_ResearchCradleData", Model);
+
+    // Escape for JavaScript (optional if you use backtick strings)
+    var pullbackEscaped = pullbackHtml.Replace("`", "\\`");
+    var cradleEscaped = cradleHtml.Replace("`", "\\`");
+}
+
+<script>
+    const partialViewFirstBarResearch = `@Html.Raw(pullbackEscaped)`;
+    const partialViewCradleResesarch = `@Html.Raw(cradleEscaped)`;
+</script>
 @section Scripts {
     <script src="~/js/research.js"></script>
 }

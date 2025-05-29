@@ -38,7 +38,6 @@ namespace Models.ViewModels
         public TradesVM TradesVM { get; set; }
 
         public ResearchCradle ResearchCradle { get; set; }
-
         public List<SelectListItem> YesNoOptions { get; set; }
         public List<SelectListItem> OrderType { get; set; }
         public List<SelectListItem> TradeRating { get; set; }

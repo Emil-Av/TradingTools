@@ -230,7 +230,7 @@ namespace TradingTools.Controllers
         public async Task<IActionResult> Index()
         {
             // Get research sample sizes
-            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == ETradeType.Research);
+            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize.GetAllAsync(x => x.TradeType == ETradeType.Research && x.Strategy == EStrategy.FirstBarPullback);
 
             // No researched trades
             if (!sampleSizes.Any())
@@ -490,7 +490,7 @@ namespace TradingTools.Controllers
                 }
             }
             SampleSize sampleSize = sampleSizes.Where(sampleSize => sampleSize.Id == lastSampleSizeId).ToList()[0];
-            await SetAllTrades();
+            await SetTrades();
             SetValuesForButtons();
             SetScreenShotsUrls();
 
@@ -498,23 +498,24 @@ namespace TradingTools.Controllers
 
             #region Helper Methods
 
-            async Task SetAllTrades()
+            async Task SetTrades()
             {
                 if (sampleSize.Strategy == EStrategy.Cradle)
                 {
                     ResearchVM.AllTrades = (await _unitOfWork.ResearchCradle
                         .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId)).Cast<object>().ToList();
+                    ResearchVM.ResearchCradle = (ResearchVM.AllTrades.FirstOrDefault() as ResearchCradle)!;
 
                 }
                 else if (sampleSize.Strategy == EStrategy.FirstBarPullback)
                 {
                     // Get all researched trades from the DB and project the instances into ResearchFirstBarPullbackDisplay
-
                     ResearchVM.AllTrades = (await _unitOfWork.ResearchFirstBarPullback
                                             .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId))
                                             .Select(EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>)
                                             .Cast<object>()
                                             .ToList();
+                    ResearchVM.ResearchFirstBarPullbackDisplay = (ResearchVM.AllTrades.FirstOrDefault() as ResearchFirstBarPullbackDisplay)!;
                 }
             }
 
