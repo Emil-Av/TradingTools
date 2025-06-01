@@ -262,9 +262,9 @@ $(function () {
     }
 
     // Loads the screenshots and the values in the input/select elements in the card
-    function displayTradeData(indexToShow, canShowToastr) {
+    function displayTradeData(indexToShow, isUserInput) {
         // Buttons 'prev' or 'next'
-        if (indexToShow == -1 || indexToShow == 1) {
+        if (!isUserInput && (indexToShow == -1 || indexToShow == 1)) {
             tradeIndex += indexToShow;
         }
         // User input of the trade to be shown
@@ -272,33 +272,36 @@ $(function () {
             tradeIndex = indexToShow;
         }
 
-        if (tradeIndex >= trades.length) {
-            if (canShowToastr) {
-                toastr.error('Trade ' + (tradeIndex + 1) + ' doesn\'t exist.');
-                canShowToastr = false;
-            }
-            else {
-                toastr.info('The last trade is being displayed');
-            }
-            tradeIndex = lastTradeIndex;
+        if (isUserInput && tradeIndex >= trades.length) {
+            displayToastrErrorWhenSwitchingTrades('Trade ' + (tradeIndex + 1) + ' doesn\'t exist.');
             return;
         }
-        else if (tradeIndex < 0) {
-            if (canShowToastr) {
-                toastr.error('Trade number can\'t be smaller then 1.');
-                canShowToastr = false;
-            }
-            else {
-                toastr.info('The first trade is being displayed');
-            }
-            tradeIndex = lastTradeIndex;
+        else if (isUserInput && tradeIndex < 0) {
+            displayToastrErrorWhenSwitchingTrades('Trade number can\'t be smaller then 1.');
             return;
+        }
 
+        else if (!isUserInput && tradeIndex >= trades.length) {
+            displayToastrInfoWhenSwitchingTrades('The last trade is being displayed');
+            return;
+        }
+        else if (!isUserInput && tradeIndex < 0) {
+            displayToastrInfoWhenSwitchingTrades('The first trade is being displayed');
+            return;
         }
         lastTradeIndex = tradeIndex;
         $('#tradeNumberInput').val(tradeIndex + 1);
         loadImages();
         loadTradeData();
+    }
+
+    function displayToastrErrorWhenSwitchingTrades(message) {
+        toastr.error(message);
+    }
+
+    function displayToastrInfoWhenSwitchingTrades(message) {
+        toastr.info(message);
+        tradeIndex = lastTradeIndex;
     }
 
     function deleteTrade() {
@@ -451,8 +454,7 @@ $(function () {
         }
     }
 
-    function getStrategy()
-    {
+    function getStrategy() {
         var strategy = $('#spanStrategy').text();
         if (strategy == strategies.FirstBarPullback) {
             return 0;
@@ -481,7 +483,6 @@ $(function () {
     }
     // Loads the images into the carousel
     function loadImages() {
-        //var screenshots = trades[tradeIndex]['ScreenshotsUrlsDisplay'];
         var screenshots = trades[tradeIndex]['ScreenshotsUrls'];
         if (screenshots === null) {
             toastr.error("No screenshots for the selected trade.");

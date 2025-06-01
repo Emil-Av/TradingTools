@@ -563,7 +563,6 @@ namespace TradingTools.Controllers
             }
 
             #endregion
-
         }
 
         #endregion
