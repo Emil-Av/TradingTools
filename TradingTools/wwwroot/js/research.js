@@ -15,7 +15,6 @@ $(function () {
     // Global index for the currently displayed trade. Can be used in the 'trades' variable
     var tradeIndex = 0;
     var lastTradeIndex = 0;
-    var sampleSizeChanged;
     var currentCardMenu = 'Trade Data';
     // The model
     var researchVM;
@@ -90,12 +89,20 @@ $(function () {
                 // Save the old value. If there is no trade in the DB for the selected trade, the menu's old value should be displayed.
                 menuClicked = $(menuButtons[key]);
                 clickedMenuValue = $(menuButtons[key]).text();
+                var sampleSizeChanged;
+                var timeFrameChanged;
 
                 if (key == '#dropdownBtnSampleSize') {
                     sampleSizeChanged = true;
                 }
                 else {
                     sampleSizeChanged = false;
+                }
+                if (key == '#dropdownBtnTimeFrame') {
+                    timeFrameChanged = true;
+                }
+                else {
+                    timeFrameChanged = false;
                 }
 
                 // Set the new value
@@ -104,7 +111,8 @@ $(function () {
                 loadSampleSizeAsync($('#spanTimeFrame').text(),
                     $('#spanStrategy').text(),
                     $('#spanSampleSize').text(),
-                    sampleSizeChanged);
+                    sampleSizeChanged,
+                    timeFrameChanged);
             });
         })(key);
     }
@@ -510,7 +518,7 @@ $(function () {
         console.log(newCarouselHtml);
     }
 
-    function loadSampleSizeAsync(timeFrame, strategy, sampleSizeNumber, isSampleSizeChanged) {
+    function loadSampleSizeAsync(timeFrame, strategy, sampleSizeNumber, isSampleSizeChanged, isTimeFrameChanged) {
         // make the API call
         $.ajax({
             method: 'POST',
@@ -520,7 +528,8 @@ $(function () {
                 timeFrame: timeFrame,
                 strategy: strategy,
                 sampleSizeNumber: sampleSizeNumber,
-                isSampleSizeChanged: isSampleSizeChanged
+                isSampleSizeChanged: isSampleSizeChanged,
+                isTimeFrameChanged: isTimeFrameChanged
             },
             success: function (response) {
                 if (response['error'] !== undefined) {

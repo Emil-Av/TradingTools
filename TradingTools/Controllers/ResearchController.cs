@@ -468,28 +468,8 @@ namespace TradingTools.Controllers
 
         private async Task<string> LoadViewModelData(List<SampleSize> sampleSizes, int sampleSizeNumber)
         {
-            int lastSampleSizeId = 0;
-            // Method is called from the Index()
-            if (sampleSizeNumber == IndexMethod)
-            {
-                lastSampleSizeId = sampleSizes.LastOrDefault().Id;
-            }
-            // Ajax API call
-            else
-            {
-                // If different sample size is selected for the same time frame and strategy
-                if (ResearchVM.HasSampleSizeChanged)
-                {
-                    lastSampleSizeId = sampleSizes[sampleSizeNumber - 1].Id;
-                }
-                // Different time frame and/or strategy is selected
-                else
-                {
-                    sampleSizeNumber = sampleSizes.Count;
-                    lastSampleSizeId = sampleSizes.Last().Id;
-                }
-            }
-            SampleSize sampleSize = sampleSizes.Where(sampleSize => sampleSize.Id == lastSampleSizeId).ToList()[0];
+            int lastSampleSizeId = SetLastSampleSizeId(sampleSizes, ref sampleSizeNumber);
+            SampleSize sampleSize = sampleSizes.FirstOrDefault(sampleSize => sampleSize.Id == lastSampleSizeId)!;
             await SetTrades();
             SetValuesForButtons();
             SetScreenShotsUrls();
@@ -532,6 +512,7 @@ namespace TradingTools.Controllers
                 SetAvailableTimeframes(sampleSizes);
 
             }
+
             void SetScreenShotsUrls()
             {
                 if (ResearchVM.CurrentSampleSize.Strategy == EStrategy.Cradle)
@@ -543,6 +524,42 @@ namespace TradingTools.Controllers
                     // Workaround - load the ScreenshotUrls from BaseTrade and map them to the IDs from TradeData...
                     ResearchVM.TradeData.ScreenshotsUrls = [.. (ResearchVM.AllTrades.FirstOrDefault()! as ResearchFirstBarPullbackDisplay)!.ScreenshotsUrls!];
                 }
+            }
+
+            int SetLastSampleSizeId(List<SampleSize> sampleSizes, ref int sampleSizeNumber)
+            {
+                // Case: IndexMethod logic
+                if (sampleSizeNumber == IndexMethod)
+                {
+                    return sampleSizes.LastOrDefault()!.Id;
+                }
+
+                int lastSampleSizeId;
+
+                if (ResearchVM.HasTimeFrameChanged && ResearchVM.HasSampleSizeChanged)
+                {
+                    // Time frame and sample size both changed
+                    var filteredSamples = sampleSizes.Where(s => s.TimeFrame == ResearchVM.CurrentTimeFrame).ToList();
+                    lastSampleSizeId = filteredSamples.ElementAtOrDefault(sampleSizeNumber - 1)!.Id;
+                }
+                else if (ResearchVM.HasTimeFrameChanged)
+                {
+                    // Only time frame changed
+                    var filteredSamples = sampleSizes.Where(s => s.TimeFrame == ResearchVM.CurrentTimeFrame).ToList();
+                    lastSampleSizeId = filteredSamples.LastOrDefault()!.Id;
+                }
+                else if (ResearchVM.HasSampleSizeChanged)
+                {
+                    // Only sample size changed
+                    lastSampleSizeId = sampleSizes.ElementAtOrDefault(sampleSizeNumber - 1)!.Id;
+                }
+                else
+                {
+                    // Different time frame and/or strategy
+                    sampleSizeNumber = sampleSizes.Count;
+                    lastSampleSizeId = sampleSizes.LastOrDefault()?.Id ?? 0;
+                }
+                return lastSampleSizeId;
             }
 
             #endregion

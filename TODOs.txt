@@ -1,3 +1,2 @@
-1. Set getCradleResearchData() in research.js
-2. Check if all values in research first bar can be updated properly
-3. Make updating a cradle research trade work.
+1. 2 TFs for ResearchCradle - the buttons don't work
+2. When there are 3 trades in a sample size and I enter 3 to go to the last trade, error comes that the trade 4 does not exist

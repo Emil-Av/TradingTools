@@ -11,5 +11,7 @@ namespace Shared
         public string SampleSizeNumber { get; set; }
 
         public string IsSampleSizeChanged { get; set; }
+
+        public string IsTimeFrameChanged { get; set; }
     }
 }

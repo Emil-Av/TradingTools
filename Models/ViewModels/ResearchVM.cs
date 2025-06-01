@@ -54,6 +54,7 @@ namespace Models.ViewModels
         public int TradesInSampleSize { get; set; }
 
         public bool HasSampleSizeChanged { get; set; }
+        public bool HasTimeFrameChanged { get; set; }
 
         #endregion
 
@@ -96,6 +97,14 @@ namespace Models.ViewModels
             else
             {
                 errors.Add("Error parsing isSampleSizeChanged variable");
+            }
+            if (bool.TryParse(viewData.IsTimeFrameChanged, out bool tempIsTimeFrameChanged))
+            {
+                HasTimeFrameChanged = tempIsTimeFrameChanged;
+            }
+            else
+            {
+                errors.Add($"Error parsing IsTimeFrameChanged variable in {nameof(ResearchVM)}.{nameof(SetSampleSizeParams)}");
             }
 
             if (errors.Any())
