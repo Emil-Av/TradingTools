@@ -14,20 +14,6 @@ namespace Models.ViewModels
             AvailableTimeframes = new List<ETimeFrame>();
             CurrentTrade = new();
             TradeData = new();
-
-            //YesNoOptions = new List<SelectListItem>
-            //{
-            //    new SelectListItem {Value = "0", Text = "No"},
-            //    new SelectListItem {Value = "1", Text = "Yes"}
-            //};
-
-            
-
-            //OrderType = new List<SelectListItem>
-            //{
-            //    new SelectListItem { Value = "0", Text = "Market"},
-            //    new SelectListItem { Value = "1", Text = "Limit"},
-            //};
         }
 
         #endregion
@@ -68,6 +54,9 @@ namespace Models.ViewModels
         public int TradesInSampleSize { get; set; }
 
         public bool HasSampleSizeChanged { get; set; }
+        public bool HasTimeFrameChanged { get; set; }
+
+        public bool HasStrategyChanged { get; set; }
 
         #endregion
 
@@ -91,10 +80,12 @@ namespace Models.ViewModels
             {
                 errors.Add(timeFrameResult.ErrorMessage);
             }
+
             if (!strategyResult.Success)
             {
                 errors.Add(strategyResult.ErrorMessage);
             }
+
             if (!Int32.TryParse(viewData.SampleSizeNumber, out int _sampleSizeNumber))
             {
                 errors.Add("Error parsing the sample size number");
@@ -103,6 +94,7 @@ namespace Models.ViewModels
             {
                 CurrentSampleSizeId = _sampleSizeNumber;
             }
+
             if (bool.TryParse(viewData.IsSampleSizeChanged, out bool tempIsSampleSizeChanged))
             {
                 HasSampleSizeChanged = tempIsSampleSizeChanged;
@@ -110,6 +102,24 @@ namespace Models.ViewModels
             else
             {
                 errors.Add("Error parsing isSampleSizeChanged variable");
+            }
+
+            if (bool.TryParse(viewData.IsTimeFrameChanged, out bool tempIsTimeFrameChanged))
+            {
+                HasTimeFrameChanged = tempIsTimeFrameChanged;
+            }
+            else
+            {
+                errors.Add($"Error parsing IsTimeFrameChanged variable in {nameof(ResearchVM)}.{nameof(SetSampleSizeParams)}");
+            }
+
+            if (bool.TryParse(viewData.IsStrategyChanged, out bool tempIsStrategyChanged))
+            {
+                HasStrategyChanged = tempIsStrategyChanged;
+            }
+            else
+            {
+                errors.Add($"Error parsing IsSampleSizeChanged variable in {nameof(ResearchVM)}.{nameof(SetSampleSizeParams)}");
             }
 
             if (errors.Any())

@@ -181,7 +181,29 @@ namespace TradingTools.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateTrade([FromBody] ResearchFirstBarPullbackDisplay currentTrade)
+        public async Task<IActionResult> UpdateCradleResearch([FromBody] ResearchCradle researchTrade)
+        {
+            JsonResult validationResult = ValidateModelState();
+            if (validationResult != null)
+            {
+                return validationResult;
+            }
+
+            await _unitOfWork.ResearchCradle.UpdateAsync(researchTrade);
+            try
+            {
+                await _unitOfWork.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = $"{ex.Message}" });
+            }
+
+            return Json(new { success = "Under development" });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateFirstBarResearch([FromBody] ResearchFirstBarPullbackDisplay currentTrade)
         {
             JsonResult validationResult = ValidateModelState();
             if (validationResult != null)
@@ -192,7 +214,6 @@ namespace TradingTools.Controllers
             ResearchFirstBarPullback trade = EntityMapper.ViewModelDisplayToEntity<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>(currentTrade, existingEntity: null);
             // The Id of a trade is in the currentTrade paramater. The id is passed to the trade object in ResearchMapper.ViewModelToEntity().
             // The Update() method, queries the database for a trade based on the Id.
-            SanitizationHelper.SanitizeObject(trade);
             await _unitOfWork.ResearchFirstBarPullback.UpdateAsync(trade);
             try
             {
@@ -447,29 +468,13 @@ namespace TradingTools.Controllers
 
         private async Task<string> LoadViewModelData(List<SampleSize> sampleSizes, int sampleSizeNumber)
         {
-            int lastSampleSizeId = 0;
-            // Method is called from the Index()
-            if (sampleSizeNumber == IndexMethod)
+            int lastSampleSizeId = SetLastSampleSizeId(sampleSizes, ref sampleSizeNumber);
+            if (lastSampleSizeId == -1)
             {
-                lastSampleSizeId = sampleSizes.LastOrDefault().Id;
+                return $"Error in setting the lastSampleSizeId in {nameof(SetLastSampleSizeId)}";
             }
-            // Ajax API call
-            else
-            {
-                // If different sample size is selected for the same time frame and strategy
-                if (ResearchVM.HasSampleSizeChanged)
-                {
-                    lastSampleSizeId = sampleSizes[sampleSizeNumber - 1].Id;
-                }
-                // Different time frame and/or strategy is selected
-                else
-                {
-                    sampleSizeNumber = sampleSizes.Count;
-                    lastSampleSizeId = sampleSizes.Last().Id;
-                }
-            }
-            SampleSize sampleSize = sampleSizes.Where(sampleSize => sampleSize.Id == lastSampleSizeId).ToList()[0];
-            await SetAllTrades();
+            SampleSize sampleSize = sampleSizes.FirstOrDefault(sampleSize => sampleSize.Id == lastSampleSizeId)!;
+            await SetTrades();
             SetValuesForButtons();
             SetScreenShotsUrls();
 
@@ -477,27 +482,24 @@ namespace TradingTools.Controllers
 
             #region Helper Methods
 
-            async Task SetAllTrades()
+            async Task SetTrades()
             {
                 if (sampleSize.Strategy == EStrategy.Cradle)
                 {
                     ResearchVM.AllTrades = (await _unitOfWork.ResearchCradle
                         .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId)).Cast<object>().ToList();
-
+                    ResearchVM.ResearchCradle = (ResearchVM.AllTrades.FirstOrDefault() as ResearchCradle)!;
                 }
                 else if (sampleSize.Strategy == EStrategy.FirstBarPullback)
                 {
                     // Get all researched trades from the DB and project the instances into ResearchFirstBarPullbackDisplay
-                    var test = (await _unitOfWork.ResearchFirstBarPullback
-                                            .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId));
-
                     ResearchVM.AllTrades = (await _unitOfWork.ResearchFirstBarPullback
                                             .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId))
                                             .Select(EntityMapper.EntityToViewModel<ResearchFirstBarPullback, ResearchFirstBarPullbackDisplay>)
                                             .Cast<object>()
                                             .ToList();
+                    ResearchVM.ResearchFirstBarPullbackDisplay = (ResearchVM.AllTrades.FirstOrDefault() as ResearchFirstBarPullbackDisplay)!;
                 }
-                ResearchVM.AllTrades.ForEach(x => SanitizationHelper.SanitizeObject(x));
             }
 
             void SetValuesForButtons()
@@ -511,8 +513,8 @@ namespace TradingTools.Controllers
                 ResearchVM.NumberSampleSizes = sampleSizes.Count(x => x.TimeFrame == ResearchVM.CurrentTimeFrame);
                 ResearchVM.TradesInSampleSize = ResearchVM.AllTrades.Count;
                 SetAvailableTimeframes(sampleSizes);
-
             }
+
             void SetScreenShotsUrls()
             {
                 if (ResearchVM.CurrentSampleSize.Strategy == EStrategy.Cradle)
@@ -526,8 +528,44 @@ namespace TradingTools.Controllers
                 }
             }
 
-            #endregion
+            int SetLastSampleSizeId(List<SampleSize> sampleSizes, ref int sampleSizeNumber)
+            {
+                if (sampleSizeNumber == IndexMethod)
+                    return sampleSizes.LastOrDefault()?.Id ?? -1;
 
+                int lastSampleSizeId = -1;
+                var currentTimeFrame = ResearchVM.CurrentTimeFrame;
+
+                if (ResearchVM.HasStrategyChanged)
+                {
+                    var lastSample = sampleSizes.LastOrDefault();
+                    if (lastSample != null)
+                    {
+                        lastSampleSizeId = lastSample.Id;
+                        sampleSizeNumber = sampleSizes.Count(x => x.TimeFrame == lastSample.TimeFrame);
+                    }
+                }
+                else if (ResearchVM.HasTimeFrameChanged && ResearchVM.HasSampleSizeChanged)
+                {
+                    var filtered = sampleSizes.Where(s => s.TimeFrame == currentTimeFrame).ToList();
+                    lastSampleSizeId = filtered.ElementAtOrDefault(sampleSizeNumber - 1)?.Id ?? -1;
+                }
+                else if (ResearchVM.HasTimeFrameChanged)
+                {
+                    var filtered = sampleSizes.Where(s => s.TimeFrame == currentTimeFrame).ToList();
+                    var last = filtered.LastOrDefault();
+                    lastSampleSizeId = last?.Id ?? -1;
+                    sampleSizeNumber = filtered.Count;
+                }
+                else if (ResearchVM.HasSampleSizeChanged)
+                {
+                    lastSampleSizeId = sampleSizes.ElementAtOrDefault(sampleSizeNumber - 1)?.Id ?? -1;
+                }
+
+                return lastSampleSizeId;
+            }
+
+            #endregion
         }
 
         #endregion

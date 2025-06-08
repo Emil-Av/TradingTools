@@ -15,12 +15,15 @@ $(function () {
     // Global index for the currently displayed trade. Can be used in the 'trades' variable
     var tradeIndex = 0;
     var lastTradeIndex = 0;
-    var sampleSizeChanged;
     var currentCardMenu = 'Trade Data';
     // The model
     var researchVM;
     var trades = $('#tradesData').data('trades');
 
+    const strategies = {
+        FirstBarPullback: 'First Bar Pullback',
+        Cradle: 'Cradle',
+    };
 
     /**
     * ******************************
@@ -86,12 +89,18 @@ $(function () {
                 // Save the old value. If there is no trade in the DB for the selected trade, the menu's old value should be displayed.
                 menuClicked = $(menuButtons[key]);
                 clickedMenuValue = $(menuButtons[key]).text();
+                var sampleSizeChanged = false;
+                var timeFrameChanged = false;
+                var strategyChanged = false;
 
                 if (key == '#dropdownBtnSampleSize') {
                     sampleSizeChanged = true;
                 }
-                else {
-                    sampleSizeChanged = false;
+                if (key == '#dropdownBtnTimeFrame') {
+                    timeFrameChanged = true;
+                }
+                if (key == '#dropdownBtnStrategy') {
+                    strategyChanged = true;
                 }
 
                 // Set the new value
@@ -100,7 +109,9 @@ $(function () {
                 loadSampleSizeAsync($('#spanTimeFrame').text(),
                     $('#spanStrategy').text(),
                     $('#spanSampleSize').text(),
-                    sampleSizeChanged);
+                    sampleSizeChanged,
+                    timeFrameChanged,
+                    strategyChanged);
             });
         })(key);
     }
@@ -250,9 +261,9 @@ $(function () {
     }
 
     // Loads the screenshots and the values in the input/select elements in the card
-    function displayTradeData(indexToShow, canShowToastr) {
+    function displayTradeData(indexToShow, isUserInput) {
         // Buttons 'prev' or 'next'
-        if (indexToShow == -1 || indexToShow == 1) {
+        if (!isUserInput && (indexToShow == -1 || indexToShow == 1)) {
             tradeIndex += indexToShow;
         }
         // User input of the trade to be shown
@@ -260,33 +271,36 @@ $(function () {
             tradeIndex = indexToShow;
         }
 
-        if (tradeIndex >= trades.length) {
-            if (canShowToastr) {
-                toastr.error('Trade ' + (tradeIndex + 1) + ' doesn\'t exist.');
-                canShowToastr = false;
-            }
-            else {
-                toastr.info('The last trade is being displayed');
-            }
-            tradeIndex = lastTradeIndex;
+        if (isUserInput && tradeIndex >= trades.length) {
+            displayToastrErrorWhenSwitchingTrades('Trade ' + (tradeIndex + 1) + ' doesn\'t exist.');
             return;
         }
-        else if (tradeIndex < 0) {
-            if (canShowToastr) {
-                toastr.error('Trade number can\'t be smaller then 1.');
-                canShowToastr = false;
-            }
-            else {
-                toastr.info('The first trade is being displayed');
-            }
-            tradeIndex = lastTradeIndex;
+        else if (isUserInput && tradeIndex < 0) {
+            displayToastrErrorWhenSwitchingTrades('Trade number can\'t be smaller then 1.');
             return;
+        }
 
+        else if (!isUserInput && tradeIndex >= trades.length) {
+            displayToastrInfoWhenSwitchingTrades('The last trade is being displayed');
+            return;
+        }
+        else if (!isUserInput && tradeIndex < 0) {
+            displayToastrInfoWhenSwitchingTrades('The first trade is being displayed');
+            return;
         }
         lastTradeIndex = tradeIndex;
         $('#tradeNumberInput').val(tradeIndex + 1);
         loadImages();
         loadTradeData();
+    }
+
+    function displayToastrErrorWhenSwitchingTrades(message) {
+        toastr.error(message);
+    }
+
+    function displayToastrInfoWhenSwitchingTrades(message) {
+        toastr.info(message);
+        tradeIndex = lastTradeIndex;
     }
 
     function deleteTrade() {
@@ -309,57 +323,56 @@ $(function () {
                 if (response['error'] !== undefined) {
                     toastr.error(response['error']);
                 }
-                setViewData(response);
+                setData(response);
             },
             error: function (jqXHR, exception) // code for exceptions
             {
-                var msg = '';
-                if (jqXHR.status === 0) {
-                    msg = 'Not connect.\n Verify Network.';
-                } else if (jqXHR.status == 404) {
-                    msg = 'Requested page not found. [404]';
-                } else if (jqXHR.status == 500) {
-                    msg = 'Internal Server Error [500].';
-                } else if (exception === 'parsererror') {
-                    msg = 'Requested JSON parse failed.';
-                } else if (exception === 'timeout') {
-                    msg = 'Time out error.';
-                } else if (exception === 'abort') {
-                    msg = 'Ajax request aborted.';
-                } else {
-                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
-                }
-                alert(msg);
+                createAjaxErrorMsg(jqXHR, exception);
             }
-
         });
+    }
+
+    function createAjaxErrorMsg(jqXHR, exception) {
+        var msg = '';
+        if (jqXHR.status === 0) {
+            msg = 'Not connect.\n Verify Network.';
+        } else if (jqXHR.status == 404) {
+            msg = 'Requested page not found. [404]';
+        } else if (jqXHR.status == 500) {
+            msg = 'Internal Server Error [500].';
+        } else if (exception === 'parsererror') {
+            msg = 'Requested JSON parse failed.';
+        } else if (exception === 'timeout') {
+            msg = 'Time out error.';
+        } else if (exception === 'abort') {
+            msg = 'Ajax request aborted.';
+        } else {
+            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+        }
+        alert(msg);
     }
 
     // Updates the database with the values from the card for the displayed trade
     function updateTradeData(index) {
-        var updatedTrade = {};
-        // Get all data from the input and select fields in the card
-        $('#cardBody [data-research]').each(function () {
-            var bindProperty = $(this).data('research');
-            updatedTrade[bindProperty] = $(this).val();
-        });
-        // Add the Id and the Screenshots
-        updatedTrade['TradeRatingDisplay'] = parseInt($('#TradeRatingInput').val());
-        updatedTrade['IdDisplay'] = trades[index]['IdDisplay'];
-        updatedTrade['ScreenshotsUrls'] = trades[index]['ScreenshotsUrls'];
+        var updatedResearch = {};
+        var strategy = $('#spanStrategy').text();
+        if (strategy == strategies.FirstBarPullback) {
+            updatedResearch = getFirstBarResearchData(index);
+            updateFirstBarResearch(updatedResearch);
+        }
+        else if (strategy == strategies.Cradle) {
+            updatedResearch = getCradleResearchData(index);
+            updateCradleResearch(updatedResearch);
+        }
+    }
 
-        $('#cardBody [data-trade-data]').each(function () {
-            var bindProperty = $(this).data('trade-data');
-            updatedTrade[bindProperty] = $(this).val();
-        });
-
-        // make the API call
+    function updateCradleResearch(updatedResearch) {
         $.ajax({
             method: 'POST',
-            url: '/research/updatetrade',
+            url: '/research/UpdateCradleResearch',
             contentType: 'application/json; charset=utf-8',
             dataType: 'JSON',
-            data: JSON.stringify(updatedTrade),
+            data: JSON.stringify(updatedResearch),
             success: function (response) {
                 if (response['success'] !== undefined) {
                     toastr.success(response['success']);
@@ -373,20 +386,102 @@ $(function () {
             }
         });
     }
+
+    function updateFirstBarResearch(updatedResearch) {
+        // make the API call
+        $.ajax({
+            method: 'POST',
+            url: '/research/UpdateFirstBarResearch',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'JSON',
+            data: JSON.stringify(updatedResearch),
+            success: function (response) {
+                if (response['success'] !== undefined) {
+                    toastr.success(response['success']);
+                }
+                else if (response['error'] !== undefined) {
+                    toastr.error(response['error']);
+                }
+            },
+            error: function (response) {
+                console.error(response);
+            }
+        });
+    }
+
+    function getCradleResearchData(index) {
+        var updatedTrade = {};
+        $('#cardBody [data-research-cradle]').each(function () {
+            var bindProperty = $(this).data('research-cradle');
+            updatedTrade[bindProperty] = $(this).val();
+        });
+
+        //updatedTrade['TradeRating'] = parseInt($('#TradeRatingInput').val());
+        updatedTrade['Id'] = trades[index]['Id'];
+        updatedTrade['ScreenshotsUrls'] = trades[index]['ScreenshotsUrls'];
+
+        return updatedTrade;
+    }
+
+    function getFirstBarResearchData(index) {
+        var updatedTrade = {};
+        $('#cardBody [data-research-firstbar]').each(function () {
+            var bindProperty = $(this).data('research-firstbar');
+            updatedTrade[bindProperty] = $(this).val();
+        });
+
+        // Add the Id and the Screenshots
+        updatedTrade['TradeRatingDisplay'] = parseInt($('#TradeRatingInput').val());
+        updatedTrade['IdDisplay'] = trades[index]['IdDisplay'];
+        updatedTrade['ScreenshotsUrls'] = trades[index]['ScreenshotsUrls'];
+
+        return updatedTrade;
+    }
+
     // Loads the trade data into the input/select elements. Used in the prev/next buttons or the key combination
-    function loadTradeData() {
+    function loadTradeData(strategy) {
+        if (strategy === undefined) {
+            strategy = getStrategy();
+        }
         var trade = trades[tradeIndex];
-        $('#cardBody [data-research]').each(function () {
-            var bindProperty = $(this).data('research');
+        $('#currentTradeId').val(trade['Id']);
+        if (strategy == 0) {
+            setFirstBarResearchData(trade);
+        }
+        else if (strategy == 1) {
+            setCradleResearchData(trade);
+        }
+    }
+
+    function getStrategy() {
+        var strategy = $('#spanStrategy').text();
+        if (strategy == strategies.FirstBarPullback) {
+            return 0;
+        }
+        else if (strategy == strategies.Cradle) {
+            return 1;
+        }
+    }
+
+    function setCradleResearchData(trade) {
+        $('#cardBody [data-research-cradle]').each(function () {
+            var bindProperty = $(this).data('research-cradle');
             if (trade.hasOwnProperty(bindProperty)) {
                 $(this).val(trade[bindProperty]);
             }
         });
-        $('#currentTradeId').val(trade['IdDisplay']);
+    }
+
+    function setFirstBarResearchData(trade) {
+        $('#cardBody [data-research-firstbar]').each(function () {
+            var bindProperty = $(this).data('research-firstbar');
+            if (trade.hasOwnProperty(bindProperty)) {
+                $(this).val(trade[bindProperty]);
+            }
+        });
     }
     // Loads the images into the carousel
     function loadImages() {
-        //var screenshots = trades[tradeIndex]['ScreenshotsUrlsDisplay'];
         var screenshots = trades[tradeIndex]['ScreenshotsUrls'];
         if (screenshots === null) {
             toastr.error("No screenshots for the selected trade.");
@@ -423,7 +518,7 @@ $(function () {
         console.log(newCarouselHtml);
     }
 
-    function loadSampleSizeAsync(timeFrame, strategy, sampleSizeNumber, isSampleSizeChanged) {
+    function loadSampleSizeAsync(timeFrame, strategy, sampleSizeNumber, isSampleSizeChanged, isTimeFrameChanged, isStrategyChanged) {
         // make the API call
         $.ajax({
             method: 'POST',
@@ -433,59 +528,43 @@ $(function () {
                 timeFrame: timeFrame,
                 strategy: strategy,
                 sampleSizeNumber: sampleSizeNumber,
-                isSampleSizeChanged: isSampleSizeChanged
+                isSampleSizeChanged: isSampleSizeChanged,
+                isTimeFrameChanged: isTimeFrameChanged,
+                isStrategyChanged: isStrategyChanged
             },
             success: function (response) {
                 if (response['error'] !== undefined) {
                     toastr.error(response['error']);
                 }
-                setViewData(response);
+                setData(response);
             },
             error: function (jqXHR, exception) // code for exceptions
             {
-                var msg = '';
-                if (jqXHR.status === 0) {
-                    msg = 'Not connect.\n Verify Network.';
-                } else if (jqXHR.status == 404) {
-                    msg = 'Requested page not found. [404]';
-                } else if (jqXHR.status == 500) {
-                    msg = 'Internal Server Error [500].';
-                } else if (exception === 'parsererror') {
-                    msg = 'Requested JSON parse failed.';
-                } else if (exception === 'timeout') {
-                    msg = 'Time out error.';
-                } else if (exception === 'abort') {
-                    msg = 'Ajax request aborted.';
-                } else {
-                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
-                }
-                alert(msg);
+                createAjaxErrorMsg(jqXHR, exception);
             }
         });
 
 
     }
 
-    function setViewData(response) {
+    function setData(response) {
         researchVM = JSON.parse(response.researchVM);
         tradeIndex = 0;
         trades = researchVM.AllTrades;
-        loadTradeData();
+        showResearchData(researchVM['CurrentStrategy']);
+        loadTradeData(researchVM['CurrentStrategy']);
         loadImages();
         setMenuValues(researchVM);
         setSelectedItemClass();
-        showResearchData(researchVM['CurrentStrategy']);
     }
 
     function showResearchData(strategy) {
         if (strategy == 0) {
-            $('#researchFirstBarPullbackData').removeClass('d-none');
-            $('#researchCradleData').addClass('d-none');
+            $('#researchDataContainer').html(partialViewFirstBarResearch);
 
         }
         else if (strategy == 1) {
-            $('#researchCradleData').removeClass('d-none');
-            $('#researchFirstBarPullbackData').addClass('d-none');
+            $('#researchDataContainer').html(partialViewCradleResesarch);
         }
     }
 

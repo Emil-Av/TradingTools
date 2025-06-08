@@ -1,1 +1,1 @@
-
+1. Switch between the strategies and the time frames of a strategy.
