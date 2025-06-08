@@ -89,20 +89,18 @@ $(function () {
                 // Save the old value. If there is no trade in the DB for the selected trade, the menu's old value should be displayed.
                 menuClicked = $(menuButtons[key]);
                 clickedMenuValue = $(menuButtons[key]).text();
-                var sampleSizeChanged;
-                var timeFrameChanged;
+                var sampleSizeChanged = false;
+                var timeFrameChanged = false;
+                var strategyChanged = false;
 
                 if (key == '#dropdownBtnSampleSize') {
                     sampleSizeChanged = true;
                 }
-                else {
-                    sampleSizeChanged = false;
-                }
                 if (key == '#dropdownBtnTimeFrame') {
                     timeFrameChanged = true;
                 }
-                else {
-                    timeFrameChanged = false;
+                if (key == '#dropdownBtnStrategy') {
+                    strategyChanged = true;
                 }
 
                 // Set the new value
@@ -112,7 +110,8 @@ $(function () {
                     $('#spanStrategy').text(),
                     $('#spanSampleSize').text(),
                     sampleSizeChanged,
-                    timeFrameChanged);
+                    timeFrameChanged,
+                    strategyChanged);
             });
         })(key);
     }
@@ -324,7 +323,7 @@ $(function () {
                 if (response['error'] !== undefined) {
                     toastr.error(response['error']);
                 }
-                setViewData(response);
+                setData(response);
             },
             error: function (jqXHR, exception) // code for exceptions
             {
@@ -519,7 +518,7 @@ $(function () {
         console.log(newCarouselHtml);
     }
 
-    function loadSampleSizeAsync(timeFrame, strategy, sampleSizeNumber, isSampleSizeChanged, isTimeFrameChanged) {
+    function loadSampleSizeAsync(timeFrame, strategy, sampleSizeNumber, isSampleSizeChanged, isTimeFrameChanged, isStrategyChanged) {
         // make the API call
         $.ajax({
             method: 'POST',
@@ -530,13 +529,14 @@ $(function () {
                 strategy: strategy,
                 sampleSizeNumber: sampleSizeNumber,
                 isSampleSizeChanged: isSampleSizeChanged,
-                isTimeFrameChanged: isTimeFrameChanged
+                isTimeFrameChanged: isTimeFrameChanged,
+                isStrategyChanged: isStrategyChanged
             },
             success: function (response) {
                 if (response['error'] !== undefined) {
                     toastr.error(response['error']);
                 }
-                setViewData(response);
+                setData(response);
             },
             error: function (jqXHR, exception) // code for exceptions
             {
@@ -547,7 +547,7 @@ $(function () {
 
     }
 
-    function setViewData(response) {
+    function setData(response) {
         researchVM = JSON.parse(response.researchVM);
         tradeIndex = 0;
         trades = researchVM.AllTrades;

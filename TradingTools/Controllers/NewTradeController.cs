@@ -161,7 +161,7 @@ namespace TradingTools.Controllers
                 // Called for a research trade
                 if (maxTradesProSampleSize == 100)
                 {
-                    await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, researchData, files);
+                    researchData.ScreenshotsUrls = await ScreenshotsHelper.SaveFilesAsync(_webHostEnvironment.WebRootPath, NewTradeVM, researchData, files);
                 }
                 try
                 {

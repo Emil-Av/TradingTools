@@ -1,2 +1,1 @@
-1. 2 TFs for ResearchCradle - the buttons don't work
-2. When there are 3 trades in a sample size and I enter 3 to go to the last trade, error comes that the trade 4 does not exist
+1. Switch between the strategies and the time frames of a strategy.

@@ -469,6 +469,10 @@ namespace TradingTools.Controllers
         private async Task<string> LoadViewModelData(List<SampleSize> sampleSizes, int sampleSizeNumber)
         {
             int lastSampleSizeId = SetLastSampleSizeId(sampleSizes, ref sampleSizeNumber);
+            if (lastSampleSizeId == -1)
+            {
+                return $"Error in setting the lastSampleSizeId in {nameof(SetLastSampleSizeId)}";
+            }
             SampleSize sampleSize = sampleSizes.FirstOrDefault(sampleSize => sampleSize.Id == lastSampleSizeId)!;
             await SetTrades();
             SetValuesForButtons();
@@ -485,7 +489,6 @@ namespace TradingTools.Controllers
                     ResearchVM.AllTrades = (await _unitOfWork.ResearchCradle
                         .GetAllAsync(x => x.SampleSizeId == lastSampleSizeId)).Cast<object>().ToList();
                     ResearchVM.ResearchCradle = (ResearchVM.AllTrades.FirstOrDefault() as ResearchCradle)!;
-
                 }
                 else if (sampleSize.Strategy == EStrategy.FirstBarPullback)
                 {
@@ -510,7 +513,6 @@ namespace TradingTools.Controllers
                 ResearchVM.NumberSampleSizes = sampleSizes.Count(x => x.TimeFrame == ResearchVM.CurrentTimeFrame);
                 ResearchVM.TradesInSampleSize = ResearchVM.AllTrades.Count;
                 SetAvailableTimeframes(sampleSizes);
-
             }
 
             void SetScreenShotsUrls()
@@ -528,37 +530,38 @@ namespace TradingTools.Controllers
 
             int SetLastSampleSizeId(List<SampleSize> sampleSizes, ref int sampleSizeNumber)
             {
-                // Case: IndexMethod logic
                 if (sampleSizeNumber == IndexMethod)
+                    return sampleSizes.LastOrDefault()?.Id ?? -1;
+
+                int lastSampleSizeId = -1;
+                var currentTimeFrame = ResearchVM.CurrentTimeFrame;
+
+                if (ResearchVM.HasStrategyChanged)
                 {
-                    return sampleSizes.LastOrDefault()!.Id;
+                    var lastSample = sampleSizes.LastOrDefault();
+                    if (lastSample != null)
+                    {
+                        lastSampleSizeId = lastSample.Id;
+                        sampleSizeNumber = sampleSizes.Count(x => x.TimeFrame == lastSample.TimeFrame);
+                    }
                 }
-
-                int lastSampleSizeId;
-
-                if (ResearchVM.HasTimeFrameChanged && ResearchVM.HasSampleSizeChanged)
+                else if (ResearchVM.HasTimeFrameChanged && ResearchVM.HasSampleSizeChanged)
                 {
-                    // Time frame and sample size both changed
-                    var filteredSamples = sampleSizes.Where(s => s.TimeFrame == ResearchVM.CurrentTimeFrame).ToList();
-                    lastSampleSizeId = filteredSamples.ElementAtOrDefault(sampleSizeNumber - 1)!.Id;
+                    var filtered = sampleSizes.Where(s => s.TimeFrame == currentTimeFrame).ToList();
+                    lastSampleSizeId = filtered.ElementAtOrDefault(sampleSizeNumber - 1)?.Id ?? -1;
                 }
                 else if (ResearchVM.HasTimeFrameChanged)
                 {
-                    // Only time frame changed
-                    var filteredSamples = sampleSizes.Where(s => s.TimeFrame == ResearchVM.CurrentTimeFrame).ToList();
-                    lastSampleSizeId = filteredSamples.LastOrDefault()!.Id;
+                    var filtered = sampleSizes.Where(s => s.TimeFrame == currentTimeFrame).ToList();
+                    var last = filtered.LastOrDefault();
+                    lastSampleSizeId = last?.Id ?? -1;
+                    sampleSizeNumber = filtered.Count;
                 }
                 else if (ResearchVM.HasSampleSizeChanged)
                 {
-                    // Only sample size changed
-                    lastSampleSizeId = sampleSizes.ElementAtOrDefault(sampleSizeNumber - 1)!.Id;
+                    lastSampleSizeId = sampleSizes.ElementAtOrDefault(sampleSizeNumber - 1)?.Id ?? -1;
                 }
-                else
-                {
-                    // Different time frame and/or strategy
-                    sampleSizeNumber = sampleSizes.Count;
-                    lastSampleSizeId = sampleSizes.LastOrDefault()?.Id ?? 0;
-                }
+
                 return lastSampleSizeId;
             }
 
