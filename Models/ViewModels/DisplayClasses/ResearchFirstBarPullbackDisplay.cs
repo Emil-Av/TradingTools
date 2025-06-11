@@ -28,8 +28,6 @@ namespace Models.ViewModels.DisplayClasses
 
         public string IsBreakevenDisplay { get; set; }
 
-        public string IsLossDisplay { get; set; }
-
         /// <summary>
         ///  Maximum risk to reward ratio. The number is always in ratio 1:MaxRR (e.g. 1:3)
         /// </summary>

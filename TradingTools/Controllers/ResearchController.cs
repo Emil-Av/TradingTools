@@ -51,14 +51,17 @@ namespace TradingTools.Controllers
         #region Public Methods
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, EStrategy strategy)
         {
             try
             {
-                if (ResearchVM.CurrentStrategy == EStrategy.FirstBarPullback)
+                if (strategy == EStrategy.FirstBarPullback)
                 {
-                    JsonResult jsonResul = await DeleteFirstBarPullback(id);
-                    return jsonResul;
+                    return await DeleteFirstBarPullback(id);
+                }
+                else if (strategy == EStrategy.Cradle)
+                {
+                    return await DeleteCradle(id);
                 }
                 return Json(new { error = "Delete method not implemented for this strategy." });
             }
@@ -66,6 +69,12 @@ namespace TradingTools.Controllers
             {
                 return Json(new { error = $"Error in Delete(): {ex.Message})" });
             }
+        }
+
+        private async Task<JsonResult> DeleteCradle(int id)
+        {
+            ResearchCradle trade = await _unitOfWork.ResearchCradle.GetAsync(x => x.Id == id);
+            SampleSize sampleSize = await _unitOfWork.SampleSize.GetAsync(x => x.Id == trade.SampleSizeId);
         }
 
         private async Task<JsonResult> DeleteFirstBarPullback(int id)
@@ -538,12 +547,8 @@ namespace TradingTools.Controllers
 
                 if (ResearchVM.HasStrategyChanged)
                 {
-                    var lastSample = sampleSizes.LastOrDefault();
-                    if (lastSample != null)
-                    {
-                        lastSampleSizeId = lastSample.Id;
-                        sampleSizeNumber = sampleSizes.Count(x => x.TimeFrame == lastSample.TimeFrame);
-                    }
+                    lastSampleSizeId = sampleSizes.LastOrDefault()!.Id;
+                    sampleSizeNumber = sampleSizes.Count(x => x.TimeFrame == sampleSizes.LastOrDefault()!.TimeFrame);
                 }
                 else if (ResearchVM.HasTimeFrameChanged && ResearchVM.HasSampleSizeChanged)
                 {
