@@ -9,6 +9,7 @@ using Models.ViewModels;
 using Shared;
 using System.Diagnostics;
 using Models;
+using Shared.Enums;
 
 namespace Utilities
 {
@@ -30,7 +31,7 @@ namespace Utilities
         {
             #region Create folders
             // /Screenshots
-            string screenshotsDir = Path.Combine(webRootPath, "Screenshots");
+            string screenshotsDir = GetScreenshotsDir(webRootPath);
             List<string> screenshotsPaths = new List<string>();
             if (!Directory.Exists(screenshotsDir))
             {
@@ -138,8 +139,23 @@ namespace Utilities
                         Directory.CreateDirectory(pathToSaveFiles);
                     }
                 }
+
+
             }
             return screenshotsPaths;
+
+
+
+        }
+
+        public static string GetScreenshotsDir(string webRootPath)
+        {
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == EEnvironment.Production.ToString())
+            {
+                return Path.Combine(webRootPath, "Screenshots");
+            }
+
+            return Path.Combine(webRootPath, "ScreenshotsDev");
         }
 
         /// <summary>

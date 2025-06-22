@@ -11,6 +11,10 @@ using Utilities;
 using SharedEnums.Enums;
 using Shared;
 using Shared.Enums;
+using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Components.Web;
+using System.IO;
+using Microsoft.VisualBasic.FileIO;
 
 namespace TradingTools.Controllers
 {
@@ -73,8 +77,131 @@ namespace TradingTools.Controllers
 
         private async Task<JsonResult> DeleteCradle(int id)
         {
+            ResearchCradle trade = await DeleteEntity(id);
+            DeleteTradeDirectory(trade.ScreenshotsUrls!.First());
+            List<ResearchCradle> tradesInSampleSize = await CheckAndDeleteSampleSize(trade);
+            if (tradesInSampleSize.Any())
+            {
+                await CheckAndUpdateScreenshotPathsAfterDeletion(trade.ScreenshotsUrls!.First(), tradesInSampleSize);
+            }
+            return Json(new { success = "Trade deleted" });
+
+        }
+
+        private void DeleteTradeDirectory(string screenshotPath)
+        {
+            string directoryToDelete = Path.GetDirectoryName(Path.Combine(_webHostEnvironment.WebRootPath, screenshotPath)!)!;
+            Directory.Delete(directoryToDelete, true);
+        }
+
+        private async Task<ResearchCradle> DeleteEntity(int id)
+        {
             ResearchCradle trade = await _unitOfWork.ResearchCradle.GetAsync(x => x.Id == id);
-            SampleSize sampleSize = await _unitOfWork.SampleSize.GetAsync(x => x.Id == trade.SampleSizeId);
+            _unitOfWork.ResearchCradle.Remove(trade);
+            await _unitOfWork.SaveAsync();
+            return trade;
+        }
+
+        private async Task<List<ResearchCradle>> CheckAndDeleteSampleSize(ResearchCradle trade)
+        {
+            List<ResearchCradle> tradesInSampleSize = await _unitOfWork.ResearchCradle.GetAllAsync(x => x.SampleSizeId == trade.SampleSizeId);
+            if (!tradesInSampleSize.Any())
+            {
+                SampleSize sampleSize = await _unitOfWork.SampleSize.GetAsync(x => x.Id == trade.SampleSizeId);
+                if (sampleSize != null)
+                {
+                    _unitOfWork.SampleSize.Remove(sampleSize);
+                    await _unitOfWork.SaveAsync();
+                }
+            }
+            return tradesInSampleSize; // +1 because of the deleted trade
+        }
+
+
+        private async Task CheckAndUpdateScreenshotPathsAfterDeletion(string screenshotPath, List<ResearchCradle> tradesInSampleSize)
+        {
+            int tradeNumber = ParseTradeNumber(screenshotPath);
+            bool isNotLastTrade = tradeNumber < tradesInSampleSize.Count + 1;
+            if (tradeNumber == -1 && isNotLastTrade)
+                return;
+
+            for (int i = tradeNumber - 1; i < tradesInSampleSize.Count; i++)
+            {
+                var trade = tradesInSampleSize[i];
+                if (trade.ScreenshotsUrls == null)
+                    continue;
+
+                List<string> updatedScreenshotUrls = new List<string>();
+                foreach (string oldUrl in trade.ScreenshotsUrls)
+                {
+                    string newUrl = ReplaceTradeNumberInUrl(oldUrl, i + 1);
+                    string oldFilePath = GetAbsolutePath(oldUrl);
+                    string newFilePath = GetAbsolutePath(newUrl);
+                    string oldDir = Path.GetDirectoryName(oldFilePath)!;
+                    string newDir = Path.GetDirectoryName(newFilePath)!;
+
+                    EnsureDirectoryExists(newDir);
+                    MoveFileIfExists(oldFilePath, newFilePath);
+                    DeleteDirectoryIfEmpty(oldDir);
+
+                    updatedScreenshotUrls.Add(newUrl);
+                }
+                trade.ScreenshotsUrls = updatedScreenshotUrls;
+                await _unitOfWork.ResearchCradle.UpdateAsync(trade);
+            }
+            await _unitOfWork.SaveAsync();
+        }
+
+        private int ParseTradeNumber(string screenshotPath)
+        {
+            var match = Regex.Match(screenshotPath, @"Trade (\d+)");
+            return match.Success && int.TryParse(match.Groups[1].Value, out int number) ? number : -1;
+        }
+
+        private string ReplaceTradeNumberInUrl(string url, int newTradeNumber)
+        {
+            return Regex.Replace(url, @"Trade (\d+)", $"Trade {newTradeNumber}");
+        }
+
+        private string GetAbsolutePath(string relativeUrl)
+        {
+            string wwwRootPath = _webHostEnvironment.WebRootPath;
+            string relativePath = relativeUrl.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString());
+            return Path.Combine(wwwRootPath, relativePath);
+        }
+
+        private void EnsureDirectoryExists(string? directory)
+        {
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+        }
+
+        private void MoveFileIfExists(string oldFilePath, string newFilePath)
+        {
+            if (System.IO.File.Exists(oldFilePath))
+            {
+                System.IO.File.Move(oldFilePath, newFilePath, overwrite: true);
+            }
+        }
+
+        private void DeleteDirectoryIfEmpty(string directory)
+        {
+            if (Directory.Exists(directory) && !Directory.EnumerateFileSystemEntries(directory).Any())
+            {
+                Directory.Delete(directory);
+            }
+        }
+
+        string GetTradeNumber(string screenshotPath)
+        {
+            var match = Regex.Match(screenshotPath, @"Trade (\d+)");
+            if (match.Success)
+            {
+                return match.Groups[1].Value;
+            }
+            return string.Empty;
         }
 
         private async Task<JsonResult> DeleteFirstBarPullback(int id)
@@ -519,7 +646,7 @@ namespace TradingTools.Controllers
                 ResearchVM.CurrentSampleSizeNumber = sampleSizeNumber;
                 ResearchVM.CurrentSampleSizeId = lastSampleSizeId;
                 // Set the NumberSampleSizes for the button menu
-                ResearchVM.NumberSampleSizes = sampleSizes.Count(x => x.TimeFrame == ResearchVM.CurrentTimeFrame);
+                ResearchVM.NumberSampleSizes = sampleSizes.Count(x => x.TimeFrame == ResearchVM.CurrentTimeFrame && x.Strategy == ResearchVM.CurrentSampleSize.Strategy);
                 ResearchVM.TradesInSampleSize = ResearchVM.AllTrades.Count;
                 SetAvailableTimeframes(sampleSizes);
             }
