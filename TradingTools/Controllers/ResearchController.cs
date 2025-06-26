@@ -61,7 +61,8 @@ namespace TradingTools.Controllers
             {
                 if (strategy == EStrategy.FirstBarPullback)
                 {
-                    return await DeleteFirstBarPullback(id);
+                    return Json(new { error = "Delete method not implemented for this strategy." });
+                    //return await DeleteFirstBarPullback(id);
                 }
                 else if (strategy == EStrategy.Cradle)
                 {
@@ -79,13 +80,25 @@ namespace TradingTools.Controllers
         {
             ResearchCradle trade = await DeleteEntity(id);
             DeleteTradeDirectory(trade.ScreenshotsUrls!.First());
-            List<ResearchCradle> tradesInSampleSize = await CheckAndDeleteSampleSize(trade);
-            if (tradesInSampleSize.Any())
-            {
-                await CheckAndUpdateScreenshotPathsAfterDeletion(trade.ScreenshotsUrls!.First(), tradesInSampleSize);
-            }
-            return Json(new { success = "Trade deleted" });
 
+            List<ResearchCradle> tradesInSampleSize = await CheckAndDeleteSampleSize(trade);
+
+            List<SampleSize> sampleSizes = await _unitOfWork.SampleSize
+                .GetAllAsync(x => x.TradeType == ETradeType.Research && x.Strategy == EStrategy.Cradle);
+
+            if (!TrySetLastSampleSizeId(tradesInSampleSize, sampleSizes, trade, out int lastSampleSizeId))
+            {
+                return Json(new { redirectUrl = Url.Action(nameof(Index)) });
+            }
+
+            if (sampleSizes.Any())
+            {
+                await LoadViewModelData(sampleSizes, lastSampleSizeId);
+                string researchVM = JsonConvert.SerializeObject(ResearchVM);
+                return Json(new { researchVM });
+            }
+
+            return Json(new { error = "No more trades for this strategy." });
         }
 
         private void DeleteTradeDirectory(string screenshotPath)
@@ -471,6 +484,7 @@ namespace TradingTools.Controllers
                                 if (!Int32.TryParse(researchInfo[1], out int strategy))
                                 {
                                     TempData["error"] = "Error parsing the strategy number from the csv file name. Check the file name.";
+                                    // In a controller, to redirect to the Index method, use RedirectToAction:
                                     return RedirectToAction(nameof(Index));
                                 }
                                 string tempTF = researchInfo[2].Replace(".csv", "");
@@ -643,7 +657,7 @@ namespace TradingTools.Controllers
                 // Set the values for the button menus
                 ResearchVM.CurrentSampleSize = sampleSizes.FirstOrDefault(x => x.Id == lastSampleSizeId)!;
                 ResearchVM.CurrentTimeFrame = ResearchVM.CurrentSampleSize.TimeFrame;
-                ResearchVM.CurrentSampleSizeNumber = sampleSizeNumber;
+                ResearchVM.CurrentSampleSizeNumber = sampleSizeNumber == lastSampleSizeId ? sampleSizes.IndexOf(ResearchVM.CurrentSampleSize) + 1 : sampleSizeNumber;
                 ResearchVM.CurrentSampleSizeId = lastSampleSizeId;
                 // Set the NumberSampleSizes for the button menu
                 ResearchVM.NumberSampleSizes = sampleSizes.Count(x => x.TimeFrame == ResearchVM.CurrentTimeFrame && x.Strategy == ResearchVM.CurrentSampleSize.Strategy);
@@ -693,11 +707,31 @@ namespace TradingTools.Controllers
                 {
                     lastSampleSizeId = sampleSizes.ElementAtOrDefault(sampleSizeNumber - 1)?.Id ?? -1;
                 }
+                else
+                {
+                    return sampleSizeNumber;
+                }
 
                 return lastSampleSizeId;
             }
 
             #endregion
+        }
+        private bool TrySetLastSampleSizeId(List<ResearchCradle> tradesInSampleSize, List<SampleSize> sampleSizes, ResearchCradle trade, out int lastSampleSizeId)
+        {
+            lastSampleSizeId = 0;
+            if (tradesInSampleSize.Any())
+            {
+                lastSampleSizeId = trade.SampleSizeId;
+                return true;
+            }
+            else if (sampleSizes.Any())
+            {
+                lastSampleSizeId = sampleSizes.Last().Id;
+                return true;
+            }
+
+            return false;
         }
 
         #endregion

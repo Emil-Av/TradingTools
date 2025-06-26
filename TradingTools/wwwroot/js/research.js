@@ -330,6 +330,10 @@ $(function () {
                 if (response['error'] !== undefined) {
                     toastr.error(response['error']);
                 }
+                else if (response.redirectUrl) {
+                    window.location.href = response.redirectUrl;
+                }
+
                 setData(response);
             },
             error: function (jqXHR, exception) // code for exceptions
