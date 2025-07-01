@@ -207,16 +207,6 @@ namespace TradingTools.Controllers
             }
         }
 
-        string GetTradeNumber(string screenshotPath)
-        {
-            var match = Regex.Match(screenshotPath, @"Trade (\d+)");
-            if (match.Success)
-            {
-                return match.Groups[1].Value;
-            }
-            return string.Empty;
-        }
-
         private async Task<JsonResult> DeleteFirstBarPullback(int id)
         {
             ResearchFirstBarPullback trade = await _unitOfWork.ResearchFirstBarPullback.GetAsync(x => x.Id == id);
@@ -657,8 +647,10 @@ namespace TradingTools.Controllers
                 // Set the values for the button menus
                 ResearchVM.CurrentSampleSize = sampleSizes.FirstOrDefault(x => x.Id == lastSampleSizeId)!;
                 ResearchVM.CurrentTimeFrame = ResearchVM.CurrentSampleSize.TimeFrame;
-                ResearchVM.CurrentSampleSizeNumber = sampleSizeNumber == lastSampleSizeId ? sampleSizes.IndexOf(ResearchVM.CurrentSampleSize) + 1 : sampleSizeNumber;
+                
                 ResearchVM.CurrentSampleSizeId = lastSampleSizeId;
+                ResearchVM.CurrentStrategy = ResearchVM.CurrentSampleSize.Strategy;
+                SetCurrentSampleSizeNumber(sampleSizeNumber, lastSampleSizeId, sampleSizes);
                 // Set the NumberSampleSizes for the button menu
                 ResearchVM.NumberSampleSizes = sampleSizes.Count(x => x.TimeFrame == ResearchVM.CurrentTimeFrame && x.Strategy == ResearchVM.CurrentSampleSize.Strategy);
                 ResearchVM.TradesInSampleSize = ResearchVM.AllTrades.Count;
@@ -716,6 +708,27 @@ namespace TradingTools.Controllers
             }
 
             #endregion
+        }
+
+        private void SetCurrentSampleSizeNumber(int sampleSizeNumber, int lastSampleSizeId, List<SampleSize> sampleSizes)
+        {
+            bool isDeletingCradle = sampleSizeNumber == lastSampleSizeId;
+            if (isDeletingCradle)
+            {
+                // Finde alle SampleSizes mit dem aktuellen TimeFrame
+                var matchingTimeFrames = sampleSizes
+                    .Where(s => s.TimeFrame == ResearchVM.CurrentSampleSize.TimeFrame)
+                    .ToList();
+
+                // Ermittle die Position des aktuellen SampleSize in dieser Liste (1-basiert)
+                int index = matchingTimeFrames.IndexOf(ResearchVM.CurrentSampleSize) + 1;
+
+                ResearchVM.CurrentSampleSizeNumber = index > 0 ? index : sampleSizeNumber;
+            }
+            else
+            {
+                ResearchVM.CurrentSampleSizeNumber = sampleSizeNumber;
+            }
         }
         private bool TrySetLastSampleSizeId(List<ResearchCradle> tradesInSampleSize, List<SampleSize> sampleSizes, ResearchCradle trade, out int lastSampleSizeId)
         {
