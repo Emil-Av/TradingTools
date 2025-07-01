@@ -305,24 +305,35 @@ $(function () {
 
     function deleteTrade() {
         var currentTradeNumber = parseInt($('#tradeNumberInput').val());
-        var id = trades[currentTradeNumber - 1]['IdDisplay'];
-        if (currentTradeNumber - 1 <= 0) {
-            tradeIndex = 0;
+        var id = getTradeId(currentTradeNumber);
+        setCurrentIndex(currentTradeNumber)
+        ajaxDelete(id)
+    }
+
+    function getStrategyAsEnumIntValue() {
+        if ($('#spanStrategy').text() == strategies.FirstBarPullback) {
+            return 0;
         }
-        else {
-            tradeIndex = currentTradeNumber - 1;
-        }
+        return 1;
+    }
+
+    function ajaxDelete(id) {
         $.ajax({
             method: 'DELETE',
             url: '/research/delete',
             dataType: 'JSON',
             data: {
-                id: id
+                id: id,
+                strategy: getStrategyAsEnumIntValue()
             },
             success: function (response) {
                 if (response['error'] !== undefined) {
                     toastr.error(response['error']);
                 }
+                else if (response.redirectUrl) {
+                    window.location.href = response.redirectUrl;
+                }
+
                 setData(response);
             },
             error: function (jqXHR, exception) // code for exceptions
@@ -330,6 +341,15 @@ $(function () {
                 createAjaxErrorMsg(jqXHR, exception);
             }
         });
+    }
+
+    function setCurrentIndex(currentTradeNumber) {
+        if (currentTradeNumber - 1 <= 0) {
+            tradeIndex = 0;
+        }
+        else {
+            tradeIndex = currentTradeNumber - 1;
+        }
     }
 
     function createAjaxErrorMsg(jqXHR, exception) {
@@ -568,11 +588,16 @@ $(function () {
         }
     }
 
+    function getTradeId(currentTradeNumber) {
+        if ($('#spanStrategy').text() == strategies.FirstBarPullback) {
+            return trades[currentTradeNumber - 1]['IdDisplay'];
+        }
+        return trades[currentTradeNumber - 1]['Id'];
+    }
 
     /**
     * ***************************
     * Region methods
     * ***************************
     */
-
 });

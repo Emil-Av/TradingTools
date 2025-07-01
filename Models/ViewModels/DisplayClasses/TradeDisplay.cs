@@ -35,6 +35,8 @@ namespace Models.ViewModels.DisplayClasses
 
         public ETradeRating? TradeRatingDisplay { get; set; }
 
+        public EOutcome? OutcomeDisplay { get; set; }
+
         public List<string>? ScreenshotsUrls { get; set; }
 
         public int? SampleSizeId { get; set; }

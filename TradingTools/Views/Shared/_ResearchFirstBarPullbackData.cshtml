@@ -57,8 +57,8 @@
                                     <select class="text-center form-control" id="IsBreakevenInput" data-research-firstbar="IsBreakevenDisplay" asp-for="@Model.ResearchFirstBarPullbackDisplay.IsBreakevenDisplay" asp-items="Model.YesNoOptions"></select>
                                 </div>
                                 <div class="form-group col-12 col-md-6 col-lg">
-                                    <label class="d-block text-nowrap min-width-60" for="IsLossInput">Loss</label>
-                                    <select class="text-center form-control" id="IsLossInput" data-research-firstbar="IsLossDisplay" asp-for="@Model.ResearchFirstBarPullbackDisplay.IsLossDisplay" asp-items="Model.YesNoOptions"></select>
+                                    <label class="d-block text-nowrap min-width-60" for="OutcomeInput">Loss</label>
+                                    <select class="text-center form-control" id="OutcomeInput" data-research-firstbar="OutcomeDisplay" asp-for="@Model.ResearchFirstBarPullbackDisplay.OutcomeDisplay" asp-items="Model.YesNoOptions"></select>
                                 </div>
                                 <div class="form-group col-12 col-md-6 col-lg">
                                     <label class="d-block text-nowrap min-width-60" for="MaxRRInput">Max RR</label>
@@ -75,9 +75,8 @@
                         <div class="col">
                             <div class="form-group col-12 col-md-6 col-lg">
                                 <label class="d-block text-nowrap min-width-60" for="Comment">Comment</label>
-                                <input class="text-justify form-control" id="Comment" data-research-firstbar="CommentDisplay" value="@Model.ResearchFirstBarPullbackDisplay.CommentDisplay" />
+                                <textarea class="text-justify form-control" id="Comment" data-research-firstbar="CommentDisplay">@Model.ResearchFirstBarPullbackDisplay.CommentDisplay</textarea>
                             </div>
-
                         </div>
                     </div>
                 </div>
