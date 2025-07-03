@@ -338,7 +338,7 @@ namespace TradingTools.Controllers
                 return Json(new { error = $"{ex.Message}" });
             }
 
-            return Json(new { success = "Under development" });
+            return Json(new { success = "Trade updated." });
         }
 
         [HttpPost]
